@@ -43,7 +43,7 @@ export default function Review() {
   async function onSubmit(event) {
     event.preventDefault();
     setIsLoading(true);
-    const response = await fetch("/api/review", {
+    const response = await fetch("/api/products", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -70,7 +70,7 @@ export default function Review() {
   return (
     <div>
   <Head>
-      <title>OpenAI API Starter - Review generator</title>
+      <title>OpenAI API Starter - Product generator</title>
       <meta name="description" content="" />
       <link rel="icon" href="/favicon.ico" />
     </Head>
@@ -80,10 +80,10 @@ export default function Review() {
                     items-center justify-center m-20"
       >
         <h3 className="text-slate-900 text-xl mb-3">
-          Product Review Generator
+          Liferay Product Generator
         </h3>
         <p className="text-slate-700 text-lg mb-3">
-          Open AI starter app to generate product reviews
+          Open AI app to generate products.
         </p>
         <form onSubmit={onSubmit}>
           <input
@@ -93,7 +93,7 @@ export default function Review() {
                               
             type="text"
             name="product"
-            placeholder="Enter a product name"
+            placeholder="Enter a company theme"
             value={productInput}
             onChange={(e) => setProductInput(e.target.value)}
           />

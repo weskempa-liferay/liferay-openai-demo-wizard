@@ -1,4 +1,4 @@
-# Liferay OpenAI Demo Wizard Starter Project
+# Liferay OpenAI Demo Wizard Project
 
 Using this application you can quickly configure content for demo purposes. It uses Open AI's API and Node.js
 
@@ -22,7 +22,7 @@ Technologies used:
 1. Navigate into the project directory
 
 ```bash
-cd openai-api-next-starter
+cd liferay-openai-demo-wizard
 ```  
 
 1. Install the requirements

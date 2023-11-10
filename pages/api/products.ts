@@ -15,7 +15,8 @@ export default async function (req, res) {
   let apiPath = "http://localhost:8080/o/headless-admin-taxonomy/v1.0/sites/20120/taxonomy-vocabularies";
   let vocabPostObj = {'name': req.body.product + ' Type'};
   let headers = {
-    'Authorization': 'Basic ' + btoa('test@liferay.com:test'), 
+    //'Authorization': 'Basic ' + btoa('test@liferay.com:test'), 
+    'x-csrf-token': '5gAiFo6t',
     'Content-Type': 'application/json'
   };
   let apiRes = "";

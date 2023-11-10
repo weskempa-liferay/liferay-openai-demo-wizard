@@ -9,33 +9,9 @@ const openai = new OpenAIApi(configuration);
 
 export default async function (req, res) {
 
+  /* Get OpenAI Content based on Theme */
 
-  const axios = require("axios");
-
-  let apiPath = "http://localhost:8080/o/headless-admin-taxonomy/v1.0/sites/20120/taxonomy-vocabularies";
-  let vocabPostObj = {'name': req.body.product + ' Type'};
-  let headers = {
-    //'Authorization': 'Basic ' + btoa('test@liferay.com:test'), 
-    'x-csrf-token': '5gAiFo6t',
-    'Content-Type': 'application/json'
-  };
-  let apiRes = "";
-
-  axios.post(apiPath,
-    vocabPostObj, 
-    headers).then(
-    function (response) {
-      console.log(response);
-      apiRes = response;
-    })
-    .catch(function (error) {
-      console.log(error);
-      apiRes = error;
-    });
-
-  res.status(200).json({ result: apiRes });
-
-  /*const completion = await openai.createCompletion({
+  const completion = await openai.createCompletion({
     model: "text-davinci-003",
     prompt: reviewPrompt(req.body.product),
     max_tokens: 2000,
@@ -58,7 +34,40 @@ export default async function (req, res) {
 
   console.log(categoryDataStr);
 
-*/
+  /* Setup Vocabulary */
+
+  const axios = require("axios");
+
+  let apiPath = process.env.LIFERAY_PATH + "/o/headless-admin-taxonomy/v1.0/sites/20120/taxonomy-vocabularies";
+  let vocabPostObj = {'name': req.body.product + ' Categories'};
+
+  const usernamePasswordBuffer = Buffer.from(process.env.LIFERAY_ADMIN_EMAIL_ADDRESS+':'+process.env.LIFERAY_ADMIN_PASSWORD);
+  const base64data = usernamePasswordBuffer.toString('base64');
+
+  let headerObj = {
+    headers: {
+    'Authorization': 'Basic ' + base64data, 
+    'Content-Type': 'application/json'
+    }
+  };
+  
+  let apiRes = "";
+
+  axios.post(apiPath,
+    vocabPostObj, 
+    headerObj).then(
+    function (response) {
+      console.log(response.data);
+      apiRes = response.data.id;
+    })
+    .catch(function (error) {
+      console.log(error);
+      apiRes = error;
+    });
+
+
+  //res.status(200).json({ result: apiRes });
+
 /*
   //const https = require("https");
   const http = require('node:http');

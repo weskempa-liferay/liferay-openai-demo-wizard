@@ -41,7 +41,10 @@ export default async function (req, res) {
   let apiPath = process.env.LIFERAY_PATH + "/o/headless-admin-taxonomy/v1.0/sites/20120/taxonomy-vocabularies";
   let vocabPostObj = {'name': req.body.product + ' Categories'};
 
-  const usernamePasswordBuffer = Buffer.from(process.env.LIFERAY_ADMIN_EMAIL_ADDRESS+':'+process.env.LIFERAY_ADMIN_PASSWORD);
+  const usernamePasswordBuffer = Buffer.from( 
+            process.env.LIFERAY_ADMIN_EMAIL_ADDRESS + 
+            ':' + process.env.LIFERAY_ADMIN_PASSWORD);
+
   const base64data = usernamePasswordBuffer.toString('base64');
 
   let headerObj = {
@@ -59,6 +62,7 @@ export default async function (req, res) {
     function (response) {
       console.log(response.data);
       apiRes = response.data.id;
+      console.log(apiRes);
     })
     .catch(function (error) {
       console.log(error);

@@ -79,7 +79,7 @@ export default async function (req, res) {
   let currCategory, currCategoryJson, categResponse;
   for(var i = 0; i < productCategories.length; i++) {
 
-    currCategory = productCategories.pop();
+    currCategory = productCategories[i];
 
     currCategoryJson = {'taxonomyVocabularyId' : apiRes, 'name' : currCategory};
   
@@ -109,10 +109,19 @@ export default async function (req, res) {
   var productName, productPrice, inventoryCount;
   var productSku, productJson;
 
-  let productResponse;
+  let productResponse, productId;
+  var productCategoryJson;
 
+  let categoryApiPath;
+
+  let currCategoryId;
   for(i = 0; productData.length>i; i++){
+    currCategory = productData[i].categoryName;
+    currCategoryId = categMap.get(currCategory);
+    console.log("category -- " + currCategory + ":" + currCategoryId);
+
     productDataList = productData[i].products;
+
     for(j = 0; j < productDataList.length; j++) {
       productName = productDataList[j].productName;
       productPrice = productDataList[j].price;
@@ -140,7 +149,14 @@ export default async function (req, res) {
           'purchasable' : true,
           'sku' : productSku,
           'neverExpire' : true
-        }]
+        }],
+        'categories' : [
+          {
+            'id' : categMap.get(currCategory),
+            'name' : currCategory,
+            'siteId' : process.env.LIFERAY_GLOBAL_SITE_ID  
+          }
+        ]
 
       }
 
@@ -149,7 +165,16 @@ export default async function (req, res) {
 
         productResponse = await axios.post(apiPath, productJson, headerObj);
 
-        console.log(productResponse);
+        //console.log(productResponse);
+
+        productId = productResponse.data.productId;
+        console.log(productName + " created with id " + productId);
+        productCategoryJson = {
+          'id' : currCategoryId,
+          'name' : currCategory,
+          'siteId' : process.env.LIFERAY_GLOBAL_SITE_ID
+        }
+
       }
       catch(productError) {
         console.log("error creating product " + productName + " -- " + productError);

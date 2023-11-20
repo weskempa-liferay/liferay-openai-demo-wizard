@@ -31,3 +31,4 @@ yarn-error.log*
 .env.test.local
 .env.production.local
 yarn.lock
+sample_output.json

@@ -32,6 +32,9 @@ export default async function (req, res) {
     "Category Names": productCategories
   } 
 
+
+  console.log(categoryDataStr);
+
   /* Setup Vocabulary */
 
   const axios = require("axios");
@@ -39,6 +42,7 @@ export default async function (req, res) {
   let apiRoot = process.env.LIFERAY_PATH;
   let apiPath = apiRoot + "/o/headless-admin-taxonomy/v1.0/sites/"+apiGroupSiteId+"/taxonomy-vocabularies";
 
+  let apiPath = process.env.LIFERAY_PATH + "/o/headless-admin-taxonomy/v1.0/sites/" + process.env.LIFERAY_GLOBAL_SITE_ID + "/taxonomy-vocabularies";
   let vocabPostObj = {'name': req.body.product + ' Categories'};
 
   const usernamePasswordBuffer = Buffer.from( 
@@ -56,19 +60,130 @@ export default async function (req, res) {
   
   let apiRes = "";
 
-  axios.post(apiPath,
-    vocabPostObj, 
-    headerObj).then(
-    function (response) {
-      //console.log(response.data);
-      apiRes = response.data.id;
-      console.log("apiRes");
-      console.log(apiRes);
-    })
-    .catch(function (error) {
-      console.log(error);
-      apiRes = error;
-    });
+  // wait for the vocab to complete before adding categories
+  try {
+    const vocabResponse = await axios.post(apiPath,
+      vocabPostObj, 
+      headerObj);
+  
+      console.log(vocabResponse.data);
+      apiRes = vocabResponse.data.id;
+  }
+  catch (error) {
+    console.log(error);
+    apiRes = error;
+
+  }
+
+  const categMap = new Map();
+
+  console.log("returned vocab key is " + apiRes);
+  // create the categories for the vocabulary that was just generated
+  let currCategory, currCategoryJson, categResponse;
+  for(var i = 0; i < productCategories.length; i++) {
+
+    currCategory = productCategories[i];
+
+    currCategoryJson = {'taxonomyVocabularyId' : apiRes, 'name' : currCategory};
+  
+    apiPath = process.env.LIFERAY_PATH + "/o/headless-admin-taxonomy/v1.0/taxonomy-vocabularies/" + apiRes + "/taxonomy-categories";
+    console.log("creating category");
+    console.log(currCategoryJson);
+
+    try {
+      categResponse = await axios.post(apiPath,
+        currCategoryJson, 
+        headerObj);
+
+      console.log(categResponse.data.id + " is the id for " + currCategory);
+
+      categMap.set(currCategory, categResponse.data.id);
+    }
+    catch(categError) {
+      console.log(categError);
+    }
+
+    console.log(categMap);
+  }
+
+  // add the products
+  let j;
+  let productDataList;
+  var productName, productPrice, inventoryCount;
+  var productSku, productJson;
+
+  let productResponse, productId;
+  var productCategoryJson;
+
+  let categoryApiPath;
+
+  let currCategoryId;
+  for(i = 0; productData.length>i; i++){
+    currCategory = productData[i].categoryName;
+    currCategoryId = categMap.get(currCategory);
+    console.log("category -- " + currCategory + ":" + currCategoryId);
+
+    productDataList = productData[i].products;
+
+    for(j = 0; j < productDataList.length; j++) {
+      productName = productDataList[j].productName;
+      productPrice = productDataList[j].price;
+      inventoryCount = productDataList[j].stock;
+      productSku = productName.toLowerCase().replaceAll(' ', '-')
+
+      productJson = {
+        'active' : true,
+        'catalogId' : process.env.LIFERAY_CATALOG_ID,
+        'description' : {
+          'en_US' : productName
+        },
+        'name' : {
+          'en_US' : productName
+        },
+        'productStatus' : 0,
+        'productType' : 'simple',
+        'shortDescription' : {
+          'en_US' : productName
+        },
+        'skuFormatted' : productSku,
+        'skus' : [{
+          'price' : productPrice,
+          'published' : true,
+          'purchasable' : true,
+          'sku' : productSku,
+          'neverExpire' : true
+        }],
+        'categories' : [
+          {
+            'id' : categMap.get(currCategory),
+            'name' : currCategory,
+            'siteId' : process.env.LIFERAY_GLOBAL_SITE_ID  
+          }
+        ]
+
+      }
+
+      try {
+        apiPath = process.env.LIFERAY_PATH + "/o/headless-commerce-admin-catalog/v1.0/products";
+
+        productResponse = await axios.post(apiPath, productJson, headerObj);
+
+        //console.log(productResponse);
+
+        productId = productResponse.data.productId;
+        console.log(productName + " created with id " + productId);
+        productCategoryJson = {
+          'id' : currCategoryId,
+          'name' : currCategory,
+          'siteId' : process.env.LIFERAY_GLOBAL_SITE_ID
+        }
+
+      }
+      catch(productError) {
+        console.log("error creating product " + productName + " -- " + productError);
+      }
+    }
+  }
 
 
   //res.status(200).json({ result: apiRes });

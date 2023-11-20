@@ -32,13 +32,14 @@ export default async function (req, res) {
     "Category Names": productCategories
   } 
 
+
   console.log(categoryDataStr);
 
   /* Setup Vocabulary */
 
   const axios = require("axios");
 
-  let apiPath = process.env.LIFERAY_PATH + "/o/headless-admin-taxonomy/v1.0/sites/20120/taxonomy-vocabularies";
+  let apiPath = process.env.LIFERAY_PATH + "/o/headless-admin-taxonomy/v1.0/sites/" + process.env.LIFERAY_GLOBAL_SITE_ID + "/taxonomy-vocabularies";
   let vocabPostObj = {'name': req.body.product + ' Categories'};
 
   const usernamePasswordBuffer = Buffer.from( 
@@ -56,18 +57,52 @@ export default async function (req, res) {
   
   let apiRes = "";
 
-  axios.post(apiPath,
-    vocabPostObj, 
-    headerObj).then(
-    function (response) {
-      console.log(response.data);
-      apiRes = response.data.id;
-      console.log(apiRes);
-    })
-    .catch(function (error) {
-      console.log(error);
-      apiRes = error;
-    });
+  // wait for the vocab to complete before adding categories
+  try {
+    const vocabResponse = await axios.post(apiPath,
+      vocabPostObj, 
+      headerObj);
+  
+      console.log(vocabResponse.data);
+      apiRes = vocabResponse.data.id;
+  }
+  catch (error) {
+    console.log(error);
+    apiRes = error;
+
+  }
+
+  const categMap = new Map();
+
+  console.log("returned vocab key is " + apiRes);
+  // create the categories for the vocabulary that was just generated
+  let currCategory, currCategoryJson, categResponse;
+  for(var i = 0; i < productCategories.length; i++) {
+
+    currCategory = productCategories.pop();
+
+    currCategoryJson = {'taxonomyVocabularyId' : apiRes, 'name' : currCategory};
+  
+    apiPath = process.env.LIFERAY_PATH + "/o/headless-admin-taxonomy/v1.0/taxonomy-vocabularies/" + apiRes + "/taxonomy-categories";
+    console.log("creating category");
+    console.log(currCategoryJson);
+
+    try {
+      categResponse = await axios.post(apiPath,
+        currCategoryJson, 
+        headerObj);
+
+      console.log(categResponse.data.id + " is the id for " + currCategory);
+
+      categMap.set(currCategory, categResponse.data.id);
+    }
+    catch(categError) {
+      console.log(categError);
+    }
+
+    console.log(categMap);
+  }
+
 
 
   //res.status(200).json({ result: apiRes });

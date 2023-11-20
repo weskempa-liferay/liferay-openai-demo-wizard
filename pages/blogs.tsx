@@ -70,14 +70,11 @@ export default function Review() {
       <link rel="icon" href="/favicon.ico" />
     </Head>
 
-      <main
-        className="flex flex-col 
-                    items-center justify-center m-20"
-      >
-        <h3 className="text-slate-900 text-xl mb-3">
+    <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
+        <h3 className="text-slate-200 font-bold text-xl mb-3">
           2-Sentence Horror Story Generator
         </h3>
-        <p className="text-slate-700 text-lg mb-3">
+        <p className="text-slate-100 text-lg mb-3">
           Type your topic in the field below and wait for your 2-sentence horror
           story.{" "}
         </p>
@@ -94,7 +91,7 @@ export default function Review() {
           />
 
           <button
-            className="text-sm w-full bg-fuchsia-600 h-7 text-white
+            className="text-sm w-full bg-blue-600 h-7 text-white
                               rounded-2xl mb-10"
             type="submit"
           >

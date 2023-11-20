@@ -32,13 +32,13 @@ export default async function (req, res) {
     "Category Names": productCategories
   } 
 
-  console.log(categoryDataStr);
-
   /* Setup Vocabulary */
 
   const axios = require("axios");
+  let apiGroupSiteId = process.env.LIFERAY_GLOBAL_SITE_ID;
+  let apiRoot = process.env.LIFERAY_PATH;
+  let apiPath = apiRoot + "/o/headless-admin-taxonomy/v1.0/sites/"+apiGroupSiteId+"/taxonomy-vocabularies";
 
-  let apiPath = process.env.LIFERAY_PATH + "/o/headless-admin-taxonomy/v1.0/sites/20120/taxonomy-vocabularies";
   let vocabPostObj = {'name': req.body.product + ' Categories'};
 
   const usernamePasswordBuffer = Buffer.from( 
@@ -60,8 +60,9 @@ export default async function (req, res) {
     vocabPostObj, 
     headerObj).then(
     function (response) {
-      console.log(response.data);
+      //console.log(response.data);
       apiRes = response.data.id;
+      console.log("apiRes");
       console.log(apiRes);
     })
     .catch(function (error) {

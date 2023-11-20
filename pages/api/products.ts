@@ -185,45 +185,6 @@ export default async function (req, res) {
     }
   }
 
-
-  //res.status(200).json({ result: apiRes });
-
-/*
-  //const https = require("https");
-  const http = require('node:http');
-
-  //http://localhost:8080/o/headless-admin-taxonomy/v1.0/sites/20120/taxonomy-vocabularies
-
-  const options = {
-    hostname: 'localhost',
-    port: 8080,
-    path: '/o/headless-admin-taxonomy/v1.0/sites/20120/taxonomy-vocabularies',
-    method: 'POST',
-    headers: new Headers({
-      'Authorization': 'Basic ' + btoa('test@liferay.com:portal4all'), 
-      'Content-Type': 'application/json'
-    })
-  }
-  
-  const request = http
-    .request(options, resp => {
-      // log the data
-      resp.on("data", d => {
-        console.log("DATA: "+d);
-      });
-    })
-    .on("error", err => {
-      console.log("Error: " + err.message);
-    });
-
-    request.write("{'name':'"+req.body.product + " Type'}");
-    request.end();
-
-
-    console.log("End of code");
-    */
-
-
 }
 
 function reviewPrompt(productName) {

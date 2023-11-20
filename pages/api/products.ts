@@ -103,6 +103,59 @@ export default async function (req, res) {
     console.log(categMap);
   }
 
+  // add the products
+  let j;
+  let productDataList;
+  var productName, productPrice, inventoryCount;
+  var productSku, productJson;
+
+  let productResponse;
+
+  for(i = 0; productData.length>i; i++){
+    productDataList = productData[i].products;
+    for(j = 0; j < productDataList.length; j++) {
+      productName = productDataList[j].productName;
+      productPrice = productDataList[j].price;
+      inventoryCount = productDataList[j].stock;
+      productSku = productName.toLowerCase().replaceAll(' ', '-')
+
+      productJson = {
+        'active' : true,
+        'catalogId' : process.env.LIFERAY_CATALOG_ID,
+        'description' : {
+          'en_US' : productName
+        },
+        'name' : {
+          'en_US' : productName
+        },
+        'productStatus' : 0,
+        'productType' : 'simple',
+        'shortDescription' : {
+          'en_US' : productName
+        },
+        'skuFormatted' : productSku,
+        'skus' : [{
+          'price' : productPrice,
+          'published' : true,
+          'purchasable' : true,
+          'sku' : productSku,
+          'neverExpire' : true
+        }]
+
+      }
+
+      try {
+        apiPath = process.env.LIFERAY_PATH + "/o/headless-commerce-admin-catalog/v1.0/products";
+
+        productResponse = await axios.post(apiPath, productJson, headerObj);
+
+        console.log(productResponse);
+      }
+      catch(productError) {
+        console.log("error creating product " + productName + " -- " + productError);
+      }
+    }
+  }
 
 
   //res.status(200).json({ result: apiRes });

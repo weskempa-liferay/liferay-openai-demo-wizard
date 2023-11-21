@@ -7,7 +7,7 @@ const HomePage: NextPage = () => {
   return (
     <>
     <Head>
-      <title>Liferay OpenAI Demo Wizard</title>
+      <title>Liferay OpenAI Demo Content Wizard</title>
       <meta name="description" content="" />
       <link rel="icon" href="/favicon.ico" type="image/x-icon"/>
     </Head>

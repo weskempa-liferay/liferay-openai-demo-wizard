@@ -106,12 +106,8 @@ export default async function (req, res) {
   // add the products
   let j;
   let productDataList;
-  var productName, productPrice, inventoryCount;
-  var productSku, productJson;
-
-  let productResponse, productId;
-  var productCategoryJson;
-
+  let productName, shortDescription, productPrice, inventoryCount, productSku, productJson;
+  let productResponse, productId, productCategoryJson;
   let categoryApiPath;
 
   let currCategoryId;
@@ -124,6 +120,7 @@ export default async function (req, res) {
 
     for(j = 0; j < productDataList.length; j++) {
       productName = productDataList[j].productName;
+      shortDescription = productDataList[j].shortDescription;
       productPrice = productDataList[j].price;
       inventoryCount = productDataList[j].stock;
       productSku = productName.toLowerCase().replaceAll(' ', '-')
@@ -140,7 +137,7 @@ export default async function (req, res) {
         "productStatus" : 0,
         "productType" : 'simple',
         "shortDescription" : {
-          "en_US" : productName
+          "en_US" : shortDescription
         },
         "skuFormatted" : productSku,
         "skus" : [{
@@ -198,12 +195,14 @@ function reviewPrompt(productName) {
           {
             "productName": "Sofa",
             "price": 499.99,
-            "stock": 120
+            "stock": 120,
+            "shortDescription": "Indulge in comfort and style with our luxurious sofa collection." 
           },
           {
             "productName": "Coffee Table",
             "price": 149.99,
-            "stock": 200
+            "stock": 200,
+            "shortDescription": "Transform your living room into a haven of elegance with our exquisite coffee tables." 
           }
         ]
       },
@@ -213,12 +212,14 @@ function reviewPrompt(productName) {
           {
             "productName": "Bed Frame",
             "price": 299.99,
-            "stock": 100
+            "stock": 100,
+            "shortDescription": "Upgrade your sleep sanctuary with our sleek and sturdy bed frames." 
           },
           {
             "productName": "Dresser",
             "price": 199.99,
-            "stock": 80
+            "stock": 80,
+            "shortDescription": "Elevate your bedroom organization with our chic and functional dressers." 
           }
         ]
       },
@@ -228,12 +229,14 @@ function reviewPrompt(productName) {
           {
             "productName": "Dining Table",
             "price": 349.99,
-            "stock": 60
+            "stock": 60,
+            "shortDescription": "Set the stage for unforgettable gatherings with our stunning dining tables." 
           },
           {
             "productName": "Dining Chairs",
             "price": 79.99,
-            "stock": 120
+            "stock": 120,
+            "shortDescription": "Take a seat in style with our sophisticated dining chairs." 
           }
         ]
       },
@@ -243,12 +246,14 @@ function reviewPrompt(productName) {
           {
             "productName": "Desk",
             "price": 229.99,
-            "stock": 90
+            "stock": 90,
+            "shortDescription": "Revolutionize your workspace with our sleek and functional office desks." 
           },
           {
             "productName": "Office Chair",
             "price": 129.99,
-            "stock": 110
+            "stock": 110,
+            "shortDescription": "Experience unparalleled comfort and productivity with our ergonomic office chairs." 
           }
         ]
       },
@@ -258,12 +263,14 @@ function reviewPrompt(productName) {
           {
             "productName": "Patio Set",
             "price": 599.99,
-            "stock": 40
+            "stock": 40,
+            "shortDescription": "Transform your outdoor space into a haven of relaxation with our stylish patio sets." 
           },
           {
             "productName": "Adirondack Chair",
             "price": 79.99,
-            "stock": 60
+            "stock": 60,
+            "shortDescription": "Unwind in timeless style with our classic Adirondack chairs." 
           }
         ]
       }

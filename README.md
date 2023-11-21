@@ -45,7 +45,7 @@ cp .env.example .env
 npm run dev
 ```
 
-You should now be able to access the app at [http://localhost:3000](http://localhost:3000). Happy hacking.
+You should now be able to access the app at [http://localhost:3000](http://localhost:3000). Lets build great things!
 
 ## Deployment
 

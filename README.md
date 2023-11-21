@@ -49,4 +49,13 @@ You should now be able to access the app at [http://localhost:3000](http://local
 
 ## Deployment
 
-TBD
+Once you have this up and running locally, make sure to fill in the required Environment Details. These might become UI-based configurations, but for now, they are required to configure in your environment variables. 
+
+```bash
+OPENAI_API_KEY=<key goes here>
+LIFERAY_PATH=
+LIFERAY_ADMIN_EMAIL_ADDRESS=
+LIFERAY_ADMIN_PASSWORD=
+LIFERAY_GLOBAL_SITE_ID=
+LIFERAY_CATALOG_ID=
+```

@@ -2,7 +2,7 @@
 
 Using this application you can quickly configure content for demo purposes. It uses Open AI's API and Node.js
 
-In this example app, you enter the name of a product and it outputs a product review, formatted in a very specific way in markdown. You can use this as a starting point to build purpose-built generative API functionality.
+You can use this as a starting point to build purpose-built generative API functionality.
 
 Technologies used:
 

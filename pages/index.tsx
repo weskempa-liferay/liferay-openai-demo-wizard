@@ -21,9 +21,9 @@ const HomePage: NextPage = () => {
             className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
             href="/products"
           >
-            <h3 className="text-2xl font-bold">Commerce Products →</h3>
+            <h3 className="text-2xl font-bold text-[hsl(210,70%,70%)]">Commerce Products →</h3>
             <div className="text-lg">
-              Generate demo specific product and categories.
+              Generate demo specific products and categories.
             </div>
           </Link>
           <Link
@@ -31,7 +31,7 @@ const HomePage: NextPage = () => {
             href="/blogs"
       
           >
-            <h3 className="text-2xl font-bold">Blogs →</h3>
+            <h3 className="text-2xl font-bold text-[hsl(210,70%,70%)]">Blogs →</h3>
             <div className="text-lg">
               Create a set of blogs based on a suggested topic.
             </div>

@@ -2,6 +2,8 @@ import Head from "next/head";
 import { useState, useRef, useEffect } from "react";
 import React from "react";
 
+import hljs from "highlight.js";
+
 export default function Review() {
   // Create a ref for the div element
   const textDivRef = useRef<HTMLDivElement>(null);
@@ -23,7 +25,8 @@ export default function Review() {
     console.log("data", data);
     console.log("data.result", data.result);
 
-    setResult(data.result);
+    const hljsResult = hljs.highlightAuto(data.result).value;
+    setResult(hljsResult);
 
     setProductInput("");
     setIsLoading(false);

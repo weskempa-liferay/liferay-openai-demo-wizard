@@ -43,7 +43,7 @@ export default async function (req, res) {
     blogJson = JSON.parse(completion.data.choices[0].text);
     blogContentSet.push(blogJson);
 
-    if(i=>runCountMax)break;
+    if(i>=runCountMax)break;
   }
 
   console.log(blogContentSet);

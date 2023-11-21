@@ -31,7 +31,7 @@ cd liferay-openai-demo-wizard
 npm install
 ```
 
-1. Make a copy of the example environment variables file
+1. Make a copy of the example environment variables file and fill in the details of your server.
 
 ```bash
 cp .env.example .env

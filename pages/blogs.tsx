@@ -1,6 +1,7 @@
 import Head from "next/head";
 import { useState, useRef, useEffect } from "react";
 import React from "react";
+import Link from "next/link";
 
 import hljs from "highlight.js";
 
@@ -14,7 +15,7 @@ export default function Review() {
   async function onSubmit(event) {
     event.preventDefault();
     setIsLoading(true);
-    const response = await fetch("/api/short-story", {
+    const response = await fetch("/api/blogs", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -41,12 +42,21 @@ export default function Review() {
     </Head>
 
     <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
+        
+        <div className="fixed top-0 left-5 p-5">
+          <Link
+            className="rounded-xl p-1 text-white "
+            href="/"
+          >
+            <h3 className="text-1xl font-bold text-[hsl(210,70%,70%)]">← Return Home</h3>
+          </Link>
+        </div>
+        
         <h3 className="text-slate-200 font-bold text-xl mb-3">
-          2-Sentence Horror Story Generator
+          Liferay Blog Generator
         </h3>
         <p className="text-slate-100 text-lg mb-3">
-          Type your topic in the field below and wait for your 2-sentence horror
-          story.{" "}
+          Type your topic in the field below and wait for your blogs.
         </p>
         <form onSubmit={onSubmit}>
           <input
@@ -55,7 +65,7 @@ export default function Review() {
                               border-gray-200 rounded mb-2"
             type="text"
             name="product"
-            placeholder="Enter a topic like The Wind"
+            placeholder="Enter a blog topic"
             value={productInput}
             onChange={(e) => setProductInput(e.target.value)}
           />
@@ -65,7 +75,7 @@ export default function Review() {
                               rounded-2xl mb-10"
             type="submit"
           >
-            Generate Story
+            Generate Blogs
           </button>
         </form>
         {isLoading ? (

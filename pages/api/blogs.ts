@@ -20,10 +20,10 @@ export default async function (req, res) {
 
 function reviewPrompt(productName) {
   return `Topic: Breakfast
-  Two-Sentence Horror Story: He always stops crying when I pour the milk on his cereal. I just have to remember not to let him see his face on the carton.
+  Two-Sentence Story: As the morning sun painted the kitchen in warm hues, Sarah savored the simple joy of breakfast – the aroma of freshly brewed coffee and the crisp sound of bacon sizzling in the pan. Amidst the routine, she found a moment of serenity, a daily ritual that turned ordinary mornings into a comforting embrace of flavors and quiet reflection.
       
   Topic: ${productName}
-  Two-Sentence Horror Story:`;
+  Two-Sentence Story:`;
 }
 
 

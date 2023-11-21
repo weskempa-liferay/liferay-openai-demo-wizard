@@ -45,7 +45,7 @@ cp .env.example .env
 npm run dev
 ```
 
-You should now be able to access the app at [http://localhost:3000](http://localhost:3000). Lets build great things!
+You should now be able to access the app at [http://localhost:3000](http://localhost:3000). 
 
 ## Deployment
 
@@ -59,3 +59,5 @@ LIFERAY_ADMIN_PASSWORD=
 LIFERAY_GLOBAL_SITE_ID=
 LIFERAY_CATALOG_ID=
 ```
+
+## Lets build great things!

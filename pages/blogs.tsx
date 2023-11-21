@@ -8,7 +8,9 @@ import hljs from "highlight.js";
 export default function Review() {
   // Create a ref for the div element
   const textDivRef = useRef<HTMLDivElement>(null);
-  const [productInput, setProductInput] = useState("");
+  const [blogTopicInput, setBlogTopicInput] = useState("");
+  const [siteIdInput, setSiteIdInput] = useState("");
+  const [blogNumberInput, setBlogNumberInput] = useState("3");
   const [result, setResult] = useState(() => "");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -20,7 +22,7 @@ export default function Review() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ product: productInput }),
+      body: JSON.stringify({ blogTopic: blogTopicInput, siteId: siteIdInput, blogNumber: blogNumberInput }),
     });
     const data = await response.json();
     console.log("data", data);
@@ -29,7 +31,7 @@ export default function Review() {
     const hljsResult = hljs.highlightAuto(data.result).value;
     setResult(hljsResult);
 
-    setProductInput("");
+    setBlogTopicInput("");
     setIsLoading(false);
   }
 
@@ -48,28 +50,61 @@ export default function Review() {
             className="rounded-xl p-1 text-white "
             href="/"
           >
-            <h3 className="text-1xl font-bold text-[hsl(210,70%,70%)]">← Return Home</h3>
+            <h3 className="text-1xl font-bold text-[hsl(210,70%,70%)]">← Return to Index</h3>
           </Link>
         </div>
         
-        <h3 className="text-slate-200 font-bold text-xl mb-3">
+        <h3 className="text-slate-200 font-bold text-3xl mb-3">
           Liferay Blog Generator
         </h3>
-        <p className="text-slate-100 text-lg mb-3">
-          Type your topic in the field below and wait for your blogs.
+        <p className="text-slate-400 text-center text-lg mb-3">
+          <i>Type your topic in the field below and wait for your blogs. <br/> Leave the field blank for a random blog topic.</i>
         </p>
         <form onSubmit={onSubmit}>
-          <input
-            className="text-sm text-gray-base w-full 
-                              mr-3 py-5 px-4 h-2 border 
-                              border-gray-200 rounded mb-2"
-            type="text"
-            name="product"
-            placeholder="Enter a blog topic"
-            value={productInput}
-            onChange={(e) => setProductInput(e.target.value)}
-          />
+          <label className="text-slate-200">
+            Enter a blog topic:
+            <input
+                className="text-sm text-gray-base w-full 
+                                   mr-3 py-5 px-4 h-2 border 
+                                  border-gray-200 text-slate-700 rounded mb-2"
+                type="text"
+                name="topic"
+                placeholder="Enter a blog topic"
+                value={blogTopicInput}
+                onChange={(e) => setBlogTopicInput(e.target.value)}
+              />
+          </label>
 
+          <div className="flex flex-row">
+
+          <label className="text-slate-200 w-70 mr-3">
+              Number of Posts to Create (Max 10)
+              <input
+                className="text-sm text-gray-base w-full 
+                                  py-5 px-4 h-2 border 
+                                  border-gray-200 text-slate-700 rounded mb-2"
+                type="text"
+                name="blogNumber"
+                placeholder="Number of blog posts"
+                value={blogNumberInput}
+                onChange={(e) => setBlogNumberInput(e.target.value)}
+              />
+            </label>
+            <label className="text-slate-200 w-30">
+              Site Id
+              <input
+                className="text-sm text-gray-base w-full 
+                                   py-5 px-4 h-2 border 
+                                  border-gray-200 text-slate-700 rounded mb-2"
+                type="text"
+                name="siteId"
+                placeholder="Enter a site id"
+                value={siteIdInput}
+                onChange={(e) => setSiteIdInput(e.target.value)}
+              />
+            </label>
+          </div>
+          
           <button
             className="text-sm w-full bg-blue-600 h-7 text-white
                               rounded-2xl mb-10"

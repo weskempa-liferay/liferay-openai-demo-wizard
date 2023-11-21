@@ -1,8 +1,8 @@
 # Liferay OpenAI Demo Wizard Project
 
-Using this application you can quickly configure content for demo purposes. It uses Open AI's API and Node.js
+Using this application you can quickly configure content for Liferay demo purposes. It uses Open AI's API and Node.js
 
-You can use this as a starting point to build purpose-built generative API functionality.
+Contributions are welcome! We can use this as a starting point to build purpose-built generative API functionality using Liferay's headless APIs.
 
 Technologies used:
 

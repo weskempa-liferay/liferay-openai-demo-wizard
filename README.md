@@ -49,7 +49,7 @@ You should now be able to access the app at [http://localhost:3000](http://local
 
 ## Deployment
 
-Once you have this up and running locally, make sure to fill in the required Environment Details. These might become UI-based configurations, but for now, they are required to configure in your environment variables. 
+Once you have this up and running locally, make sure to fill in the required Environment Details. These might become UI-based configurations, but for now it is required to configure these settings in your environment variables. 
 
 ```bash
 OPENAI_API_KEY=<key goes here>

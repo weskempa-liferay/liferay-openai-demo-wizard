@@ -31,13 +31,13 @@ cd liferay-openai-demo-wizard
 npm install
 ```
 
-1. Make a copy of the example environment variables file and fill in the details of your server.
+1. Make a copy of the example environment variables file
 
 ```bash
 cp .env.example .env
 ```
 
-1. Add your [API key]([https://beta.openai.com/account/api-keys](https://platform.openai.com/account/api-keys)) to the newly created `.env` file
+1. Add your OpenAI [API key]([https://beta.openai.com/account/api-keys](https://platform.openai.com/account/api-keys)) to the newly created `.env` file as well as fill in the details of your server.
 
 1. Run the app
 

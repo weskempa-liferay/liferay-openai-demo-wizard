@@ -9,7 +9,7 @@ const HomePage: NextPage = () => {
     <Head>
       <title>Liferay OpenAI Demo Wizard</title>
       <meta name="description" content="" />
-      <link rel="icon" href="/favicon.ico" />
+      <link rel="icon" href="/favicon.ico" type="image/x-icon"/>
     </Head>
     <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
       <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">

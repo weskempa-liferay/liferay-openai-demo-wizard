@@ -38,9 +38,6 @@ export default async function (req, res) {
   /* Setup Vocabulary */
 
   const axios = require("axios");
-  let apiGroupSiteId = process.env.LIFERAY_GLOBAL_SITE_ID;
-  let apiRoot = process.env.LIFERAY_PATH;
-  let apiPath = apiRoot + "/o/headless-admin-taxonomy/v1.0/sites/"+apiGroupSiteId+"/taxonomy-vocabularies";
 
   let apiPath = process.env.LIFERAY_PATH + "/o/headless-admin-taxonomy/v1.0/sites/" + process.env.LIFERAY_GLOBAL_SITE_ID + "/taxonomy-vocabularies";
   let vocabPostObj = {'name': req.body.product + ' Categories'};
@@ -132,32 +129,30 @@ export default async function (req, res) {
       productSku = productName.toLowerCase().replaceAll(' ', '-')
 
       productJson = {
-        'active' : true,
-        'catalogId' : process.env.LIFERAY_CATALOG_ID,
-        'description' : {
-          'en_US' : productName
+        "active" : true,
+        "catalogId" : process.env.LIFERAY_CATALOG_ID,
+        "description" : {
+          "en_US" : productName
         },
-        'name' : {
-          'en_US' : productName
+        "name" : {
+          "en_US" : productName
         },
-        'productStatus' : 0,
-        'productType' : 'simple',
-        'shortDescription' : {
-          'en_US' : productName
+        "productStatus" : 0,
+        "productType" : 'simple',
+        "shortDescription" : {
+          "en_US" : productName
         },
-        'skuFormatted' : productSku,
-        'skus' : [{
-          'price' : productPrice,
-          'published' : true,
-          'purchasable' : true,
-          'sku' : productSku,
-          'neverExpire' : true
+        "skuFormatted" : productSku,
+        "skus" : [{
+          "price" : productPrice,
+          "published" : true,
+          "purchasable" : true,
+          "sku" : productSku,
+          "neverExpire" : true
         }],
-        'categories' : [
+        "categories" : [
           {
-            'id' : categMap.get(currCategory),
-            'name' : currCategory,
-            'siteId' : process.env.LIFERAY_GLOBAL_SITE_ID  
+            "id" : categMap.get(currCategory)
           }
         ]
 
@@ -165,6 +160,11 @@ export default async function (req, res) {
 
       try {
         apiPath = process.env.LIFERAY_PATH + "/o/headless-commerce-admin-catalog/v1.0/products";
+
+        console.log("sending: "+ productName);
+        console.log(apiPath);
+        console.log(productJson);
+        console.log(headerObj);
 
         productResponse = await axios.post(apiPath, productJson, headerObj);
 

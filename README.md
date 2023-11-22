@@ -1,8 +1,10 @@
-# Liferay OpenAI Demo Wizard Project
+# Liferay OpenAI Demo Content Wizard Project
 
-Using this application you can quickly configure content for Liferay demo purposes. It uses Open AI's API and Node.js
+Using this application you can quickly configure content for Liferay demo purposes. It uses Open AI's API, Liferay's APIs, and Next.js
 
-Contributions are welcome! We can use this as a starting point to build purpose-built generative API functionality using Liferay's headless APIs.
+Contributions are welcome! We can use this as a starting point to build purpose-built generative API functionality using Liferay's headless APIs. 
+
+**Thank you Steven Lu** for the inspiration and knowledge that helped make this functional!
 
 Technologies used:
 
@@ -12,6 +14,8 @@ Technologies used:
 - [React](https://reactjs.org/)
 - [TailwindCSS](https://tailwindcss.com/)
 - [Highlight.js](https://highlightjs.org/)
+  
+![Index](https://github.com/weskempa-liferay/liferay-openai-demo-wizard/assets/68334638/3ec81d2a-09a3-42ec-aee9-f27cb5cbc538)
 
 ## Setup
 
@@ -37,7 +41,7 @@ npm install
 cp .env.example .env
 ```
 
-1. Add your [API key]([https://beta.openai.com/account/api-keys](https://platform.openai.com/account/api-keys)) to the newly created `.env` file
+1. Add your OpenAI [API key]([https://beta.openai.com/account/api-keys](https://platform.openai.com/account/api-keys)) to the newly created `.env` file as well as fill in the details of your server.
 
 1. Run the app
 

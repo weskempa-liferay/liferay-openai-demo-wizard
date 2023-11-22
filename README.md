@@ -1,4 +1,4 @@
-# Liferay OpenAI Demo Wizard Project
+# Liferay OpenAI Demo Content Wizard Project
 
 Using this application you can quickly configure content for Liferay demo purposes. It uses Open AI's API, Liferay's APIs, and Next.js
 
@@ -12,6 +12,8 @@ Technologies used:
 - [React](https://reactjs.org/)
 - [TailwindCSS](https://tailwindcss.com/)
 - [Highlight.js](https://highlightjs.org/)
+  
+![Index](https://github.com/weskempa-liferay/liferay-openai-demo-wizard/assets/68334638/3ec81d2a-09a3-42ec-aee9-f27cb5cbc538)
 
 ## Setup
 

@@ -17,6 +17,7 @@ const HomePage: NextPage = () => {
         Liferay <span className="text-[hsl(210,70%,50%)]">AI</span> Demo Wizard
         </h1>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
+
           <Link
             className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
             href="/products"
@@ -26,16 +27,27 @@ const HomePage: NextPage = () => {
               Generate demo specific products and categories.
             </div>
           </Link>
+
           <Link
             className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
             href="/blogs"
-      
           >
             <h3 className="text-2xl font-bold text-[hsl(210,70%,70%)]">Blogs →</h3>
             <div className="text-lg">
               Create a set of blogs based on a suggested topic.
             </div>
           </Link>
+
+          <Link
+            className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
+            href="/faqs"
+          >
+            <h3 className="text-2xl font-bold text-[hsl(210,70%,70%)]">FAQs (In Development) →</h3>
+            <div className="text-lg">
+              Create a set of FAQs based on a suggested topic.
+            </div>
+          </Link>
+          
         </div>
        
       </div>

@@ -6,12 +6,15 @@ const openai = new OpenAI({
 
 export default async function (req, res) {
 
-  console.log("requesting " + req.body.blogNumber + " blogs");
   const runCount = req.body.blogNumber;
-  const runCountMax = 10;
+  const includeImages = req.body.includeImages;
 
-  let blogJson, blogResponse, response;
-  const axios = require("axios");
+  console.log("requesting " + runCount + " blog(s) "+ includeImages?"(with images)":"(without images)");
+
+  const runCountMax = 10;
+  const timestamp = new Date().getTime();
+
+  let blogJson, response;
   const blogContentSet = [];
 
   const usernamePasswordBuffer = Buffer.from( 
@@ -44,13 +47,14 @@ export default async function (req, res) {
       },
       picture_description: {
         type: "string",
-        description: "A description of an appropriate image for this blog in six sentences."
+        description: "A description of an appropriate image for this blog in three sentences."
       }
     },
     required: ["headline", "alternativeHeadline", "articleBody", "picture_description"]
   }
 
   for(let i=0; i<runCount; i++){
+
     response = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: [
@@ -66,10 +70,8 @@ export default async function (req, res) {
       frequency_penalty: 0.5,
       presence_penalty: 0
     });
-
-    //console.log(response.choices[0].message.function_call.arguments);
-    //console.log(JSON.parse(response.choices[0].message.function_call.arguments));
-  
+    
+    console.log(response.choices[0].message.function_call.arguments);
     blogJson = JSON.parse(response.choices[0].message.function_call.arguments);
 
     let pictureDescription = blogJson.picture_description;
@@ -77,24 +79,121 @@ export default async function (req, res) {
 
     blogJson.articleBody = blogJson.articleBody.replace(/(?:\r\n|\r|\n)/g, '<br>');
 
-    //console.log("pictureDescription" + pictureDescription)
+    console.log("pictureDescription: " + pictureDescription)
+
+    try {
+      
+      const imageResponse = await openai.images.generate({
+        prompt: pictureDescription,
+        n: 1,
+        size: "1024x1024"});
+  
+      console.log(imageResponse.data[0].url);
+
+      const fs = require('fs');
+      const http = require('https'); 
+      
+      const file = fs.createWriteStream("temp/img"+timestamp+"-"+i+".jpg");
+
+      const request = http.get(imageResponse.data[0].url, function(response) {
+         response.pipe(file);
+
+         file.on("finish", () => {
+             file.close();
+             console.log("Download Completed");
+             //console.log(file);
+
+             if(includeImages){
+              postImageToLiferay(file,base64data,req, blogJson, i);
+             }else{
+              postBlogToLiferay(file,base64data,req, blogJson, i,0);
+             }
+         });
+  
+        console.log("upload image " + file.path );
+        //console.log("Current directory:", __dirname);
+      });
+
+    } catch (error) {
+      if (error.response) {
+        console.log(error.response.status);
+        //console.log(error.response.data);
+      } else {
+        console.log(error.message);
+      }
+    }
 
     blogContentSet.push(blogJson);
 
     if(i>=runCountMax)break;
   }
-
-  console.log(blogContentSet);
-  console.log(JSON.stringify(blogContentSet));
-
-  try {
-    let apiPath = process.env.LIFERAY_PATH + "/o/headless-delivery/v1.0/sites/"+req.body.siteId+"/blog-postings/batch";
-
-    blogResponse = await axios.post(apiPath, blogContentSet, headerObj);
-  }
-  catch(apiError) {
-    console.log("error creating prblogoduct " + req.body.blogTopic + " -- " + apiError);
-  }
-
+  
   res.status(200).json({ result: JSON.stringify(blogContentSet) });
+}
+
+function postImageToLiferay(file,base64data,req, blogJson, loopCount){
+
+  const fs = require('fs');
+  const request = require('request');
+
+  let blogImageApiPath = process.env.LIFERAY_PATH + "o/headless-delivery/v1.0/sites/"+req.body.siteId+"/blog-posting-images";
+      
+  const options = {
+      method: "POST",
+      url: blogImageApiPath,
+      port: 443,
+      headers: {
+        'Authorization': 'Basic ' + base64data, 
+        'Content-Type': 'multipart/form-data'
+      },
+      formData : {
+          "file" : fs.createReadStream(process.cwd()+"/"+file.path)
+      }
+  };
+  
+  
+  request(options, function (err, res, body) {
+      if(err) console.log(err);
+      
+      postBlogToLiferay(file,base64data,req, blogJson, loopCount,JSON.parse(body).id)
+
+  });
+}
+
+function postBlogToLiferay(file,base64data,req, blogJson, loopCount,imageId){
+
+  //console.log(JSON.parse(body));
+
+  if(imageId){
+    blogJson.image = {
+      "imageId": imageId
+    }
+  }
+
+  let apiPath = process.env.LIFERAY_PATH + "/o/headless-delivery/v1.0/sites/"+req.body.siteId+"/blog-postings";
+
+  const options = {
+      method: "POST",
+      url: apiPath,
+      port: 443,
+      headers: {
+        'Authorization': 'Basic ' + base64data,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(blogJson)
+  };
+
+  setTimeout(function(){{
+
+    const request = require('request');
+
+    request(options, function (err, res, body) {
+        if(err) console.log(err);
+        //console.log(body);
+
+        console.log("Blog Import Process Complete.");
+    });
+
+  }},100);
+
 }

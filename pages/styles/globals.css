@@ -18,6 +18,20 @@ as-is from the repository directly without the need for a build step
 
 Typically this "required" baseline CSS is added by `makestuff.js` during build.
 */
+
+.download-options{
+  background-color: rgba(100,100,150,.3);
+}
+
+.imgtoggle{
+  width: 220px;
+  padding: 32px 20px;
+}
+
+.imgtoggle span{
+  margin-left: 50px;
+}
+
 pre code.hljs {
     display: block;
     overflow-x: auto;

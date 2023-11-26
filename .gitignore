@@ -11,6 +11,7 @@
 # next.js
 /.next/
 /out/
+/temp/
 
 # production
 /build
@@ -32,3 +33,5 @@ yarn-error.log*
 .env.production.local
 yarn.lock
 sample_output.json
+
+yarn.lock

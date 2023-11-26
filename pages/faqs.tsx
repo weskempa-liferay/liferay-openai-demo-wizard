@@ -8,27 +8,21 @@ import hljs from "highlight.js";
 export default function Review() {
   // Create a ref for the div element
   const textDivRef = useRef<HTMLDivElement>(null);
-  const [blogTopicInput, setBlogTopicInput] = useState("");
+  const [faqTopicInput, setFAQTopicInput] = useState("");
   const [siteIdInput, setSiteIdInput] = useState("");
-  const [blogNumberInput, setBlogNumberInput] = useState("1");
-  const [blogImageToggle, setBlogImageToggle] = useState(true);
+  const [faqNumberInput, setFAQNumberInput] = useState("1");
   const [result, setResult] = useState(() => "");
   const [isLoading, setIsLoading] = useState(false);
-
-
-  const handleChange = () => {
-    setBlogImageToggle(!blogImageToggle);
-  };
 
   async function onSubmit(event) {
     event.preventDefault();
     setIsLoading(true);
-    const response = await fetch("/api/blogs", {
+    const response = await fetch("/api/faqs", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ blogTopic: blogTopicInput, siteId: siteIdInput, blogNumber: blogNumberInput, includeImages: blogImageToggle }),
+      body: JSON.stringify({ faqTopic: faqTopicInput, siteId: siteIdInput, faqNumber: faqNumberInput }),
     });
     const data = await response.json();
     console.log("data", data);
@@ -37,14 +31,14 @@ export default function Review() {
     const hljsResult = hljs.highlightAuto(data.result).value;
     setResult(hljsResult);
 
-    setBlogTopicInput("");
+    setFAQTopicInput("");
     setIsLoading(false);
   }
 
   return (
     <div>
        <Head>
-      <title>Liferay OpenAI Demo Content Wizard - Blog Generator</title>
+      <title>Liferay OpenAI Demo Content Wizard - FAQ Generator </title>
       <meta name="description" content="" />
       <link rel="icon" href="/favicon.ico" />
     </Head>
@@ -59,41 +53,52 @@ export default function Review() {
             <h3 className="text-1xl font-bold text-[hsl(210,70%,70%)]">← Return to Index</h3>
           </Link>
         </div>
+
+        <div className="fixed top-2 right-5 p-5 text-lg download-options p-5 rounded">
+            <button className="bg-gray-200 hover:bg-grey text-grey-lightest font-bold py-2 px-4 rounded inline-flex items-center">
+                <svg className="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z"/></svg>
+                <span>FAQ Structure</span>
+            </button>&nbsp;
+            <button className="bg-gray-200 hover:bg-grey text-grey-lightest font-bold py-2 px-4 rounded inline-flex items-center">
+                <svg className="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z"/></svg>
+                <span>FAQ Fragment</span>
+            </button>
+        </div>
         
         <h3 className="text-slate-200 font-bold text-3xl mb-3">
-          Liferay Blog Generator
+          Liferay FAQ Generator (In Development) 
         </h3>
         <p className="text-slate-400 text-center text-lg mb-3">
-          <i>Type your topic in the field below and wait for your blogs. <br/> Leave the field blank for a random blog topic.</i>
+          <i>Type your topic in the field below and wait for your FAQs. <br/> Leave the field blank for a random faq topic.</i>
         </p>
         <form onSubmit={onSubmit}>
           <label className="text-slate-200">
-            Enter a blog topic:
+            Enter a FAQ topic:
             <input
                 className="text-sm text-gray-base w-full 
                                    mr-3 py-5 px-4 h-2 border 
                                   border-gray-200 text-slate-700 rounded mb-2"
                 type="text"
                 name="topic"
-                placeholder="Enter a blog topic"
-                value={blogTopicInput}
-                onChange={(e) => setBlogTopicInput(e.target.value)}
+                placeholder="Enter a faq topic"
+                value={faqTopicInput}
+                onChange={(e) => setFAQTopicInput(e.target.value)}
               />
           </label>
 
           <div className="flex flex-row">
 
           <label className="text-slate-200 w-70 mr-3">
-              Number of Posts to Create (Max 10)
+              Number of Q&A Pairs to Create (Max 10)
               <input
                 className="text-sm text-gray-base w-full 
                                   py-5 px-4 h-2 border 
                                   border-gray-200 text-slate-700 rounded mb-2"
                 type="text"
-                name="blogNumber"
-                placeholder="Number of blog posts"
-                value={blogNumberInput}
-                onChange={(e) => setBlogNumberInput(e.target.value)}
+                name="faqNumber"
+                placeholder="Number of FAQ posts"
+                value={faqNumberInput}
+                onChange={(e) => setFAQNumberInput(e.target.value)}
               />
             </label>
             <label className="text-slate-200 w-30">
@@ -109,11 +114,6 @@ export default function Review() {
                 onChange={(e) => setSiteIdInput(e.target.value)}
               />
             </label>
-            <label className="imgtoggle elative inline-flex items-center cursor-pointer">
-              <input type="checkbox" checked={blogImageToggle} onChange={handleChange} value="" className="sr-only peer"/>
-              <div className="absolute w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-              <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Generate Images</span>
-            </label>
           </div>
           
           <button
@@ -121,7 +121,7 @@ export default function Review() {
                               rounded-2xl mb-10"
             type="submit"
           >
-            Generate Blogs
+            Generate FAQs
           </button>
         </form>
         {isLoading ? (

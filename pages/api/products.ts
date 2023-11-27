@@ -1,35 +1,87 @@
-import { Configuration, OpenAIApi } from "openai";
+import OpenAI  from "openai";
 
-const configuration = new Configuration({
+const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
-const openai = new OpenAIApi(configuration);
 
 export default async function (req, res) {
 
   /* Get OpenAI Content based on Theme */
 
-  const completion = await openai.createCompletion({
-    model: "text-davinci-003",
-    prompt: reviewPrompt(req.body.product),
-    max_tokens: 2000,
+  const categorySchema = {
+    type: "object",
+    properties: {
+      categories: {
+        type: "array",
+        description: "An array of 5 product categories",
+        items:{
+          type:"object",
+          properties:{
+            category:{
+              type: "string",
+              description: "Name of the product category"
+            },
+            products: {
+              type:"array",
+              description: "An array of 3 products within the suggested category",
+              items:{
+                type:"object",
+                properties:{
+                  productName: {
+                    type: "string",
+                    description: "The name of a product that exists in the given category"
+                  },
+                  shortDescription: {
+                    type: "string",
+                    description: "A short description of this product"
+                  },
+                  price: {
+                    type: "string",
+                    description: "Cost of this product in USD",
+                  },
+                  stock: {
+                    type: "integer",
+                    description: "Number of product items that are currently in stock."
+                  }
+                }
+              },
+              required: ["product", "shortDescription", "price", "stock"]
+            }
+          }
+        },
+        required: ["categories"]
+      }
+    }
+  }
+
+  const response = await openai.chat.completions.create({
+    model: "gpt-3.5-turbo",
+    messages: [
+      {"role": "system", "content": "You are a commerce administrator responsible for defining product categories for your company."},
+      {"role": "user", "content": "Create a list of products and categories on the subject of: "+req.body.product}
+    ],
+    functions: [
+      {name: "get_commerce_categories", "parameters": categorySchema}
+    ],
     temperature: 0.6,
   });
-  res.status(200).json({ result: completion.data.choices[0].text });
 
-  let productData = JSON.parse(completion.data.choices[0].text).categories;
+  let categories = JSON.parse(response.choices[0].message.function_call.arguments).categories;
+  console.log(JSON.stringify(categories));
+  
+
+  res.status(200).json({result:JSON.stringify(categories)});
   
   let productCategories = [];
 
-  for(let i = 0; productData.length>i; i++){
-    productCategories.push(productData[i].categoryName);
+  for(let i = 0; categories.length>i; i++){  
+    productCategories.push(categories[i].category);
   }
 
   let categoryDataStr =  {
     "Category Vocab": req.body.product + " Type",
     "Category Names": productCategories
   } 
-
 
   console.log(categoryDataStr);
 
@@ -109,12 +161,12 @@ export default async function (req, res) {
   let categoryApiPath;
 
   let currCategoryId;
-  for(i = 0; productData.length>i; i++){
-    currCategory = productData[i].categoryName;
+  for(i = 0; categories.length>i; i++){
+    currCategory = categories[i].category;
     currCategoryId = categMap.get(currCategory);
     console.log("category -- " + currCategory + ":" + currCategoryId);
 
-    productDataList = productData[i].products;
+    productDataList = categories[i].products;
 
     for(j = 0; j < productDataList.length; j++) {
       productName = productDataList[j].productName;
@@ -139,7 +191,7 @@ export default async function (req, res) {
         },
         "skuFormatted" : productSku,
         "skus" : [{
-          "price" : productPrice,
+          "price" : parseFloat(productPrice.replaceAll("$","")),
           "published" : true,
           "purchasable" : true,
           "sku" : productSku,
@@ -179,104 +231,6 @@ export default async function (req, res) {
       }
     }
   }
-
-}
-
-function reviewPrompt(productName) {
-  return `company theme: Furniture
-  json product list:
-  {
-    "categories": [
-      {
-        "categoryName": "Living Room Furniture",
-        "products": [
-          {
-            "productName": "Sofa",
-            "price": 499.99,
-            "stock": 120,
-            "shortDescription": "Indulge in comfort and style with our luxurious sofa collection." 
-          },
-          {
-            "productName": "Coffee Table",
-            "price": 149.99,
-            "stock": 200,
-            "shortDescription": "Transform your living room into a haven of elegance with our exquisite coffee tables." 
-          }
-        ]
-      },
-      {
-        "categoryName": "Bedroom Furniture",
-        "products": [
-          {
-            "productName": "Bed Frame",
-            "price": 299.99,
-            "stock": 100,
-            "shortDescription": "Upgrade your sleep sanctuary with our sleek and sturdy bed frames." 
-          },
-          {
-            "productName": "Dresser",
-            "price": 199.99,
-            "stock": 80,
-            "shortDescription": "Elevate your bedroom organization with our chic and functional dressers." 
-          }
-        ]
-      },
-      {
-        "categoryName": "Dining Room Furniture",
-        "products": [
-          {
-            "productName": "Dining Table",
-            "price": 349.99,
-            "stock": 60,
-            "shortDescription": "Set the stage for unforgettable gatherings with our stunning dining tables." 
-          },
-          {
-            "productName": "Dining Chairs",
-            "price": 79.99,
-            "stock": 120,
-            "shortDescription": "Take a seat in style with our sophisticated dining chairs." 
-          }
-        ]
-      },
-      {
-        "categoryName": "Office Furniture",
-        "products": [
-          {
-            "productName": "Desk",
-            "price": 229.99,
-            "stock": 90,
-            "shortDescription": "Revolutionize your workspace with our sleek and functional office desks." 
-          },
-          {
-            "productName": "Office Chair",
-            "price": 129.99,
-            "stock": 110,
-            "shortDescription": "Experience unparalleled comfort and productivity with our ergonomic office chairs." 
-          }
-        ]
-      },
-      {
-        "categoryName": "Outdoor Furniture",
-        "products": [
-          {
-            "productName": "Patio Set",
-            "price": 599.99,
-            "stock": 40,
-            "shortDescription": "Transform your outdoor space into a haven of relaxation with our stylish patio sets." 
-          },
-          {
-            "productName": "Adirondack Chair",
-            "price": 79.99,
-            "stock": 60,
-            "shortDescription": "Unwind in timeless style with our classic Adirondack chairs." 
-          }
-        ]
-      }
-    ]
-  }  
-  
-  company theme: ${productName}
-  json product list:`;
 }
 
 

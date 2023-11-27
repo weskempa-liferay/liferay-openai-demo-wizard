@@ -44,7 +44,7 @@ export default async function (req, res) {
       },
       articleBody: {
         type: "string",
-        description: "The content of the blog article. Remove any double quotes",
+        description: "The content of the blog article which should be 250 words or more.  Remove any double quotes",
       },
       picture_description: {
         type: "string",

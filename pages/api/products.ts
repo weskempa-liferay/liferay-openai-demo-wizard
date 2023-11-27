@@ -8,6 +8,8 @@ const debug = false;
 
 export default async function (req, res) {
 
+  let start = new Date().getTime();
+
   /* Get OpenAI Content based on Theme */
 
   const categorySchema = {
@@ -233,6 +235,10 @@ export default async function (req, res) {
       }
     }
   }
+
+  let end = new Date().getTime();
+
+  console.log("Completed in " + (end - start) + " milliseconds");
 }
 
 

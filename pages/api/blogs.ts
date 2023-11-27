@@ -9,7 +9,8 @@ export default async function (req, res) {
   const runCount = req.body.blogNumber;
   const includeImages = req.body.includeImages;
 
-  console.log("requesting " + runCount + " blog(s) "+ includeImages?"(with images)":"(without images)");
+  console.log("requesting " + runCount + " blog(s)");
+  console.log("include images: " + includeImages);
 
   const runCountMax = 10;
   const timestamp = new Date().getTime();
@@ -93,7 +94,7 @@ export default async function (req, res) {
       const fs = require('fs');
       const http = require('https'); 
       
-      const file = fs.createWriteStream("temp/img"+timestamp+"-"+i+".jpg");
+      const file = fs.createWriteStream("generatedimages/img"+timestamp+"-"+i+".jpg");
 
       const request = http.get(imageResponse.data[0].url, function(response) {
          response.pipe(file);
@@ -104,6 +105,7 @@ export default async function (req, res) {
              //console.log(file);
 
              if(includeImages){
+
               postImageToLiferay(file,base64data,req, blogJson, i);
              }else{
               postBlogToLiferay(file,base64data,req, blogJson, i,0);
@@ -136,8 +138,10 @@ function postImageToLiferay(file,base64data,req, blogJson, loopCount){
   const fs = require('fs');
   const request = require('request');
 
-  let blogImageApiPath = process.env.LIFERAY_PATH + "o/headless-delivery/v1.0/sites/"+req.body.siteId+"/blog-posting-images";
+  let blogImageApiPath = process.env.LIFERAY_PATH + "/o/headless-delivery/v1.0/sites/"+req.body.siteId+"/blog-posting-images";
       
+  console.log(blogImageApiPath);
+
   const options = {
       method: "POST",
       url: blogImageApiPath,
@@ -151,13 +155,16 @@ function postImageToLiferay(file,base64data,req, blogJson, loopCount){
       }
   };
   
-  
-  request(options, function (err, res, body) {
-      if(err) console.log(err);
-      
-      postBlogToLiferay(file,base64data,req, blogJson, loopCount,JSON.parse(body).id)
+  setTimeout(function(){
 
-  });
+    request(options, function (err, res, body) {
+        if(err) console.log(err);
+        
+        postBlogToLiferay(file,base64data,req, blogJson, loopCount,JSON.parse(body).id)
+
+    });
+
+  },100);
 }
 
 function postBlogToLiferay(file,base64data,req, blogJson, loopCount,imageId){

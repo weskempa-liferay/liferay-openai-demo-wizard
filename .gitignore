@@ -35,3 +35,4 @@ yarn.lock
 sample_output.json
 
 yarn.lock
+generatedimages/*.jpg

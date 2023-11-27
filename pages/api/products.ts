@@ -4,6 +4,8 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+const debug = false;
+
 export default async function (req, res) {
 
   /* Get OpenAI Content based on Theme */
@@ -67,7 +69,7 @@ export default async function (req, res) {
   });
 
   let categories = JSON.parse(response.choices[0].message.function_call.arguments).categories;
-  console.log(JSON.stringify(categories));
+  if(debug) console.log(JSON.stringify(categories));
   
 
   res.status(200).json({result:JSON.stringify(categories)});
@@ -83,7 +85,7 @@ export default async function (req, res) {
     "Category Names": productCategories
   } 
 
-  console.log(categoryDataStr);
+  if(debug) console.log(categoryDataStr);
 
   /* Setup Vocabulary */
 
@@ -113,7 +115,7 @@ export default async function (req, res) {
       vocabPostObj, 
       headerObj);
   
-      console.log(vocabResponse.data);
+      if(debug) console.log(vocabResponse.data);
       apiRes = vocabResponse.data.id;
   }
   catch (error) {
@@ -124,7 +126,7 @@ export default async function (req, res) {
 
   const categMap = new Map();
 
-  console.log("returned vocab key is " + apiRes);
+  if(debug) console.log("returned vocab key is " + apiRes);
   // create the categories for the vocabulary that was just generated
   let currCategory, currCategoryJson, categResponse;
   for(var i = 0; i < productCategories.length; i++) {
@@ -134,15 +136,15 @@ export default async function (req, res) {
     currCategoryJson = {'taxonomyVocabularyId' : apiRes, 'name' : currCategory};
   
     apiPath = process.env.LIFERAY_PATH + "/o/headless-admin-taxonomy/v1.0/taxonomy-vocabularies/" + apiRes + "/taxonomy-categories";
-    console.log("creating category");
-    console.log(currCategoryJson);
+    if(debug) console.log("creating category");
+    if(debug) console.log(currCategoryJson);
 
     try {
       categResponse = await axios.post(apiPath,
         currCategoryJson, 
         headerObj);
 
-      console.log(categResponse.data.id + " is the id for " + currCategory);
+        if(debug) console.log(categResponse.data.id + " is the id for " + currCategory);
 
       categMap.set(currCategory, categResponse.data.id);
     }
@@ -150,7 +152,7 @@ export default async function (req, res) {
       console.log(categError);
     }
 
-    console.log(categMap);
+    if(debug) console.log(categMap);
   }
 
   // add the products
@@ -164,7 +166,7 @@ export default async function (req, res) {
   for(i = 0; categories.length>i; i++){
     currCategory = categories[i].category;
     currCategoryId = categMap.get(currCategory);
-    console.log("category -- " + currCategory + ":" + currCategoryId);
+    if(debug) console.log("category -- " + currCategory + ":" + currCategoryId);
 
     productDataList = categories[i].products;
 
@@ -208,17 +210,17 @@ export default async function (req, res) {
       try {
         apiPath = process.env.LIFERAY_PATH + "/o/headless-commerce-admin-catalog/v1.0/products";
 
-        console.log("sending: "+ productName);
-        console.log(apiPath);
-        console.log(productJson);
-        console.log(headerObj);
+        if(debug) console.log("sending: "+ productName);
+        if(debug) console.log(apiPath);
+        if(debug) console.log(productJson);
+        if(debug) console.log(headerObj);
 
         productResponse = await axios.post(apiPath, productJson, headerObj);
 
         //console.log(productResponse);
 
         productId = productResponse.data.productId;
-        console.log(productName + " created with id " + productId);
+        if(debug) console.log(productName + " created with id " + productId);
         productCategoryJson = {
           'id' : currCategoryId,
           'name' : currCategory,

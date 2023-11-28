@@ -9,8 +9,16 @@ export default function Review() {
   // Create a ref for the div element
   const textDivRef = useRef<HTMLDivElement>(null);
   const [productInput, setProductInput] = useState("");
+  const [categoryNumberInput, setCategoryNumberInput] = useState("5");
+  const [productNumberInput, setProductNumberInput] = useState("3");
+  
   const [result, setResult] = useState(() => "");
   const [isLoading, setIsLoading] = useState(false);
+
+  const [productImageToggle, setProductImageToggle] = useState(true);
+  const handleChange = () => {
+    setProductImageToggle(!productImageToggle);
+  };
 
   async function onSubmit(event) {
     event.preventDefault();
@@ -20,7 +28,7 @@ export default function Review() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ product: productInput }),
+      body: JSON.stringify({ product: productInput, includeImages: productImageToggle, numberOfCategoriest: categoryNumberInput, numberofProducts: productNumberInput  }),
     });
     const data = await response.json();
     console.log("data", data);
@@ -56,20 +64,63 @@ export default function Review() {
           Liferay Product Generator
         </h3>
         <p className="text-slate-400 text-center text-lg mb-3">
-          <i>This is an Open AI integration to generate demo products.<br/>Enter your Company Theme below.</i>
+          <i>This is an Open AI integration to generate demo products.</i>
         </p>
+
         <form onSubmit={onSubmit}>
-          <input
-            className="text-sm text-gray-base w-full 
-                              mr-3 py-5 px-4 h-2 border 
-                              border-gray-200 rounded mb-2"
-                              
-            type="text"
-            name="product"
-            placeholder="Enter a company theme"
-            value={productInput}
-            onChange={(e) => setProductInput(e.target.value)}
-          />
+          <div className="flex flex-row">
+            <label className="text-slate-200 w-30">
+              Company Theme
+                <input
+                  className="text-sm text-gray-base w-full 
+                            mr-3 py-5 px-4 h-2 border 
+                            border-gray-200 text-slate-700 rounded mb-2"
+                                    
+                  type="text"
+                  name="product"
+                  placeholder="Enter a company theme"
+                  value={productInput}
+                  onChange={(e) => setProductInput(e.target.value)}
+                />
+            </label>
+            <label className="imgtoggle w-30 elative inline-flex items-center cursor-pointer">
+              <input type="checkbox" checked={productImageToggle} onChange={handleChange} value="" className="sr-only peer"/>
+              <div className="absolute w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+              <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Generate Images</span>
+            </label>
+          </div>
+
+          <div className="flex flex-row">
+            <label className="text-slate-200 w-30 mr-5">
+              Number of Categories
+                <input
+                  className="text-sm text-gray-base w-full 
+                            mr-3 py-5 px-4 h-2 border 
+                            border-gray-200 text-slate-700 rounded mb-2"
+                                    
+                  type="text"
+                  name="product"
+                  placeholder="5"
+                  value={categoryNumberInput}
+                  onChange={(e) => setCategoryNumberInput(e.target.value)}
+                />
+            </label>
+            
+            <label className="text-slate-200 w-30">
+              Number of Products per Category
+                <input
+                  className="text-sm text-gray-base w-full 
+                            mr-3 py-5 px-4 h-2 border 
+                            border-gray-200 text-slate-700 rounded mb-2"
+                                    
+                  type="text"
+                  name="product"
+                  placeholder="3"
+                  value={productNumberInput}
+                  onChange={(e) => setProductNumberInput(e.target.value)}
+                />
+            </label>
+          </div>
 
           <button
             className="text-sm w-full bg-blue-600 h-7 text-white

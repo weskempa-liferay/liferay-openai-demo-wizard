@@ -4,11 +4,13 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-const debug = false;
+const debug = true;
 
 export default async function (req, res) {
 
   let start = new Date().getTime();
+
+  const includeImages = req.body.includeImages;
 
   /* Get OpenAI Content based on Theme */
 
@@ -17,7 +19,7 @@ export default async function (req, res) {
     properties: {
       categories: {
         type: "array",
-        description: "An array of 5 product categories",
+        description: "An array of "+req.body.numberOfCategories+" product categories",
         items:{
           type:"object",
           properties:{
@@ -27,7 +29,7 @@ export default async function (req, res) {
             },
             products: {
               type:"array",
-              description: "An array of 3 products within the suggested category",
+              description: "An array of "+req.body.numberOfProducts+" products within the suggested category",
               items:{
                 type:"object",
                 properties:{
@@ -72,9 +74,6 @@ export default async function (req, res) {
 
   let categories = JSON.parse(response.choices[0].message.function_call.arguments).categories;
   if(debug) console.log(JSON.stringify(categories));
-  
-
-  res.status(200).json({result:JSON.stringify(categories)});
   
   let productCategories = [];
 
@@ -162,7 +161,6 @@ export default async function (req, res) {
   let productDataList;
   let productName, shortDescription, productPrice, inventoryCount, productSku, productJson;
   let productResponse, productId, productCategoryJson;
-  let categoryApiPath;
 
   let currCategoryId;
   for(i = 0; categories.length>i; i++){
@@ -229,6 +227,35 @@ export default async function (req, res) {
           'siteId' : process.env.LIFERAY_GLOBAL_SITE_ID
         }
 
+
+        console.log("includeImages:"+includeImages);
+        if(includeImages){
+
+          const imageResponse = await openai.images.generate({
+            prompt: "Create a commerce catalog image for a " + productName,
+            n: 1,
+            size: "1024x1024"});
+      
+          console.log(imageResponse.data[0].url);
+
+          let imgschema = JSON.stringify({
+            "title": {"en_US": productName},
+            "src": imageResponse.data[0].url,
+            "externalReferenceCode": "product-"+productResponse.data.productId,
+            "priority": 1,
+            "neverExpire": true
+          })
+          
+
+          console.log(imgschema);
+
+          let imgApiPath = process.env.LIFERAY_PATH + "/o/headless-commerce-admin-catalog/v1.0/products/"+productResponse.data.productId+"/images/by-url";
+
+          let productImageResponse = await axios.post(imgApiPath, imgschema, headerObj);
+          
+          console.log(productImageResponse.data[0])
+        }
+
       }
       catch(productError) {
         console.log("error creating product " + productName + " -- " + productError);
@@ -239,7 +266,6 @@ export default async function (req, res) {
   let end = new Date().getTime();
 
   console.log("Completed in " + (end - start) + " milliseconds");
+  
+  res.status(200).json({result:JSON.stringify(categories)});
 }
-
-
-

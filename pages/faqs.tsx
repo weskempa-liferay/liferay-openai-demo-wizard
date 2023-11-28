@@ -49,10 +49,10 @@ export default function Review() {
   return (
     <div>
        <Head>
-      <title>Liferay OpenAI Demo Content Wizard - FAQ Generator </title>
-      <meta name="description" content="" />
-      <link rel="icon" href="/favicon.ico" />
-    </Head>
+        <title>Liferay OpenAI Demo Content Wizard - FAQ Generator </title>
+        <meta name="description" content="" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
 
     <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
         
@@ -83,24 +83,25 @@ export default function Review() {
           <i>Type your topic in the field below and wait for your FAQs. <br/> Leave the field blank for a random faq topic.</i>
         </p>
         <form onSubmit={onSubmit}>
-          <label className="text-slate-200">
-            Enter a FAQ topic:
-            <input
-                className="text-sm text-gray-base w-full 
-                                   mr-3 py-5 px-4 h-2 border 
-                                  border-gray-200 text-slate-700 rounded mb-2"
-                type="text"
-                name="topic"
-                placeholder="Enter a faq topic"
-                value={faqTopicInput}
-                onChange={(e) => setFAQTopicInput(e.target.value)}
-              />
-          </label>
 
           <div className="flex flex-row">
 
+            <label className="text-slate-200 mr-3">
+              Enter a FAQ topic:
+              <input
+                  className="text-sm text-gray-base w-full 
+                                    mr-3 py-5 px-4 h-2 border 
+                                    border-gray-200 text-slate-700 rounded mb-2"
+                  type="text"
+                  name="topic"
+                  placeholder="Enter a faq topic"
+                  value={faqTopicInput}
+                  onChange={(e) => setFAQTopicInput(e.target.value)}
+                />
+            </label>
+
             <label className="text-slate-200 w-70 mr-3">
-              Number of Q&A Pairs to Create
+              Number of Q&A Pairs to Create (Max 10)
               <input
                 className="text-sm text-gray-base w-full 
                                   py-5 px-4 h-2 border 
@@ -112,7 +113,11 @@ export default function Review() {
                 onChange={(e) => setFAQNumberInput(e.target.value)}
               />
             </label>
-            <label className="text-slate-200 w-30">
+          </div>
+
+          <div className="flex flex-row">
+
+          <label className="text-slate-200 w-30 mr-3">
               Site Id
               <input
                 className="text-sm text-gray-base w-full 
@@ -125,9 +130,6 @@ export default function Review() {
                 onChange={(e) => setSiteIdInput(e.target.value)}
               />
             </label>
-          </div>
-
-          <div className="flex flex-row">
 
             <label className="text-slate-200 w-70 mr-3">
               FAQ Structure ID
@@ -142,6 +144,7 @@ export default function Review() {
                 onChange={(e) => setFAQStructureIdInput(e.target.value)}
               />
             </label>
+            
             <label className="text-slate-200 w-30">
               Folder ID
               <input
@@ -197,5 +200,3 @@ export default function Review() {
     </div>
   );
 }
-
-

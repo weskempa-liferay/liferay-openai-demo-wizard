@@ -100,7 +100,7 @@ export default function Review() {
           <div className="flex flex-row">
 
             <label className="text-slate-200 w-70 mr-3">
-              Number of Q&A Pairs to Create (Max 10)
+              Number of Q&A Pairs to Create
               <input
                 className="text-sm text-gray-base w-full 
                                   py-5 px-4 h-2 border 

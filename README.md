@@ -1,4 +1,4 @@
-# Liferay OpenAI Demo Content Wizard Project
+# Liferay OpenAI Content Creation Wizard 
 
 Using this application you can quickly configure content for Liferay demo purposes. It uses Open AI's API, Liferay's APIs, and Next.js
 

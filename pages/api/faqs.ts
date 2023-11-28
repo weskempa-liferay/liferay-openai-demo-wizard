@@ -7,11 +7,76 @@ export default async function (req, res) {
 
     let start = new Date().getTime();
 
-    /*
+    const faqSchema = {
+        type: "object",
+        properties: {
+          faqs: {
+            type: "array",
+            description: "An array of "+req.body.faqNumber+" frequently asked questions",
+            items:{
+              type:"object",
+              properties:{
+                title:{
+                  type: "string",
+                  description: "Simplifed title of the question no longer than 7 words."
+                },
+                question:{
+                  type: "string",
+                  description: "Frequently asked question"
+                },
+                answer:{
+                  type: "string",
+                  description: "Answer to the frequently asked question. Answers over 30 words are preferred."
+                }
+              },
+              required: ["title", "question", "answer"]
+            },
+            required: ["faqs"]
+          }
+        }
+      }
+
+    const response = await openai.chat.completions.create({
+        model: "gpt-3.5-turbo",
+        messages: [
+            {"role": "system", "content": "You are an administrator responsible for defining frequently asked questions."},
+            {"role": "user", "content": "Create a list of frequently asked questions and answers on the subject of: "+req.body.faqTopic}
+        ],
+        functions: [
+        {name: "get_faqs", "parameters": faqSchema}
+        ],
+        temperature: 0.6,
+    });
+
+    let faqs = JSON.parse(response.choices[0].message.function_call.arguments).faqs;
+    console.log(JSON.stringify(faqs));
+
+    for(let i=0;i<faqs.length;i++){
+        //console.log(faqs[i]);
+        
+        let postBody = {
+            "contentFields": [
+            {
+                "contentFieldValue": {
+                    "data": faqs[i].question
+                },
+                "name": "Question"
+            },
+            {
+                "contentFieldValue": {
+                "data": faqs[i].answer
+                },
+                "name": "Answer"
+            }
+            ],
+            "contentStructureId": req.body.structureId,
+            "siteId": req.body.siteId,
+            "structuredContentFolderId": req.body.folderId,
+            "title": faqs[i].title
+        };
 
         const axios = require("axios");
         const fs = require("fs");
-
 
         const usernamePasswordBuffer = Buffer.from( 
             process.env.LIFERAY_ADMIN_EMAIL_ADDRESS + 
@@ -19,32 +84,29 @@ export default async function (req, res) {
 
         const base64data = usernamePasswordBuffer.toString('base64');
 
-        let blogImageApiPath = process.env.LIFERAY_PATH + "o/headless-delivery/v1.0/sites/20119/blog-posting-images";
+        let faqApiPath = process.env.LIFERAY_PATH + "/o/headless-delivery/v1.0/sites/"+req.body.siteId+"/structured-contents";
 
         const options = {
             method: "POST",
-            url: blogImageApiPath,
             port: 443,
             headers: {
                 'Authorization': 'Basic ' + base64data,
                 'Accept': 'application/json',
-                'Content-Type': 'multipart/form-data'
-            },
-            formData: formData
+                'Content-Type': 'application/json'
+            }
         };
 
         try {
-            const response = await axios.post(blogImageApiPath,
-            formData, options);
+            const response = await axios.post(faqApiPath,
+                postBody, options);
 
-            //console.log(response.data);
+            console.log(response.data);
         }
         catch (error) {
             console.log(error);
         }
 
-        console.log("Click!");
-    */
+    }
 
     let end = new Date().getTime();
 

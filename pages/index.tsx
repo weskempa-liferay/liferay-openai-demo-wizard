@@ -24,7 +24,7 @@ const HomePage: NextPage = () => {
           >
             <h3 className="text-2xl font-bold text-[hsl(210,70%,70%)]">Commerce Products →</h3>
             <div className="text-lg">
-              Generate demo specific products and categories.
+              Generate demo products and categories based on your company theme.
             </div>
           </Link>
 
@@ -34,7 +34,7 @@ const HomePage: NextPage = () => {
           >
             <h3 className="text-2xl font-bold text-[hsl(210,70%,70%)]">Blogs →</h3>
             <div className="text-lg">
-              Create a set of blogs based on a suggested topic.
+              Create a set of blogs based on a suggested prompt.
             </div>
           </Link>
 

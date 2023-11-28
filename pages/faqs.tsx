@@ -10,7 +10,9 @@ export default function Review() {
   const textDivRef = useRef<HTMLDivElement>(null);
   const [faqTopicInput, setFAQTopicInput] = useState("");
   const [siteIdInput, setSiteIdInput] = useState("");
-  const [faqNumberInput, setFAQNumberInput] = useState("1");
+  const [faqNumberInput, setFAQNumberInput] = useState("5");
+  const [faqFolderIdInput, setFAQFolderIdInput] = useState("0");
+  const [faqStructureIdInput, setFAQStructureIdInput] = useState("");
   const [result, setResult] = useState(() => "");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -22,7 +24,8 @@ export default function Review() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ faqTopic: faqTopicInput, siteId: siteIdInput, faqNumber: faqNumberInput }),
+      body: JSON.stringify({ faqTopic: faqTopicInput, siteId: siteIdInput, faqNumber: faqNumberInput, folderId: faqFolderIdInput, structureId: faqStructureIdInput }),
+    
     });
     const data = await response.json();
     console.log("data", data);
@@ -31,7 +34,7 @@ export default function Review() {
     const hljsResult = hljs.highlightAuto(data.result).value;
     setResult(hljsResult);
 
-    setFAQTopicInput("");
+    //setFAQTopicInput("");
     setIsLoading(false);
   }
 
@@ -66,7 +69,7 @@ export default function Review() {
         </div>
         
         <h3 className="text-slate-200 font-bold text-3xl mb-3">
-          Liferay FAQ Generator (In Development) 
+          Liferay FAQ Generator
         </h3>
         <p className="text-slate-400 text-center text-lg mb-3">
           <i>Type your topic in the field below and wait for your FAQs. <br/> Leave the field blank for a random faq topic.</i>
@@ -88,7 +91,7 @@ export default function Review() {
 
           <div className="flex flex-row">
 
-          <label className="text-slate-200 w-70 mr-3">
+            <label className="text-slate-200 w-70 mr-3">
               Number of Q&A Pairs to Create (Max 10)
               <input
                 className="text-sm text-gray-base w-full 
@@ -112,6 +115,36 @@ export default function Review() {
                 placeholder="Enter a site id"
                 value={siteIdInput}
                 onChange={(e) => setSiteIdInput(e.target.value)}
+              />
+            </label>
+          </div>
+
+          <div className="flex flex-row">
+
+            <label className="text-slate-200 w-70 mr-3">
+              FAQ Structure ID
+              <input
+                className="text-sm text-gray-base w-full 
+                                  py-5 px-4 h-2 border 
+                                  border-gray-200 text-slate-700 rounded mb-2"
+                type="text"
+                name="faqNumber"
+                placeholder="Number of FAQ Structure ID"
+                value={faqStructureIdInput}
+                onChange={(e) => setFAQStructureIdInput(e.target.value)}
+              />
+            </label>
+            <label className="text-slate-200 w-30">
+              Folder ID
+              <input
+                className="text-sm text-gray-base w-full 
+                                   py-5 px-4 h-2 border 
+                                  border-gray-200 text-slate-700 rounded mb-2"
+                type="text"
+                name="siteId"
+                placeholder="Enter a folder id"
+                value={faqFolderIdInput}
+                onChange={(e) => setFAQFolderIdInput(e.target.value)}
               />
             </label>
           </div>

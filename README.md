@@ -23,7 +23,7 @@ Technologies used:
 - [TailwindCSS](https://tailwindcss.com/)
 - [Highlight.js](https://highlightjs.org/)
   
-![Index](https://github.com/weskempa-liferay/liferay-openai-demo-wizard/public/files/AIWizard-Screenshot.png)
+<img width="853" alt="AIWizard-Screenshot" src="https://github.com/weskempa-liferay/liferay-openai-demo-wizard/assets/68334638/82270f10-bd36-40cd-bc4e-cd2d1bebda5b">
 
 ## Setup
 

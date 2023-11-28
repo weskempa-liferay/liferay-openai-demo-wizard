@@ -3,6 +3,9 @@ import OpenAI  from "openai";
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
+
+const debug = false;
+
 export default async function (req, res) {
 
     let start = new Date().getTime();
@@ -49,10 +52,10 @@ export default async function (req, res) {
     });
 
     let faqs = JSON.parse(response.choices[0].message.function_call.arguments).faqs;
-    console.log(JSON.stringify(faqs));
+    if(debug) console.log(JSON.stringify(faqs));
 
     for(let i=0;i<faqs.length;i++){
-        //console.log(faqs[i]);
+        if(debug) console.log(faqs[i]);
         
         let postBody = {
             "contentFields": [
@@ -100,7 +103,7 @@ export default async function (req, res) {
             const response = await axios.post(faqApiPath,
                 postBody, options);
 
-            console.log(response.data);
+            if(debug) console.log(response.data);
         }
         catch (error) {
             console.log(error);

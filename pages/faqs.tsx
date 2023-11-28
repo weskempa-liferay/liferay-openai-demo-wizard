@@ -38,6 +38,14 @@ export default function Review() {
     setIsLoading(false);
   }
 
+  const handleStructureClick = () => {
+    window.open('files/Structure_Frequently Asked Question_36706.json');
+  }
+
+  const handleFragmentClick = () => {
+    location.href='files/FAQ-Fragment.zip';
+  }
+
   return (
     <div>
        <Head>
@@ -58,11 +66,11 @@ export default function Review() {
         </div>
 
         <div className="fixed top-2 right-5 p-5 text-lg download-options p-5 rounded">
-            <button className="bg-gray-200 hover:bg-grey text-grey-lightest font-bold py-2 px-4 rounded inline-flex items-center">
+            <button id="structure-download" className="bg-gray-200 hover:bg-grey text-grey-lightest font-bold py-2 px-4 rounded inline-flex items-center" onClick={handleStructureClick}>
                 <svg className="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z"/></svg>
                 <span>FAQ Structure</span>
             </button>&nbsp;
-            <button className="bg-gray-200 hover:bg-grey text-grey-lightest font-bold py-2 px-4 rounded inline-flex items-center">
+            <button className="bg-gray-200 hover:bg-grey text-grey-lightest font-bold py-2 px-4 rounded inline-flex items-center" onClick={handleFragmentClick}>
                 <svg className="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z"/></svg>
                 <span>FAQ Fragment</span>
             </button>
@@ -157,6 +165,11 @@ export default function Review() {
             Generate FAQs
           </button>
         </form>
+
+        <p className="text-slate-100 text-center text-lg mb-3">
+          <b>Note:</b> FAQ generation requires a specific content structure. <br/> Please use the supplied FAQ Structure and Fragment supplied above.
+        </p>
+
         {isLoading ? (
           <div>
             <p className="text-slate-200">Generating content... be patient.. </p>

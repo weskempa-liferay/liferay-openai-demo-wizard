@@ -228,7 +228,7 @@ export default async function (req, res) {
         }
 
 
-        console.log("includeImages:"+includeImages);
+        if(debug) console.log("includeImages:"+includeImages);
         if(includeImages){
 
           const imageResponse = await openai.images.generate({
@@ -236,7 +236,7 @@ export default async function (req, res) {
             n: 1,
             size: "1024x1024"});
       
-          console.log(imageResponse.data[0].url);
+          if(debug) console.log(imageResponse.data[0].url);
 
           let imgschema = JSON.stringify({
             "title": {"en_US": productName},
@@ -247,13 +247,13 @@ export default async function (req, res) {
           })
           
 
-          console.log(imgschema);
+          if(debug) console.log(imgschema);
 
           let imgApiPath = process.env.LIFERAY_PATH + "/o/headless-commerce-admin-catalog/v1.0/products/"+productResponse.data.productId+"/images/by-url";
 
           let productImageResponse = await axios.post(imgApiPath, imgschema, headerObj);
           
-          console.log(productImageResponse.data[0])
+          if(debug) console.log(productImageResponse.data[0])
         }
 
       }

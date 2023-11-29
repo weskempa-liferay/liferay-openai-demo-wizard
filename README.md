@@ -11,6 +11,7 @@ Utilizing OpenAI to infuse content into our demos doesn't just speed up content 
 - Commerce Categories and Products with Images
 - Blogs with Images
 - FAQs
+- Users
 
 As we move forward, expect more options for different content types. A big shoutout to Steven Lu for the inspiration and knowledge that brought this functionality to life! Cheers!
 

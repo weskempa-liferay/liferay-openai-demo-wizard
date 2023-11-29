@@ -5,6 +5,8 @@ With this application, creating content for Liferay demo purposes is a breeze!
 Consider this scenario: You can create 15 products across 5 categories, without image generation, in just 35 seconds with a single prompt from you. The magic happens through the integration of OpenAI's API for content creation and Liferay's APIs for seamless storage based on your prompts.
 
 Utilizing this OpenAI Wizard doesn't just speed up content creation, which many of us are already doing with AI. It goes the extra mile by seamlessly loading it into the demo instance through our Liferay APIs. Big kudos to **Steven Lu**, who, alongside contributing significantly to Commerce and its related APIs, identified the potential to optimize the time spent on setting up commerce products, categories, and SKUs.
+  
+<img width="853" alt="AIWizard-Screenshot" src="https://github.com/weskempa-liferay/liferay-openai-demo-wizard/assets/68334638/82270f10-bd36-40cd-bc4e-cd2d1bebda5b">
 
 ## The Liferay Content Wizard currently supports generating these asset types: 
 
@@ -24,8 +26,6 @@ Technologies used:
 - [React](https://reactjs.org/)
 - [TailwindCSS](https://tailwindcss.com/)
 - [Highlight.js](https://highlightjs.org/)
-  
-<img width="853" alt="AIWizard-Screenshot" src="https://github.com/weskempa-liferay/liferay-openai-demo-wizard/assets/68334638/82270f10-bd36-40cd-bc4e-cd2d1bebda5b">
 
 ## Setup
 

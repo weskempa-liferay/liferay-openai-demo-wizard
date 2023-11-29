@@ -8,40 +8,19 @@ import hljs from "highlight.js";
 export default function Review() {
   
   const textDivRef = useRef<HTMLDivElement>(null);
-  const [faqTopicInput, setFAQTopicInput] = useState("");
+  const [newsTopicInput, setNewsTopicInput] = useState("");
+  const [newsLengthInput, setNewsLengthInput] = useState("150");
   const [siteIdInput, setSiteIdInput] = useState("");
-  const [faqNumberInput, setFAQNumberInput] = useState("5");
-  const [faqFolderIdInput, setFAQFolderIdInput] = useState("0");
-  const [faqStructureIdInput, setFAQStructureIdInput] = useState("");
+  const [folderIdInput, setFolderIdInput] = useState("");
+  const [structureIdInput, setStructureIdInput] = useState("");
+  const [newsNumberInput, setNewsNumberInput] = useState("3");
+  const [newsImageToggle, setNewsImageToggle] = useState(true);
   const [result, setResult] = useState(() => "");
   const [isLoading, setIsLoading] = useState(false);
 
-  async function onSubmit(event) {
-    event.preventDefault();
-    setIsLoading(true);
-    const response = await fetch("/api/faqs", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        faqTopic: faqTopicInput,
-        siteId: siteIdInput,
-        faqNumber: faqNumberInput, 
-        folderId: faqFolderIdInput, 
-        structureId: faqStructureIdInput
-      }),
-    
-    });
-    const data = await response.json();
-    console.log("data", data);
-
-    const hljsResult = hljs.highlightAuto(data.result).value;
-    setResult(hljsResult);
-
-    //setFAQTopicInput("");
-    setIsLoading(false);
-  }
+  const handleChange = () => {
+    setNewsImageToggle(!newsImageToggle);
+  };
 
   const handleStructureClick = () => {
     window.open('files/Structure_Frequently Asked Question_36706.json');
@@ -51,13 +30,40 @@ export default function Review() {
     location.href='files/FAQ-Fragment.zip';
   }
 
+  async function onSubmit(event) {
+    event.preventDefault();
+    setIsLoading(true);
+    const response = await fetch("/api/news", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ 
+        newsTopic: newsTopicInput, 
+        newsLength: newsLengthInput, 
+        siteId: siteIdInput, 
+        folderId: folderIdInput, 
+        structureId: structureIdInput, 
+        newsNumber: newsNumberInput, 
+        includeImages: newsImageToggle
+      }),
+    });
+    const data = await response.json();
+    console.log("data", data);
+
+    const hljsResult = hljs.highlightAuto(data.result).value;
+    setResult(hljsResult);
+
+    setIsLoading(false);
+  }
+
   return (
     <div>
        <Head>
-        <title>Liferay OpenAI Demo Content Wizard - FAQ Generator </title>
-        <meta name="description" content="" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+      <title>Liferay OpenAI Demo Content Wizard - News Generator</title>
+      <meta name="description" content="" />
+      <link rel="icon" href="/favicon.ico" />
+    </Head>
 
     <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
         
@@ -73,57 +79,72 @@ export default function Review() {
         <div className="fixed top-2 right-5 p-5 text-lg download-options p-5 rounded">
             <button id="structure-download" className="bg-gray-200 hover:bg-grey text-grey-lightest font-bold py-2 px-4 rounded inline-flex items-center" onClick={handleStructureClick}>
                 <svg className="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z"/></svg>
-                <span>FAQ Structure</span>
+                <span>News Structure</span>
             </button>&nbsp;
             <button className="bg-gray-200 hover:bg-grey text-grey-lightest font-bold py-2 px-4 rounded inline-flex items-center" onClick={handleFragmentClick}>
                 <svg className="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z"/></svg>
-                <span>FAQ Fragment</span>
+                <span>News Fragment</span>
             </button>
         </div>
         
         <h3 className="text-slate-200 font-bold text-3xl mb-3">
-          Liferay FAQ Generator
+          Liferay News Generator
         </h3>
         <p className="text-slate-400 text-center text-lg mb-10">
-          <i>Type your topic in the field below and wait for your FAQs. <br/> Leave the field blank for a random faq topic.</i>
+          <i>Type your topic in the field below and wait for your Newss. <br/> Leave the field blank for a random News topic.</i>
         </p>
+        
         <form onSubmit={onSubmit}>
-
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 md:gap-4 mb-4">
+          
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 md:gap-4 mb-4">
 
             <label className="flex max-w-xs flex-col text-slate-200">
-              Enter a FAQ topic:
+              Enter a News topic:
               <input
                   className="text-sm text-gray-base w-full 
                                     mr-3 py-5 px-4 h-2 border 
                                     border-gray-200 text-slate-700 rounded"
                   type="text"
                   name="topic"
-                  placeholder="Enter a faq topic"
-                  value={faqTopicInput}
-                  onChange={(e) => setFAQTopicInput(e.target.value)}
+                  placeholder="Enter a News topic"
+                  value={newsTopicInput}
+                  onChange={(e) => setNewsTopicInput(e.target.value)}
                 />
             </label>
 
             <label className="flex max-w-xs flex-col text-slate-200">
-              Number of Q&A Pairs to Create (Max 10)
+              Number of Articles to Create (Max 10)
               <input
                 className="text-sm text-gray-base w-full 
                                   py-5 px-4 h-2 border 
                                   border-gray-200 text-slate-700 rounded"
                 type="text"
-                name="faqNumber"
-                placeholder="Number of FAQ posts"
-                value={faqNumberInput}
-                onChange={(e) => setFAQNumberInput(e.target.value)}
+                name="newsNumber"
+                placeholder="Number of News posts"
+                value={newsNumberInput}
+                onChange={(e) => setNewsNumberInput(e.target.value)}
               />
             </label>
-
-            <label className="flex max-w-xs flex-col text-slate-200 w-30">
+            
+            <label className="flex max-w-xs flex-col text-slate-200">
+              Expected News post length (in # of words):
+              <input
+                  className="text-sm text-gray-base w-full 
+                                    mr-3 py-5 px-4 h-2 border 
+                                    border-gray-200 text-slate-700 rounded"
+                  type="text"
+                  name="topic"
+                  placeholder="Enter a News topic"
+                  value={newsLengthInput}
+                  onChange={(e) => setNewsLengthInput(e.target.value)}
+                />
+            </label>
+            
+            <label className="flex max-w-xs flex-col text-slate-200">
               Site Id
               <input
                 className="text-sm text-gray-base w-full 
-                                   py-5 px-4 h-2 border 
+                                  py-5 px-4 h-2 border 
                                   border-gray-200 text-slate-700 rounded"
                 type="text"
                 name="siteId"
@@ -132,34 +153,41 @@ export default function Review() {
                 onChange={(e) => setSiteIdInput(e.target.value)}
               />
             </label>
-
-            <label className="flex max-w-xs flex-col text-slate-200 w-70">
-              FAQ Structure ID
+            
+            <label className="flex max-w-xs flex-col text-slate-200">
+              Folder Id
               <input
                 className="text-sm text-gray-base w-full 
                                   py-5 px-4 h-2 border 
                                   border-gray-200 text-slate-700 rounded"
                 type="text"
-                name="faqNumber"
-                placeholder="Number of FAQ Structure ID"
-                value={faqStructureIdInput}
-                onChange={(e) => setFAQStructureIdInput(e.target.value)}
+                name="siteId"
+                placeholder="Enter a site id"
+                value={folderIdInput}
+                onChange={(e) => setFolderIdInput(e.target.value)}
               />
             </label>
             
-            <label className="flex max-w-xs flex-col text-slate-200 w-30">
-              Folder ID
+            <label className="flex max-w-xs flex-col text-slate-200">
+              Structure Id
               <input
                 className="text-sm text-gray-base w-full 
-                                   py-5 px-4 h-2 border 
+                                  py-5 px-4 h-2 border 
                                   border-gray-200 text-slate-700 rounded"
                 type="text"
                 name="siteId"
-                placeholder="Enter a folder id"
-                value={faqFolderIdInput}
-                onChange={(e) => setFAQFolderIdInput(e.target.value)}
+                placeholder="Enter a structure id"
+                value={structureIdInput}
+                onChange={(e) => setStructureIdInput(e.target.value)}
               />
             </label>
+
+            <label className="imgtoggle elative inline-flex items-center cursor-pointer">
+              <input type="checkbox" checked={newsImageToggle} onChange={handleChange} value="" className="sr-only peer"/>
+              <div className="absolute w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+              <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Generate Images</span>
+            </label>
+
           </div>
           
           <button
@@ -167,15 +195,9 @@ export default function Review() {
                               rounded-2xl mb-10"
             type="submit"
           >
-            Generate FAQs
+            Generate News
           </button>
         </form>
-
-        <p className="text-slate-100 text-center text-lg mb-3 rounded p-5 bg-white/10 italic">
-          <b>Note:</b> FAQ generation requires a specific content structure. <br/> 
-          Please use the supplied FAQ Structure and Fragment supplied above.
-        </p>
-
         {isLoading ? (
           <div>
             <p className="text-slate-200">Generating content... be patient.. </p>

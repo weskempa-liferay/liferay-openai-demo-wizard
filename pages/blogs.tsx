@@ -6,7 +6,7 @@ import Link from "next/link";
 import hljs from "highlight.js";
 
 export default function Review() {
-  // Create a ref for the div element
+  
   const textDivRef = useRef<HTMLDivElement>(null);
   const [blogTopicInput, setBlogTopicInput] = useState("");
   const [blogLengthInput, setBlogLengthInput] = useState("200");
@@ -28,16 +28,20 @@ export default function Review() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ blogTopic: blogTopicInput, blogLength: blogLengthInput, siteId: siteIdInput, blogNumber: blogNumberInput, includeImages: blogImageToggle }),
+      body: JSON.stringify({
+        blogTopic: blogTopicInput,
+        blogLength: blogLengthInput,
+        siteId: siteIdInput,
+        blogNumber: blogNumberInput, 
+        includeImages: blogImageToggle
+      }),
     });
     const data = await response.json();
     console.log("data", data);
-    console.log("data.result", data.result);
 
     const hljsResult = hljs.highlightAuto(data.result).value;
     setResult(hljsResult);
 
-    setBlogTopicInput("");
     setIsLoading(false);
   }
 

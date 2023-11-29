@@ -8,17 +8,19 @@ const debug = true;
 
 export default async function (req, res) {
 
-  const runCount = req.body.blogNumber;
+  let start = new Date().getTime();
+
+  const runCount = req.body.newsNumber;
   const includeImages = req.body.includeImages;
 
-  if(debug) console.log("requesting " + runCount + " blog(s)");
+  if(debug) console.log("requesting " + runCount + " news(s)");
   if(debug) console.log("include images: " + includeImages);
 
   const runCountMax = 10;
   const timestamp = new Date().getTime();
 
-  let blogJson, response;
-  const blogContentSet = [];
+  let newsJson, response;
+  const newsContentSet = [];
 
   const usernamePasswordBuffer = Buffer.from( 
     process.env.LIFERAY_ADMIN_EMAIL_ADDRESS + 
@@ -38,19 +40,19 @@ export default async function (req, res) {
     properties: {
       headline: {
         type: "string",
-        description: "The title of the blog artcile"
+        description: "The title of the news artcile"
       },
       alternativeHeadline: {
         type: "string",
-        description: "A headline that is a summary of the blog article"
+        description: "A headline that is a summary of the news article"
       },
       articleBody: {
         type: "string",
-        description: "The content of the blog article which should be "+req.body.blogLength+" words or more.  Remove any double quotes",
+        description: "The content of the news article which should be "+req.body.newsLength+" words or more.  Remove any double quotes",
       },
       picture_description: {
         type: "string",
-        description: "A description of an appropriate image for this blog in three sentences."
+        description: "A description of an appropriate image for this news in three sentences."
       }
     },
     required: ["headline", "alternativeHeadline", "articleBody", "picture_description"]
@@ -61,13 +63,13 @@ export default async function (req, res) {
     response = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: [
-        {"role": "system", "content": "You are a blog author."},
-        {"role": "user", "content": "Write blogs on the subject of: "+req.body.blogTopic+". Each blog title needs to be unique."}
+        {"role": "system", "content": "You are a news author."},
+        {"role": "user", "content": "Write news on the subject of: "+req.body.newsTopic+". Each news title needs to be unique. The content of the news article which should be "+req.body.newsLength+" words or more."}
       ],
       functions: [
-        {name: "get_blog_content", "parameters": schema}
+        {name: "get_news_content", "parameters": schema}
       ],
-      function_call: {name: "get_blog_content"},
+      function_call: {name: "get_news_content"},
       max_tokens: 1000,
       temperature: 0.8,
       frequency_penalty: 0.5,
@@ -75,15 +77,15 @@ export default async function (req, res) {
     });
     
     if(debug) console.log(response.choices[0].message.function_call.arguments);
-    blogJson = JSON.parse(response.choices[0].message.function_call.arguments);
+    newsJson = JSON.parse(response.choices[0].message.function_call.arguments);
 
-    let pictureDescription = blogJson.picture_description;
-    delete blogJson.picture_description;
+    let pictureDescription = newsJson.picture_description;
+    delete newsJson.picture_description;
 
-    blogJson.articleBody = blogJson.articleBody.replace(/(?:\r\n|\r|\n)/g, '<br>');
+    newsJson.articleBody = newsJson.articleBody.replace(/(?:\r\n|\r|\n)/g, '<br>');
 
     if(debug) console.log("pictureDescription: " + pictureDescription)
-
+  
     try {
       
       if(includeImages){
@@ -105,14 +107,14 @@ export default async function (req, res) {
           file.on("finish", () => {
             file.close();
             if(debug) console.log("Download Completed");
-            postImageToLiferay(file,base64data,req, blogJson);
+            postImageToLiferay(file,base64data,req, newsJson);
           });
-  
-        if(debug) console.log("upload image " + file.path );
-      });
+    
+          if(debug) console.log("upload image " + file.path );
+        });
 
     } else {
-      postBlogToLiferay(base64data,req, blogJson, 0);
+      postNewsToLiferay(base64data,req, newsJson, 0);
     }
 
     } catch (error) {
@@ -123,26 +125,30 @@ export default async function (req, res) {
       }
     }
 
-    blogContentSet.push(blogJson);
+    newsContentSet.push(newsJson);
 
     if(i>=runCountMax)break;
   }
   
-  res.status(200).json({ result: JSON.stringify(blogContentSet) });
+  let end = new Date().getTime();
+
+  console.log("Completed in " + (end - start) + " milliseconds");
+
+  res.status(200).json({ result: JSON.stringify(newsContentSet) });
 }
 
-function postImageToLiferay(file,base64data,req, blogJson){
+function postImageToLiferay(file,base64data,req, newsJson){
 
   const fs = require('fs');
   const request = require('request');
 
-  let blogImageApiPath = process.env.LIFERAY_PATH + "/o/headless-delivery/v1.0/sites/"+req.body.siteId+"/blog-posting-images";
+  let newsImageApiPath = process.env.LIFERAY_PATH + "/o/headless-delivery/v1.0/sites/"+req.body.siteId+"/documents";
       
-  if(debug) console.log(blogImageApiPath);
+  if(debug) console.log(newsImageApiPath);
 
   const options = {
       method: "POST",
-      url: blogImageApiPath,
+      url: newsImageApiPath,
       port: 443,
       headers: {
         'Authorization': 'Basic ' + base64data, 
@@ -158,22 +164,65 @@ function postImageToLiferay(file,base64data,req, blogJson){
     request(options, function (err, res, body) {
         if(err) console.log(err);
         
-        postBlogToLiferay(base64data,req, blogJson, JSON.parse(body).id)
+        postNewsToLiferay(base64data,req, newsJson, JSON.parse(body).id);
 
     });
 
   },100);
 }
 
-function postBlogToLiferay(base64data, req, blogJson,imageId){
+function postNewsToLiferay(base64data,req, newsJson,imageId){
 
+  let newsFields;
+  
   if(imageId){
-    blogJson.image = {
-      "imageId": imageId
-    }
+    newsFields = [
+      {
+        "contentFieldValue": {
+          "data": newsJson.alternativeHeadline
+        },
+        "name": "Summary"
+      },
+      {
+        "contentFieldValue": {
+          "data": newsJson.articleBody
+        },
+        "name": "Content"
+      },
+      {
+        "contentFieldValue": {
+          "image": {
+            "id": imageId
+          }
+        },
+        "name": "Image"
+      }
+    ];
+  } else {
+    newsFields = [
+      {
+        "contentFieldValue": {
+          "data": newsJson.alternativeHeadline
+        },
+        "name": "Summary"
+      },
+      {
+        "contentFieldValue": {
+          "data": newsJson.articleBody
+        },
+        "name": "Content"
+      }
+    ];
   }
 
-  let apiPath = process.env.LIFERAY_PATH + "/o/headless-delivery/v1.0/sites/"+req.body.siteId+"/blog-postings";
+  const newsSchema = {
+    "contentFields": newsFields,
+    "contentStructureId": req.body.structureId,
+    "structuredContentFolderId": req.body.folderId,
+    "title": newsJson.headline
+  }
+
+  let apiPath = process.env.LIFERAY_PATH + "/o/headless-delivery/v1.0/sites/"+req.body.siteId+"/structured-contents";
 
   const options = {
       method: "POST",
@@ -183,7 +232,7 @@ function postBlogToLiferay(base64data, req, blogJson,imageId){
         'Authorization': 'Basic ' + base64data,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(blogJson)
+      body: JSON.stringify(newsSchema)
   };
 
   setTimeout(function(){{
@@ -193,7 +242,7 @@ function postBlogToLiferay(base64data, req, blogJson,imageId){
     request(options, function (err, res, body) {
         if(err) console.log(err);
 
-        console.log("Blog Import Process Complete.");
+        console.log("News import process complete.");
     });
 
   }},100);

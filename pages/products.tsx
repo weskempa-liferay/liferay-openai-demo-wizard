@@ -28,7 +28,12 @@ export default function Review() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ product: productInput, includeImages: productImageToggle, numberOfCategoriest: categoryNumberInput, numberofProducts: productNumberInput  }),
+      body: JSON.stringify({ 
+        product: productInput, 
+        includeImages: productImageToggle, 
+        numberOfCategoriest: categoryNumberInput, 
+        numberofProducts: productNumberInput
+      }),
     });
     const data = await response.json();
     console.log("data", data);

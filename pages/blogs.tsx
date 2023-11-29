@@ -66,29 +66,31 @@ export default function Review() {
         <p className="text-slate-400 text-center text-lg mb-3">
           <i>Type your topic in the field below and wait for your blogs. <br/> Leave the field blank for a random blog topic.</i>
         </p>
+        
         <form onSubmit={onSubmit}>
-          <label className="text-slate-200 mr-2">
-            Enter a blog topic:
-            <input
-                className="text-sm text-gray-base w-full 
-                                  mr-3 py-5 px-4 h-2 border 
-                                  border-gray-200 text-slate-700 rounded mb-2"
-                type="text"
-                name="topic"
-                placeholder="Enter a blog topic"
-                value={blogTopicInput}
-                onChange={(e) => setBlogTopicInput(e.target.value)}
-              />
-          </label>
+          
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:gap-4 mb-4">
 
-          <div className="flex flex-row">
+            <label className="text-slate-200">
+              Enter a blog topic:
+              <input
+                  className="text-sm text-gray-base w-full 
+                                    mr-3 py-5 px-4 h-2 border 
+                                    border-gray-200 text-slate-700 rounded"
+                  type="text"
+                  name="topic"
+                  placeholder="Enter a blog topic"
+                  value={blogTopicInput}
+                  onChange={(e) => setBlogTopicInput(e.target.value)}
+                />
+            </label>
 
-            <label className="text-slate-200 mr-3">
+            <label className="text-slate-200">
               Number of Posts to Create (Max 10)
               <input
                 className="text-sm text-gray-base w-full 
                                   py-5 px-4 h-2 border 
-                                  border-gray-200 text-slate-700 rounded mb-2"
+                                  border-gray-200 text-slate-700 rounded"
                 type="text"
                 name="blogNumber"
                 placeholder="Number of blog posts"
@@ -96,12 +98,13 @@ export default function Review() {
                 onChange={(e) => setBlogNumberInput(e.target.value)}
               />
             </label>
-            <label className="text-slate-200">
+            
+            <label className="text-slate-200 flex-col gap-4">
               Expected blog post length (in # of words):
               <input
                   className="text-sm text-gray-base w-full 
                                     mr-3 py-5 px-4 h-2 border 
-                                    border-gray-200 text-slate-700 rounded mb-2"
+                                    border-gray-200 text-slate-700 rounded"
                   type="text"
                   name="topic"
                   placeholder="Enter a blog topic"
@@ -109,30 +112,27 @@ export default function Review() {
                   onChange={(e) => setBlogLengthInput(e.target.value)}
                 />
             </label>
-          </div>
-
-          <div className="flex flex-row mb-2">
+            
             <label className="text-slate-200">
-                Site Id
-                <input
-                  className="text-sm text-gray-base w-full 
-                                    py-5 px-4 h-2 border 
-                                    border-gray-200 text-slate-700 rounded mb-2"
-                  type="text"
-                  name="siteId"
-                  placeholder="Enter a site id"
-                  value={siteIdInput}
-                  onChange={(e) => setSiteIdInput(e.target.value)}
-                />
-              </label>
+              Site Id
+              <input
+                className="text-sm text-gray-base w-full 
+                                  py-5 px-4 h-2 border 
+                                  border-gray-200 text-slate-700 rounded"
+                type="text"
+                name="siteId"
+                placeholder="Enter a site id"
+                value={siteIdInput}
+                onChange={(e) => setSiteIdInput(e.target.value)}
+              />
+            </label>
 
-            <div className="flex flex-row">
-              <label className="imgtoggle elative inline-flex items-center cursor-pointer">
-                <input type="checkbox" checked={blogImageToggle} onChange={handleChange} value="" className="sr-only peer"/>
-                <div className="absolute w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Generate Images</span>
-              </label>
-            </div>
+            <label className="imgtoggle elative inline-flex items-center cursor-pointer">
+              <input type="checkbox" checked={blogImageToggle} onChange={handleChange} value="" className="sr-only peer"/>
+              <div className="absolute w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+              <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Generate Images</span>
+            </label>
+
           </div>
           
           <button

@@ -66,14 +66,14 @@ export default function Review() {
         </p>
         <form onSubmit={onSubmit}>
 
-          <div className="flex flex-row">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:gap-4 mb-4">
 
-            <label className="text-slate-200 w-70 mb-2 mr-2">
+            <label className="text-slate-200 w-70">
               Number of Users to Create
               <input
                 className="text-sm text-gray-base w-full 
                                   py-5 px-4 h-2 border 
-                                  border-gray-200 text-slate-700 rounded mb-2"
+                                  border-gray-200 text-slate-700 rounded"
                 type="text"
                 name="userNumber"
                 placeholder="Number of user posts"
@@ -82,12 +82,12 @@ export default function Review() {
               />
             </label>
 
-            <label className="text-slate-200 w-70 mb-2">
+            <label className="text-slate-200 w-70">
               Email prefix
               <input
                 className="text-sm text-gray-base w-full 
                                   py-5 px-4 h-2 border 
-                                  border-gray-200 text-slate-700 rounded mb-2"
+                                  border-gray-200 text-slate-700 rounded"
                 type="text"
                 name="userNumber"
                 placeholder="@liferay.xyz"

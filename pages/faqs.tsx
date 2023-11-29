@@ -84,14 +84,14 @@ export default function Review() {
         </p>
         <form onSubmit={onSubmit}>
 
-          <div className="flex flex-row">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:gap-4 mb-4">
 
-            <label className="text-slate-200 mr-3">
+            <label className="text-slate-200">
               Enter a FAQ topic:
               <input
                   className="text-sm text-gray-base w-full 
                                     mr-3 py-5 px-4 h-2 border 
-                                    border-gray-200 text-slate-700 rounded mb-2"
+                                    border-gray-200 text-slate-700 rounded"
                   type="text"
                   name="topic"
                   placeholder="Enter a faq topic"
@@ -100,12 +100,12 @@ export default function Review() {
                 />
             </label>
 
-            <label className="text-slate-200 w-70">
+            <label className="text-slate-200">
               Number of Q&A Pairs to Create (Max 10)
               <input
                 className="text-sm text-gray-base w-full 
                                   py-5 px-4 h-2 border 
-                                  border-gray-200 text-slate-700 rounded mb-2"
+                                  border-gray-200 text-slate-700 rounded"
                 type="text"
                 name="faqNumber"
                 placeholder="Number of FAQ posts"
@@ -113,16 +113,13 @@ export default function Review() {
                 onChange={(e) => setFAQNumberInput(e.target.value)}
               />
             </label>
-          </div>
 
-          <div className="flex flex-row  mb-2">
-
-            <label className="text-slate-200 w-30 mr-3">
+            <label className="text-slate-200 w-30">
               Site Id
               <input
                 className="text-sm text-gray-base w-full 
                                    py-5 px-4 h-2 border 
-                                  border-gray-200 text-slate-700 rounded mb-2"
+                                  border-gray-200 text-slate-700 rounded"
                 type="text"
                 name="siteId"
                 placeholder="Enter a site id"
@@ -131,12 +128,12 @@ export default function Review() {
               />
             </label>
 
-            <label className="text-slate-200 w-70 mr-3">
+            <label className="text-slate-200 w-70">
               FAQ Structure ID
               <input
                 className="text-sm text-gray-base w-full 
                                   py-5 px-4 h-2 border 
-                                  border-gray-200 text-slate-700 rounded mb-2"
+                                  border-gray-200 text-slate-700 rounded"
                 type="text"
                 name="faqNumber"
                 placeholder="Number of FAQ Structure ID"
@@ -145,12 +142,12 @@ export default function Review() {
               />
             </label>
             
-            <label className="text-slate-200 w-30 ">
+            <label className="text-slate-200 w-30">
               Folder ID
               <input
                 className="text-sm text-gray-base w-full 
                                    py-5 px-4 h-2 border 
-                                  border-gray-200 text-slate-700 rounded mb-2"
+                                  border-gray-200 text-slate-700 rounded"
                 type="text"
                 name="siteId"
                 placeholder="Enter a folder id"

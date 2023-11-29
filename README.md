@@ -6,7 +6,7 @@ Consider this scenario: You can create 15 products across 5 categories, without 
 
 Utilizing OpenAI to infuse content into our demos doesn't just speed up content creation, which many of us are already doing with AI. It goes the extra mile by seamlessly loading it into the demo instance through our APIs. Big kudos to **Steven Lu**, who, alongside contributing significantly to Commerce and its related APIs, identified the potential to optimize the time spent on setting up commerce products, categories, and SKUs.
 
-## The application currently supports creating the following asset types: 
+## The Liferay Content Wizard currently supports generating these asset types: 
 
 - **Commerce Categories and Products with Images**
 - **Blogs with Images**

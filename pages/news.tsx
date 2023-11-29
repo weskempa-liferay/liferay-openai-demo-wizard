@@ -23,7 +23,7 @@ export default function Review() {
   };
 
   const handleStructureClick = () => {
-    window.open('files/Structure_Frequently Asked Question_36706.json');
+    window.open('files/Structure_News Article_37668.json');
   }
 
   const handleFragmentClick = () => {
@@ -81,7 +81,7 @@ export default function Review() {
                 <svg className="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z"/></svg>
                 <span>News Structure</span>
             </button>&nbsp;
-            <button className="bg-gray-200 hover:bg-grey text-grey-lightest font-bold py-2 px-4 rounded inline-flex items-center" onClick={handleFragmentClick}>
+            <button className="hidden bg-gray-200 hover:bg-grey text-grey-lightest font-bold py-2 px-4 rounded inline-flex items-center" onClick={handleFragmentClick}>
                 <svg className="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z"/></svg>
                 <span>News Fragment</span>
             </button>
@@ -155,7 +155,7 @@ export default function Review() {
             </label>
             
             <label className="flex max-w-xs flex-col text-slate-200">
-              Folder Id
+              Web Content Folder Id
               <input
                 className="text-sm text-gray-base w-full 
                                   py-5 px-4 h-2 border 
@@ -198,6 +198,12 @@ export default function Review() {
             Generate News
           </button>
         </form>
+
+        <p className="text-slate-100 text-center text-lg mb-3 rounded p-5 bg-white/10 italic">
+          <b>Note:</b> News Article generation requires a specific content structure. <br/> 
+          Please use the supplied News Structure supplied above.
+        </p>
+
         {isLoading ? (
           <div>
             <p className="text-slate-200">Generating content... be patient.. </p>

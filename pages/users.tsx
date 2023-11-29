@@ -9,6 +9,8 @@ export default function Review() {
   // Create a ref for the div element
   const textDivRef = useRef<HTMLDivElement>(null);
   const [userNumberInput, setUserNumberInput] = useState("5");
+  const [emailPrefixInput, setEmailPrefixInput] = useState("liferay.xyz");
+  
   const [userImageToggle, setUserImageToggle] = useState(true);
   const [result, setResult] = useState(() => "");
   const [isLoading, setIsLoading] = useState(false);
@@ -25,7 +27,7 @@ export default function Review() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({userNumber: userNumberInput, includeImages: userImageToggle }),
+      body: JSON.stringify({userNumber: userNumberInput, emailPrefix: emailPrefixInput, includeImages: userImageToggle }),
     });
     const data = await response.json();
     console.log("data", data);
@@ -66,7 +68,7 @@ export default function Review() {
 
           <div className="flex flex-row">
 
-          <label className="text-slate-200 w-70 mb-2">
+            <label className="text-slate-200 w-70 mb-2 mr-2">
               Number of Users to Create
               <input
                 className="text-sm text-gray-base w-full 
@@ -77,6 +79,20 @@ export default function Review() {
                 placeholder="Number of user posts"
                 value={userNumberInput}
                 onChange={(e) => setUserNumberInput(e.target.value)}
+              />
+            </label>
+
+            <label className="text-slate-200 w-70 mb-2">
+              Email prefix
+              <input
+                className="text-sm text-gray-base w-full 
+                                  py-5 px-4 h-2 border 
+                                  border-gray-200 text-slate-700 rounded mb-2"
+                type="text"
+                name="userNumber"
+                placeholder="@liferay.xyz"
+                value={emailPrefixInput}
+                onChange={(e) => setEmailPrefixInput(e.target.value)}
               />
             </label>
             

@@ -191,7 +191,7 @@ export default function Review() {
           </div>
           
           <button
-            className="text-sm w-full bg-blue-600 h-7 text-white
+            className="text-sm w-full bg-blue-600 h-9 text-white
                               rounded-2xl mb-10"
             type="submit"
           >

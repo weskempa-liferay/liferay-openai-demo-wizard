@@ -63,15 +63,15 @@ export default function Review() {
         <h3 className="text-slate-200 font-bold text-3xl mb-3">
           Liferay Blog Generator
         </h3>
-        <p className="text-slate-400 text-center text-lg mb-3">
+        <p className="text-slate-400 text-center text-lg mb-10">
           <i>Type your topic in the field below and wait for your blogs. <br/> Leave the field blank for a random blog topic.</i>
         </p>
         
         <form onSubmit={onSubmit}>
           
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:gap-4 mb-4">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 md:gap-4 mb-4">
 
-            <label className="text-slate-200">
+            <label className="flex max-w-xs flex-col text-slate-200">
               Enter a blog topic:
               <input
                   className="text-sm text-gray-base w-full 
@@ -85,7 +85,7 @@ export default function Review() {
                 />
             </label>
 
-            <label className="text-slate-200">
+            <label className="flex max-w-xs flex-col text-slate-200">
               Number of Posts to Create (Max 10)
               <input
                 className="text-sm text-gray-base w-full 
@@ -99,7 +99,7 @@ export default function Review() {
               />
             </label>
             
-            <label className="text-slate-200 flex-col gap-4">
+            <label className="flex max-w-xs flex-col text-slate-200">
               Expected blog post length (in # of words):
               <input
                   className="text-sm text-gray-base w-full 
@@ -113,7 +113,7 @@ export default function Review() {
                 />
             </label>
             
-            <label className="text-slate-200">
+            <label className="flex max-w-xs flex-col text-slate-200">
               Site Id
               <input
                 className="text-sm text-gray-base w-full 

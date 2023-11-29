@@ -79,14 +79,14 @@ export default function Review() {
         <h3 className="text-slate-200 font-bold text-3xl mb-3">
           Liferay FAQ Generator
         </h3>
-        <p className="text-slate-400 text-center text-lg mb-3">
+        <p className="text-slate-400 text-center text-lg mb-10">
           <i>Type your topic in the field below and wait for your FAQs. <br/> Leave the field blank for a random faq topic.</i>
         </p>
         <form onSubmit={onSubmit}>
 
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:gap-4 mb-4">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 md:gap-4 mb-4">
 
-            <label className="text-slate-200">
+            <label className="flex max-w-xs flex-col text-slate-200">
               Enter a FAQ topic:
               <input
                   className="text-sm text-gray-base w-full 
@@ -100,7 +100,7 @@ export default function Review() {
                 />
             </label>
 
-            <label className="text-slate-200">
+            <label className="flex max-w-xs flex-col text-slate-200">
               Number of Q&A Pairs to Create (Max 10)
               <input
                 className="text-sm text-gray-base w-full 
@@ -114,7 +114,7 @@ export default function Review() {
               />
             </label>
 
-            <label className="text-slate-200 w-30">
+            <label className="flex max-w-xs flex-col text-slate-200 w-30">
               Site Id
               <input
                 className="text-sm text-gray-base w-full 
@@ -128,7 +128,7 @@ export default function Review() {
               />
             </label>
 
-            <label className="text-slate-200 w-70">
+            <label className="flex max-w-xs flex-col text-slate-200 w-70">
               FAQ Structure ID
               <input
                 className="text-sm text-gray-base w-full 
@@ -142,7 +142,7 @@ export default function Review() {
               />
             </label>
             
-            <label className="text-slate-200 w-30">
+            <label className="flex max-w-xs flex-col text-slate-200 w-30">
               Folder ID
               <input
                 className="text-sm text-gray-base w-full 
@@ -166,8 +166,9 @@ export default function Review() {
           </button>
         </form>
 
-        <p className="text-slate-100 text-center text-lg mb-3">
-          <b>Note:</b> FAQ generation requires a specific content structure. <br/> Please use the supplied FAQ Structure and Fragment supplied above.
+        <p className="text-slate-100 text-center text-lg mb-3 rounded p-5 bg-blue-800 italic">
+          <b>Note:</b> FAQ generation requires a specific content structure. <br/> 
+          Please use the supplied FAQ Structure and Fragment supplied above.
         </p>
 
         {isLoading ? (

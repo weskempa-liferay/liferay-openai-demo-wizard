@@ -61,14 +61,14 @@ export default function Review() {
         <h3 className="text-slate-200 font-bold text-3xl mb-3">
           Liferay User Generator
         </h3>
-        <p className="text-slate-400 text-center text-lg mb-3">
+        <p className="text-slate-400 text-center text-lg mb-10">
           <i>Use the form below to create users.</i>
         </p>
         <form onSubmit={onSubmit}>
 
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:gap-4 mb-4">
 
-            <label className="text-slate-200 w-70">
+            <label className="flex max-w-xs flex-col text-slate-200">
               Number of Users to Create
               <input
                 className="text-sm text-gray-base w-full 
@@ -82,7 +82,7 @@ export default function Review() {
               />
             </label>
 
-            <label className="text-slate-200 w-70">
+            <label className="flex max-w-xs flex-col text-slate-200">
               Email prefix
               <input
                 className="text-sm text-gray-base w-full 

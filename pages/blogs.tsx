@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import React from "react";
 import Link from "next/link";
 
@@ -9,8 +9,9 @@ export default function Review() {
   // Create a ref for the div element
   const textDivRef = useRef<HTMLDivElement>(null);
   const [blogTopicInput, setBlogTopicInput] = useState("");
+  const [blogLengthInput, setBlogLengthInput] = useState("200");
   const [siteIdInput, setSiteIdInput] = useState("");
-  const [blogNumberInput, setBlogNumberInput] = useState("1");
+  const [blogNumberInput, setBlogNumberInput] = useState("3");
   const [blogImageToggle, setBlogImageToggle] = useState(true);
   const [result, setResult] = useState(() => "");
   const [isLoading, setIsLoading] = useState(false);
@@ -27,7 +28,7 @@ export default function Review() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ blogTopic: blogTopicInput, siteId: siteIdInput, blogNumber: blogNumberInput, includeImages: blogImageToggle }),
+      body: JSON.stringify({ blogTopic: blogTopicInput, blogLength: blogLengthInput, siteId: siteIdInput, blogNumber: blogNumberInput, includeImages: blogImageToggle }),
     });
     const data = await response.json();
     console.log("data", data);
@@ -66,11 +67,11 @@ export default function Review() {
           <i>Type your topic in the field below and wait for your blogs. <br/> Leave the field blank for a random blog topic.</i>
         </p>
         <form onSubmit={onSubmit}>
-          <label className="text-slate-200">
+          <label className="text-slate-200 mr-2">
             Enter a blog topic:
             <input
                 className="text-sm text-gray-base w-full 
-                                   mr-3 py-5 px-4 h-2 border 
+                                  mr-3 py-5 px-4 h-2 border 
                                   border-gray-200 text-slate-700 rounded mb-2"
                 type="text"
                 name="topic"
@@ -82,7 +83,7 @@ export default function Review() {
 
           <div className="flex flex-row">
 
-          <label className="text-slate-200 w-70 mr-3">
+            <label className="text-slate-200 mr-3">
               Number of Posts to Create (Max 10)
               <input
                 className="text-sm text-gray-base w-full 
@@ -95,24 +96,43 @@ export default function Review() {
                 onChange={(e) => setBlogNumberInput(e.target.value)}
               />
             </label>
-            <label className="text-slate-200 w-30">
-              Site Id
+            <label className="text-slate-200">
+              Expected blog post length (in # of words):
               <input
-                className="text-sm text-gray-base w-full 
-                                   py-5 px-4 h-2 border 
-                                  border-gray-200 text-slate-700 rounded mb-2"
-                type="text"
-                name="siteId"
-                placeholder="Enter a site id"
-                value={siteIdInput}
-                onChange={(e) => setSiteIdInput(e.target.value)}
-              />
+                  className="text-sm text-gray-base w-full 
+                                    mr-3 py-5 px-4 h-2 border 
+                                    border-gray-200 text-slate-700 rounded mb-2"
+                  type="text"
+                  name="topic"
+                  placeholder="Enter a blog topic"
+                  value={blogLengthInput}
+                  onChange={(e) => setBlogLengthInput(e.target.value)}
+                />
             </label>
-            <label className="imgtoggle elative inline-flex items-center cursor-pointer">
-              <input type="checkbox" checked={blogImageToggle} onChange={handleChange} value="" className="sr-only peer"/>
-              <div className="absolute w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-              <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Generate Images</span>
-            </label>
+          </div>
+
+          <div className="flex flex-row mb-2">
+            <label className="text-slate-200">
+                Site Id
+                <input
+                  className="text-sm text-gray-base w-full 
+                                    py-5 px-4 h-2 border 
+                                    border-gray-200 text-slate-700 rounded mb-2"
+                  type="text"
+                  name="siteId"
+                  placeholder="Enter a site id"
+                  value={siteIdInput}
+                  onChange={(e) => setSiteIdInput(e.target.value)}
+                />
+              </label>
+
+            <div className="flex flex-row">
+              <label className="imgtoggle elative inline-flex items-center cursor-pointer">
+                <input type="checkbox" checked={blogImageToggle} onChange={handleChange} value="" className="sr-only peer"/>
+                <div className="absolute w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Generate Images</span>
+              </label>
+            </div>
           </div>
           
           <button

@@ -90,7 +90,7 @@ export default function Review() {
             </label>
           </div>
 
-          <div className="flex flex-row">
+          <div className="flex flex-row mb-2">
             <label className="text-slate-200 w-30 mr-5">
               Number of Categories
                 <input

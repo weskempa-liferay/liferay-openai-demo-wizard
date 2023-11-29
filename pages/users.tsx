@@ -8,26 +8,24 @@ import hljs from "highlight.js";
 export default function Review() {
   // Create a ref for the div element
   const textDivRef = useRef<HTMLDivElement>(null);
-  const [blogTopicInput, setBlogTopicInput] = useState("");
-  const [siteIdInput, setSiteIdInput] = useState("");
-  const [blogNumberInput, setBlogNumberInput] = useState("1");
-  const [blogImageToggle, setBlogImageToggle] = useState(true);
+  const [userNumberInput, setUserNumberInput] = useState("5");
+  const [userImageToggle, setUserImageToggle] = useState(true);
   const [result, setResult] = useState(() => "");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = () => {
-    setBlogImageToggle(!blogImageToggle);
+    setUserImageToggle(!userImageToggle);
   };
 
   async function onSubmit(event) {
     event.preventDefault();
     setIsLoading(true);
-    const response = await fetch("/api/blogs", {
+    const response = await fetch("/api/users", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ blogTopic: blogTopicInput, siteId: siteIdInput, blogNumber: blogNumberInput, includeImages: blogImageToggle }),
+      body: JSON.stringify({userNumber: userNumberInput, includeImages: userImageToggle }),
     });
     const data = await response.json();
     console.log("data", data);
@@ -36,14 +34,13 @@ export default function Review() {
     const hljsResult = hljs.highlightAuto(data.result).value;
     setResult(hljsResult);
 
-    setBlogTopicInput("");
     setIsLoading(false);
   }
 
   return (
     <div>
        <Head>
-      <title>Liferay OpenAI Demo Content Wizard - Blog Generator</title>
+      <title>Liferay OpenAI Demo Content Wizard - User Generator</title>
       <meta name="description" content="" />
       <link rel="icon" href="/favicon.ico" />
     </Head>
@@ -60,59 +57,35 @@ export default function Review() {
         </div>
         
         <h3 className="text-slate-200 font-bold text-3xl mb-3">
-          Liferay Blog Generator
+          Liferay User Generator
         </h3>
         <p className="text-slate-400 text-center text-lg mb-3">
-          <i>Type your topic in the field below and wait for your blogs. <br/> Leave the field blank for a random blog topic.</i>
+          <i>Use the form below to create users.</i>
         </p>
         <form onSubmit={onSubmit}>
-          <label className="text-slate-200">
-            Enter a blog topic:
-            <input
-                className="text-sm text-gray-base w-full 
-                                   mr-3 py-5 px-4 h-2 border 
-                                  border-gray-200 text-slate-700 rounded mb-2"
-                type="text"
-                name="topic"
-                placeholder="Enter a blog topic"
-                value={blogTopicInput}
-                onChange={(e) => setBlogTopicInput(e.target.value)}
-              />
-          </label>
 
           <div className="flex flex-row">
 
-          <label className="text-slate-200 w-70 mr-3">
-              Number of Posts to Create (Max 10)
+          <label className="text-slate-200 w-70 mb-2">
+              Number of Users to Create
               <input
                 className="text-sm text-gray-base w-full 
                                   py-5 px-4 h-2 border 
                                   border-gray-200 text-slate-700 rounded mb-2"
                 type="text"
-                name="blogNumber"
-                placeholder="Number of blog posts"
-                value={blogNumberInput}
-                onChange={(e) => setBlogNumberInput(e.target.value)}
+                name="userNumber"
+                placeholder="Number of user posts"
+                value={userNumberInput}
+                onChange={(e) => setUserNumberInput(e.target.value)}
               />
             </label>
-            <label className="text-slate-200 w-30">
-              Site Id
-              <input
-                className="text-sm text-gray-base w-full 
-                                   py-5 px-4 h-2 border 
-                                  border-gray-200 text-slate-700 rounded mb-2"
-                type="text"
-                name="siteId"
-                placeholder="Enter a site id"
-                value={siteIdInput}
-                onChange={(e) => setSiteIdInput(e.target.value)}
-              />
-            </label>
-            <label className="imgtoggle elative inline-flex items-center cursor-pointer">
-              <input type="checkbox" checked={blogImageToggle} onChange={handleChange} value="" className="sr-only peer"/>
+            
+            <label className="imgtoggle elative  inline-flex items-center cursor-pointer hidden">
+              <input type="checkbox" checked={userImageToggle} onChange={handleChange} value="" className="sr-only peer"/>
               <div className="absolute w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-              <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Generate Images</span>
+              <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Generate Profile Pictures</span>
             </label>
+            
           </div>
           
           <button
@@ -120,7 +93,7 @@ export default function Review() {
                               rounded-2xl mb-10"
             type="submit"
           >
-            Generate Blogs
+            Generate Users
           </button>
         </form>
         {isLoading ? (

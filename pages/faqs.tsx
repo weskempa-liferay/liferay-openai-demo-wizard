@@ -100,7 +100,7 @@ export default function Review() {
                 />
             </label>
 
-            <label className="text-slate-200 w-70 mr-3">
+            <label className="text-slate-200 w-70">
               Number of Q&A Pairs to Create (Max 10)
               <input
                 className="text-sm text-gray-base w-full 
@@ -115,9 +115,9 @@ export default function Review() {
             </label>
           </div>
 
-          <div className="flex flex-row">
+          <div className="flex flex-row  mb-2">
 
-          <label className="text-slate-200 w-30 mr-3">
+            <label className="text-slate-200 w-30 mr-3">
               Site Id
               <input
                 className="text-sm text-gray-base w-full 
@@ -145,7 +145,7 @@ export default function Review() {
               />
             </label>
             
-            <label className="text-slate-200 w-30">
+            <label className="text-slate-200 w-30 ">
               Folder ID
               <input
                 className="text-sm text-gray-base w-full 

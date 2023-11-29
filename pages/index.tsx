@@ -47,6 +47,16 @@ const HomePage: NextPage = () => {
               Create a set of FAQs based on a suggested topic.
             </div>
           </Link>
+
+          <Link
+            className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
+            href="/users"
+          >
+            <h3 className="text-2xl font-bold text-[hsl(210,70%,70%)]">Users →</h3>
+            <div className="text-lg">
+              Create example users for your portal instance.
+            </div>
+          </Link>
           
         </div>
        

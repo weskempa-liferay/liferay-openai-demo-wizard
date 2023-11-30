@@ -32,6 +32,10 @@ Typically this "required" baseline CSS is added by `makestuff.js` during build.
   margin-left: 50px;
 }
 
+.object-row{
+  width:94%;
+}
+
 pre code.hljs {
     display: block;
     overflow-x: auto;

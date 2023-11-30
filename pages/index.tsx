@@ -50,21 +50,31 @@ const HomePage: NextPage = () => {
 
           <Link
             className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-            href="/users"
-          >
-            <h3 className="text-2xl font-bold text-[hsl(210,70%,70%)]">Users →</h3>
-            <div className="text-lg">
-              Create example users for your portal instance.
-            </div>
-          </Link>
-
-          <Link
-            className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
             href="/news"
           >
             <h3 className="text-2xl font-bold text-[hsl(210,70%,70%)]">News →</h3>
             <div className="text-lg">
               Create a set of News Articles based on a suggested topic.
+            </div>
+          </Link>
+
+          <Link
+            className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
+            href="/objects"
+          >
+            <h3 className="text-2xl font-bold text-[hsl(210,70%,70%)]">Objects →</h3>
+            <div className="text-lg">
+              Populate your custom objects with records based on your prompts.
+            </div>
+          </Link>
+
+          <Link
+            className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
+            href="/users"
+          >
+            <h3 className="text-2xl font-bold text-[hsl(210,70%,70%)]">Users →</h3>
+            <div className="text-lg">
+              Create example users for your portal instance.
             </div>
           </Link>
           

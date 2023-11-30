@@ -13,8 +13,9 @@ Utilizing this OpenAI Wizard doesn't just speed up content creation, which many 
 - **Commerce Categories and Products with Images**
 - **Blogs with Images**
 - **FAQs**
-- **Users**
 - **News Articles with Images**
+- **Custom Liferay Objects Schemas**
+- **Users**
 
 As we move forward, expect more options for different content types. A big shoutout to Steven Lu for the inspiration and knowledge that brought this functionality to life! Cheers!
 

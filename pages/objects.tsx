@@ -22,19 +22,6 @@ class Review extends React.Component {
     event.preventDefault();
     this.setState({isLoading:false});
 
-    //let objectFieldName0 = (document.getElementById('objectFieldName0') as HTMLInputElement).value;
-    //let objectFieldDescription0 = (document.getElementById('objectFieldDescription0') as HTMLInputElement).value;
-    //let objectFieldType0 = (document.getElementById('objectFieldType0') as HTMLInputElement).value;
-
-    //console.log(objectFieldName0+":"+objectFieldDescription0+":"+objectFieldType0);
-
-    //return false;
-    console.log(event);
-
-    let objectFields = "";
-
-    //const textDivRef = useRef<HTMLDivElement>(null);
-
     let postFields = {};
     
     for(let i = 0;i<this.state.objectFields.length;i++){
@@ -179,7 +166,7 @@ class Review extends React.Component {
                         name="topic"
                         placeholder="/o/c/exampleobjects/batch"
                         value={this.state.aiEndpointInput}
-                        onChange={(e) => this.setState({aiEndpoint:e.target.value})}
+                        onChange={(e) => this.setState({aiEndpointInput:e.target.value})}
                         />
                 </label>
             </div>

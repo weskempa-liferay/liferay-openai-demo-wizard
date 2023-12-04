@@ -232,6 +232,7 @@ export default async function (req, res) {
         if(includeImages){
 
           const imageResponse = await openai.images.generate({
+            model: "dall-e-3",
             prompt: "Create a commerce catalog image for a " + productName,
             n: 1,
             size: "1024x1024"});

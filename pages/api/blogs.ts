@@ -88,6 +88,7 @@ export default async function (req, res) {
       
       if(includeImages){
         const imageResponse = await openai.images.generate({
+          model: "dall-e-3",
           prompt: pictureDescription,
           n: 1,
           size: "1024x1024"});

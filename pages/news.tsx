@@ -24,8 +24,8 @@ export default function Review() {
 
   const handleStructureClick = () => {
     downloadFile({
-      filePath: "files/Structure_News_Article.json",
-      fileName: "Structure_News_Article.json"
+      filePath: "files/Structure-News_Article",
+      fileName: "Structure-News_Article"
     });
   }
 

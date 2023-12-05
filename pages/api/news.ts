@@ -182,7 +182,7 @@ function postNewsToLiferay(base64data,req, newsJson,imageId){
         "contentFieldValue": {
           "data": newsJson.alternativeHeadline
         },
-        "name": "Summary"
+        "name": "Headline"
       },
       {
         "contentFieldValue": {
@@ -205,7 +205,7 @@ function postNewsToLiferay(base64data,req, newsJson,imageId){
         "contentFieldValue": {
           "data": newsJson.alternativeHeadline
         },
-        "name": "Summary"
+        "name": "Headline"
       },
       {
         "contentFieldValue": {

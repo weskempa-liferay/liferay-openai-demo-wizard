@@ -23,8 +23,25 @@ export default function Review() {
   };
 
   const handleStructureClick = () => {
-    window.open('files/Structure_News Article_37668.json');
+    downloadFile({
+      filePath: 'files/Structure_News_Article.json'
+    });
   }
+
+  const downloadFile = ({ filePath }) => {
+    
+    const a = document.createElement('a')
+    a.download = "Structure_News_Article.json";
+    a.href = filePath;
+    const clickEvt = new MouseEvent('click', {
+      view: window,
+      bubbles: true,
+      cancelable: true,
+    })
+    a.dispatchEvent(clickEvt)
+    a.remove()
+  }
+  
 
   const handleFragmentClick = () => {
     location.href='files/FAQ-Fragment.zip';

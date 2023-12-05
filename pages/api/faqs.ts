@@ -21,10 +21,6 @@ export default async function (req, res) {
               properties:{
                 title:{
                   type: "string",
-                  description: "Simplifed title of the question no longer than 7 words."
-                },
-                question:{
-                  type: "string",
                   description: "Frequently asked question"
                 },
                 answer:{
@@ -59,18 +55,12 @@ export default async function (req, res) {
         
         let postBody = {
             "contentFields": [
-            {
-                "contentFieldValue": {
-                    "data": faqs[i].question
-                },
-                "name": "Question"
-            },
-            {
-                "contentFieldValue": {
-                "data": faqs[i].answer
-                },
-                "name": "Answer"
-            }
+              {
+                  "contentFieldValue": {
+                  "data": faqs[i].answer
+                  },
+                  "name": "Answer"
+              }
             ],
             "contentStructureId": req.body.structureId,
             "siteId": req.body.siteId,

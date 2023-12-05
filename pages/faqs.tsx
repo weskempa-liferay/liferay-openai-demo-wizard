@@ -44,8 +44,8 @@ export default function Review() {
 
   const handleStructureClick = () => {
     downloadFile({
-      filePath: "files/Structure_Frequently_Asked_Question.json",
-      fileName: "Structure_Frequently_Asked_Question.json"
+      filePath: "files/Structure-Frequently_Asked_Question.json",
+      fileName: "Structure-Frequently_Asked_Question.json"
     });
   }
 

@@ -63,7 +63,7 @@ export default function Review() {
   }
 
   const handleFragmentClick = () => {
-    location.href='files/FAQ-Fragment.zip';
+    location.href='files/Fragment-FAQ.zip';
   }
 
   return (

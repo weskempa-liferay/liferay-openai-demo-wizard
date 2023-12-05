@@ -11,6 +11,8 @@ export default async function (req, res) {
   let start = new Date().getTime();
 
   const includeImages = req.body.includeImages;
+  let catalogId = req.body.catalogId;
+  let globalSiteId = req.body.gloablSiteId;
 
   /* Get OpenAI Content based on Theme */
 
@@ -92,7 +94,7 @@ export default async function (req, res) {
 
   const axios = require("axios");
 
-  let apiPath = process.env.LIFERAY_PATH + "/o/headless-admin-taxonomy/v1.0/sites/" + process.env.LIFERAY_GLOBAL_SITE_ID + "/taxonomy-vocabularies";
+  let apiPath = process.env.LIFERAY_PATH + "/o/headless-admin-taxonomy/v1.0/sites/" + globalSiteId + "/taxonomy-vocabularies";
   let vocabPostObj = {'name': req.body.product + ' Categories'};
 
   const usernamePasswordBuffer = Buffer.from( 
@@ -179,7 +181,7 @@ export default async function (req, res) {
 
       productJson = {
         "active" : true,
-        "catalogId" : process.env.LIFERAY_CATALOG_ID,
+        "catalogId" : catalogId,
         "description" : {
           "en_US" : productName
         },

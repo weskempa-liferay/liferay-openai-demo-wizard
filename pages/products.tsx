@@ -11,7 +11,10 @@ export default function Review() {
   const [productInput, setProductInput] = useState("");
   const [categoryNumberInput, setCategoryNumberInput] = useState("5");
   const [productNumberInput, setProductNumberInput] = useState("3");
-  
+
+  const [globalSiteIdInput, setGlobalSiteIdInput] = useState("");
+  const [catalogIdInput, setCatalogIdInput] = useState("");
+
   const [result, setResult] = useState(() => "");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -32,7 +35,9 @@ export default function Review() {
         product: productInput, 
         includeImages: productImageToggle, 
         numberOfCategoriest: categoryNumberInput, 
-        numberofProducts: productNumberInput
+        numberofProducts: productNumberInput,
+        gloablSiteId:globalSiteIdInput,
+        catalogId:catalogIdInput
       }),
     });
     const data = await response.json();
@@ -118,6 +123,36 @@ export default function Review() {
                   placeholder="3"
                   value={productNumberInput}
                   onChange={(e) => setProductNumberInput(e.target.value)}
+                />
+            </label>
+            
+            <label className="flex max-w-xs flex-col text-slate-200">
+              Global Site ID for Taxonomy
+                <input
+                  className="text-sm text-gray-base w-full 
+                            mr-3 py-5 px-4 h-2 border 
+                            border-gray-200 text-slate-700 rounded mb-2"
+                                    
+                  type="text"
+                  name="product"
+                  placeholder=""
+                  value={globalSiteIdInput}
+                  onChange={(e) => setGlobalSiteIdInput(e.target.value)}
+                />
+            </label>
+            
+            <label className="flex max-w-xs flex-col text-slate-200">
+              Catalog ID for Products
+                <input
+                  className="text-sm text-gray-base w-full 
+                            mr-3 py-5 px-4 h-2 border 
+                            border-gray-200 text-slate-700 rounded mb-2"
+                                    
+                  type="text"
+                  name="product"
+                  placeholder=""
+                  value={catalogIdInput}
+                  onChange={(e) => setCatalogIdInput(e.target.value)}
                 />
             </label>
 

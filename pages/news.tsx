@@ -24,14 +24,14 @@ export default function Review() {
 
   const handleStructureClick = () => {
     downloadFile({
-      filePath: 'files/Structure_News_Article.json'
+      filePath: "files/Structure_News_Article.json",
+      fileName: "Structure_News_Article.json"
     });
   }
 
-  const downloadFile = ({ filePath }) => {
-    
+  const downloadFile = ({ filePath,fileName }) => {
     const a = document.createElement('a')
-    a.download = "Structure_News_Article.json";
+    a.download = fileName;
     a.href = filePath;
     const clickEvt = new MouseEvent('click', {
       view: window,
@@ -41,7 +41,6 @@ export default function Review() {
     a.dispatchEvent(clickEvt)
     a.remove()
   }
-  
 
   const handleFragmentClick = () => {
     location.href='files/FAQ-Fragment.zip';

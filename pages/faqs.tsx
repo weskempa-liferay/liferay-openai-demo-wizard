@@ -39,12 +39,27 @@ export default function Review() {
     const hljsResult = hljs.highlightAuto(data.result).value;
     setResult(hljsResult);
 
-    //setFAQTopicInput("");
     setIsLoading(false);
   }
 
   const handleStructureClick = () => {
-    window.open('files/Structure_Frequently Asked Question_36706.json');
+    downloadFile({
+      filePath: "files/Structure_Frequently_Asked_Question.json",
+      fileName: "Structure_Frequently_Asked_Question.json"
+    });
+  }
+
+  const downloadFile = ({ filePath, fileName }) => {
+    const a = document.createElement('a')
+    a.download = fileName;
+    a.href = filePath;
+    const clickEvt = new MouseEvent('click', {
+      view: window,
+      bubbles: true,
+      cancelable: true,
+    })
+    a.dispatchEvent(clickEvt)
+    a.remove()
   }
 
   const handleFragmentClick = () => {

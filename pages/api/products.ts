@@ -4,12 +4,11 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-const debug = true;
-
 export default async function (req, res) {
 
   let start = new Date().getTime();
 
+  const debug = req.body.debugMode;
   const imageGeneration = req.body.imageGeneration;
   let catalogId = req.body.catalogId;
   let globalSiteId = req.body.gloablSiteId;

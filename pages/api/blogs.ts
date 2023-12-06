@@ -25,13 +25,6 @@ export default async function (req, res) {
 
   const base64data = usernamePasswordBuffer.toString('base64');
 
-  let headerObj = {
-    headers: {
-      'Authorization': 'Basic ' + base64data, 
-      'Content-Type': 'application/json'
-    }
-  };
-
   const schema = {
     type: "object",
     properties: {

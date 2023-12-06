@@ -4,11 +4,10 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-const debug = true;
-
 export default async function (req, res) {
 
   const runCount = req.body.blogNumber;
+  const debug = req.body.debugMode;
   const imageGeneration = req.body.imageGeneration;
 
   if(debug) console.log("requesting " + runCount + " blog(s)");

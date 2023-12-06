@@ -229,22 +229,6 @@ export default function Review() {
             </label>
             
             <label className="flex max-w-xs flex-col text-slate-200">
-              Image Folder Id (0 for Doc Lib Root)
-              <input
-                className="text-sm text-gray-base w-full 
-                                  py-5 px-4 h-2 border 
-                                  border-gray-200 text-slate-700 rounded"
-                type="text"
-                name="imageFolderId"
-                disabled={imageFolderDisabled}
-                placeholder="Enter a Document Library Folder ID"
-                value={imageFolderIdInput}
-                onChange={(e) => setImageFolderIdInput(e.target.value)}
-              />
-            </label>
-            
-            
-            <label className="flex max-w-xs flex-col text-slate-200">
               Structure Id
               <input
                 className="text-sm text-gray-base w-full 
@@ -271,6 +255,21 @@ export default function Review() {
                     <option value="dall-e-2">DALL·E 2 (Basic Images)</option>
                     <option value="dall-e-3">DALL·E 3 (Highest-Quality Images)</option>
                 </select>
+            </label>
+            
+            <label className="flex max-w-xs flex-col text-slate-200">
+              Image Folder Id (0 for Doc Lib Root)
+              <input
+                className="text-sm text-gray-base w-full 
+                                  py-5 px-4 h-2 border 
+                                  border-gray-200 text-slate-700 rounded"
+                type="text"
+                name="imageFolderId"
+                disabled={imageFolderDisabled}
+                placeholder="Enter a Document Library Folder ID"
+                value={imageFolderIdInput}
+                onChange={(e) => setImageFolderIdInput(e.target.value)}
+              />
             </label>
 
           </div>

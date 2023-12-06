@@ -8,11 +8,17 @@ import hljs from "highlight.js";
 export default function Review() {
 
   const textDivRef = useRef<HTMLDivElement>(null);
+
+  const [debugMode, setDebugMode] = useState(false);
   
   const [result, setResult] = useState(() => "");
   const [isLoading, setIsLoading] = useState(false);
 
   const [file, setFile] = useState();
+
+  const handleDebugModeChange = () => {
+    setDebugMode(!debugMode);
+  };
 
   const handleOnChange = (e) => {
     setFile(e.target.files[0]);
@@ -21,7 +27,6 @@ export default function Review() {
   const handleExampleClick = () => {
     window.open('files/users.csv');
   }
-
 
   const csvFileToArray = string => {
     const csvHeader = string.slice(0, string.indexOf("\n")).split(",");
@@ -68,7 +73,8 @@ export default function Review() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          csvoutput: csvOutput
+          csvoutput: csvOutput,
+          debugMode: debugMode
         }),
       });
       const data = await response.json();
@@ -104,6 +110,14 @@ export default function Review() {
                 <svg className="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z"/></svg>
                 <span>Example Users CSV File</span>
             </button>
+        </div>
+
+        <div className="fixed bottom-0 right-0">
+          <label className="imgtoggle elative inline-flex items-center cursor-pointer">
+            <input type="checkbox" checked={debugMode} onChange={handleDebugModeChange} value="" className="sr-only peer"/>
+            <div className="absolute w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+            <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Debug Mode</span>
+          </label>
         </div>
         
         <h3 className="text-slate-200 font-bold text-3xl mb-3">

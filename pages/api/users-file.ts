@@ -4,20 +4,17 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-const debug = true;
-
 export default async function (req, res) {
 
     let start = new Date().getTime();
 
+    const debug = req.body.debugMode;
     let userlist = req.body.csvoutput;
 
-    console.log(userlist);
-    
-    //if(debug) console.log(response.choices[0].message);
+    if(debug) console.log(userlist);
 
     for(let i=0;i<userlist.length;i++){
-        delete userlist[i].imageFile; //remove temporarily
+        delete userlist[i].imageFile; //TODO
     }
 
     if(debug) console.log(userlist);

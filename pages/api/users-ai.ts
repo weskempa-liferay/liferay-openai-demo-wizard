@@ -4,11 +4,11 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-const debug = true;
-
 export default async function (req, res) {
 
     let start = new Date().getTime();
+
+    const debug = req.body.debugMode;
 
     const userSchema = {
         type: "object",
@@ -59,10 +59,8 @@ export default async function (req, res) {
         temperature: 0.6,
     });
 
-    //if(debug) console.log(response.choices[0].message);
     let userlist = JSON.parse(response.choices[0].message.function_call.arguments).users;
     
-
     for(let i=0;i<userlist.length;i++){
         userlist[i].additionalName = userlist[i].middleName;
         delete userlist[i].middleName;

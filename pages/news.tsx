@@ -7,11 +7,11 @@ import hljs from "highlight.js";
 
 export default function Review() {
 
+  const textDivRef = useRef<HTMLDivElement>(null);
+
   const [debugMode, setDebugMode] = useState(false);
   
   const [expectedCost, setExpectedCost] = useState("<$0.01");
-
-  const textDivRef = useRef<HTMLDivElement>(null);
   const [newsTopicInput, setNewsTopicInput] = useState("");
   const [newsLengthInput, setNewsLengthInput] = useState("150");
   const [siteIdInput, setSiteIdInput] = useState("");
@@ -140,7 +140,6 @@ export default function Review() {
             <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Debug Mode</span>
           </label>
         </div>
-
         
         <h3 className="text-slate-200 font-bold text-3xl mb-3">
           Liferay News Generator

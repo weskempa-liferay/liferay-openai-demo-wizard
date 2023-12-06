@@ -10,7 +10,7 @@ export default async function (req, res) {
 
   let start = new Date().getTime();
 
-  const includeImages = req.body.includeImages;
+  const imageGeneration = req.body.imageGeneration;
   let catalogId = req.body.catalogId;
   let globalSiteId = req.body.gloablSiteId;
 
@@ -230,11 +230,11 @@ export default async function (req, res) {
         }
 
 
-        if(debug) console.log("includeImages:"+includeImages);
-        if(includeImages){
+        if(debug) console.log("includeImages:"+imageGeneration);
+        if(imageGeneration!="none"){
 
           const imageResponse = await openai.images.generate({
-            model: "dall-e-3",
+            model: imageGeneration,
             prompt: "Create a commerce catalog image for a " + productName,
             n: 1,
             size: "1024x1024"});
@@ -248,7 +248,6 @@ export default async function (req, res) {
             "priority": 1,
             "neverExpire": true
           })
-          
 
           if(debug) console.log(imgschema);
 

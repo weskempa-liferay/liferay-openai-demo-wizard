@@ -164,8 +164,8 @@ export default function Review() {
                         text-slate-700 text-sm rounded
                         block w-full p-2.5">
                     <option value="none">None</option>
-                    <option value="dall-e-2">Dall-e-2 (Basic Images)</option>
-                    <option value="dall-e-3">Dall-e-3 (Highest-Quality Images)</option>
+                    <option value="dall-e-2">DALL·E 2 (Basic Images)</option>
+                    <option value="dall-e-3">DALL·E 3 (Highest-Quality Images)</option>
                 </select>
             </label>
 

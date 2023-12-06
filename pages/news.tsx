@@ -16,11 +16,13 @@ export default function Review() {
   const [newsLengthInput, setNewsLengthInput] = useState("150");
   const [siteIdInput, setSiteIdInput] = useState("");
   const [folderIdInput, setFolderIdInput] = useState("");
+  const [imageFolderIdInput, setImageFolderIdInput] = useState("0");
   const [structureIdInput, setStructureIdInput] = useState("");
   const [newsNumberInput, setNewsNumberInput] = useState("3");
   const [imageGenerationType, setImageGenerationType] = useState("none");
   const [result, setResult] = useState(() => "");
   const [isLoading, setIsLoading] = useState(false);
+  const [imageFolderDisabled, setImageFolderDisabled] = useState(true);
 
   const handleDebugModeChange = () => {
     setDebugMode(!debugMode);
@@ -39,12 +41,15 @@ export default function Review() {
     let cost = "";
 
     console.log(newsNumberInput);
+    setImageFolderDisabled(true);
     if(isNaN(parseInt(newsNumberInput))){
       cost = "$0.00";
     }else if(imageGenerationType=="dall-e-3"){
       cost = USDollar.format(parseInt(newsNumberInput) * 0.04);
+      setImageFolderDisabled(false);
     }else if(imageGenerationType=="dall-e-2"){
       cost = USDollar.format(parseInt(newsNumberInput) * 0.02);
+      setImageFolderDisabled(false);
     }else{
       cost = "<$0.01";
     }
@@ -88,6 +93,7 @@ export default function Review() {
         newsLength: newsLengthInput, 
         siteId: siteIdInput, 
         folderId: folderIdInput, 
+        imageFolderId:imageFolderIdInput,
         structureId: structureIdInput, 
         newsNumber: newsNumberInput, 
         imageGeneration: imageGenerationType,
@@ -145,7 +151,7 @@ export default function Review() {
           Liferay News Generator
         </h3>
         <p className="text-slate-400 text-center text-lg mb-10">
-          <i>Type your topic in the field below and wait for your Newss. <br/> Leave the field blank for a random News topic.</i>
+          <i>Type your topic in the field below and wait for your News. <br/> Leave the field blank for a random News topic.</i>
         </p>
         
         <form onSubmit={onSubmit}>
@@ -221,6 +227,22 @@ export default function Review() {
                 onChange={(e) => setFolderIdInput(e.target.value)}
               />
             </label>
+            
+            <label className="flex max-w-xs flex-col text-slate-200">
+              Image Folder Id (0 for Doc Lib Root)
+              <input
+                className="text-sm text-gray-base w-full 
+                                  py-5 px-4 h-2 border 
+                                  border-gray-200 text-slate-700 rounded"
+                type="text"
+                name="imageFolderId"
+                disabled={imageFolderDisabled}
+                placeholder="Enter a Document Library Folder ID"
+                value={imageFolderIdInput}
+                onChange={(e) => setImageFolderIdInput(e.target.value)}
+              />
+            </label>
+            
             
             <label className="flex max-w-xs flex-col text-slate-200">
               Structure Id

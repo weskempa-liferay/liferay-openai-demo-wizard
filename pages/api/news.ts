@@ -132,10 +132,16 @@ export default async function (req, res) {
 
 function postImageToLiferay(file,base64data,req, newsJson, debug){
 
+  const imageFolderId = parseInt(req.body.imageFolderId);
+
   const fs = require('fs');
   const request = require('request');
 
   let newsImageApiPath = process.env.LIFERAY_PATH + "/o/headless-delivery/v1.0/sites/"+req.body.siteId+"/documents";
+
+  if(imageFolderId){
+    newsImageApiPath = process.env.LIFERAY_PATH + "/o/headless-delivery/v1.0/document-folders/"+imageFolderId+"/documents";
+  }
       
   if(debug) console.log(newsImageApiPath);
 

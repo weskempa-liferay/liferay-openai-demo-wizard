@@ -105,14 +105,14 @@ export default async function (req, res) {
           file.on("finish", () => {
             file.close();
             if(debug) console.log("Download Completed");
-            postImageToLiferay(file,base64data,req, blogJson);
+            postImageToLiferay(file,base64data,req, blogJson, debug);
           });
   
           if(debug) console.log("upload image " + file.path );
         });
 
       } else {
-        postBlogToLiferay(base64data,req, blogJson, 0);
+        postBlogToLiferay(base64data,req, blogJson, 0, debug);
       }
 
     } catch (error) {
@@ -131,7 +131,7 @@ export default async function (req, res) {
   res.status(200).json({ result: JSON.stringify(blogContentSet) });
 }
 
-function postImageToLiferay(file,base64data,req, blogJson){
+function postImageToLiferay(file,base64data,req, blogJson, debug){
 
   const fs = require('fs');
   const request = require('request');
@@ -158,14 +158,14 @@ function postImageToLiferay(file,base64data,req, blogJson){
     request(options, function (err, res, body) {
         if(err) console.log(err);
         
-        postBlogToLiferay(base64data,req, blogJson, JSON.parse(body).id)
+        postBlogToLiferay(base64data,req, blogJson, JSON.parse(body).id, debug)
 
     });
 
   },100);
 }
 
-function postBlogToLiferay(base64data, req, blogJson,imageId){
+function postBlogToLiferay(base64data, req, blogJson,imageId, debug){
 
   if(imageId){
     blogJson.image = {

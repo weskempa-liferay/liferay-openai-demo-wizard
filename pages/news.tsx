@@ -77,7 +77,7 @@ export default function Review() {
   }
 
   const handleFragmentClick = () => {
-    location.href='files/FAQ-Fragment.zip';
+    location.href='files/Fragment-News.zip';
   }
 
   async function onSubmit(event) {
@@ -133,7 +133,7 @@ export default function Review() {
                 <svg className="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z"/></svg>
                 <span>News Structure</span>
             </button>&nbsp;
-            <button className="hidden bg-gray-200 hover:bg-grey text-grey-lightest font-bold py-2 px-4 rounded inline-flex items-center" onClick={handleFragmentClick}>
+            <button className="bg-gray-200 hover:bg-grey text-grey-lightest font-bold py-2 px-4 rounded inline-flex items-center" onClick={handleFragmentClick}>
                 <svg className="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z"/></svg>
                 <span>News Fragment</span>
             </button>

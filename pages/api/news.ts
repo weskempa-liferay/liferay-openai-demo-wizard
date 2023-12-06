@@ -4,16 +4,15 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-const debug = true;
-
 export default async function (req, res) {
 
   let start = new Date().getTime();
 
+  const debug = req.body.debugMode;
   const runCount = req.body.newsNumber;
   const imageGeneration = req.body.imageGeneration;
 
-  if(debug) console.log("requesting " + runCount + " news(s)");
+  if(debug) console.log("requesting " + runCount + " news articles");
   if(debug) console.log("include images: " + imageGeneration);
 
   const runCountMax = 10;
@@ -101,14 +100,14 @@ export default async function (req, res) {
           file.on("finish", () => {
             file.close();
             if(debug) console.log("Download Completed");
-            postImageToLiferay(file,base64data,req, newsJson);
+            postImageToLiferay(file,base64data,req, newsJson, debug);
           });
     
           if(debug) console.log("upload image " + file.path );
         });
 
     } else {
-      postNewsToLiferay(base64data,req, newsJson, 0);
+      postNewsToLiferay(base64data,req, newsJson, 0, debug);
     }
 
     } catch (error) {
@@ -131,7 +130,7 @@ export default async function (req, res) {
   res.status(200).json({ result: JSON.stringify(newsContentSet) });
 }
 
-function postImageToLiferay(file,base64data,req, newsJson){
+function postImageToLiferay(file,base64data,req, newsJson, debug){
 
   const fs = require('fs');
   const request = require('request');
@@ -158,14 +157,14 @@ function postImageToLiferay(file,base64data,req, newsJson){
     request(options, function (err, res, body) {
         if(err) console.log(err);
         
-        postNewsToLiferay(base64data,req, newsJson, JSON.parse(body).id);
+        postNewsToLiferay(base64data,req, newsJson, JSON.parse(body).id, debug);
 
     });
 
   },100);
 }
 
-function postNewsToLiferay(base64data,req, newsJson,imageId){
+function postNewsToLiferay(base64data,req, newsJson,imageId, debug){
 
   let newsFields;
   

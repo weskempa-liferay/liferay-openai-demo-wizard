@@ -9,10 +9,10 @@ const debug = true;
 export default async function (req, res) {
 
   const runCount = req.body.blogNumber;
-  const includeImages = req.body.includeImages;
+  const imageGeneration = req.body.imageGeneration;
 
   if(debug) console.log("requesting " + runCount + " blog(s)");
-  if(debug) console.log("include images: " + includeImages);
+  if(debug) console.log("include images: " + imageGeneration);
 
   const runCountMax = 10;
   const timestamp = new Date().getTime();
@@ -86,9 +86,9 @@ export default async function (req, res) {
 
     try {
       
-      if(includeImages){
+      if(imageGeneration!="none"){
         const imageResponse = await openai.images.generate({
-          model: "dall-e-3",
+          model: imageGeneration,
           prompt: pictureDescription,
           n: 1,
           size: "1024x1024"});
@@ -109,12 +109,12 @@ export default async function (req, res) {
             postImageToLiferay(file,base64data,req, blogJson);
           });
   
-        if(debug) console.log("upload image " + file.path );
-      });
+          if(debug) console.log("upload image " + file.path );
+        });
 
-    } else {
-      postBlogToLiferay(base64data,req, blogJson, 0);
-    }
+      } else {
+        postBlogToLiferay(base64data,req, blogJson, 0);
+      }
 
     } catch (error) {
       if (error.response) {

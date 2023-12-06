@@ -23,16 +23,6 @@ export default function Review() {
       currency: 'USD',
   });
 
-  const setBlogNumberConfig = (newValue) => {
-    setBlogNumberInput(newValue);
-    updateCost();
-  };
-
-  const updateImageGenerationType = (newValue) => {
-    setImageGenerationType(newValue);
-    updateCost();
-  };
-
   useEffect(() => {
     updateCost();
   }, [blogNumberInput,imageGenerationType]);
@@ -132,7 +122,7 @@ export default function Review() {
                 name="blogNumber"
                 placeholder="Number of blog posts"
                 value={blogNumberInput}
-                onChange={(e) => setBlogNumberConfig(e.target.value)}
+                onChange={(e) => setBlogNumberInput(e.target.value)}
               />
             </label>
             
@@ -168,7 +158,7 @@ export default function Review() {
                 Image Generation
                 <select name="objectFieldType" 
                         value={imageGenerationType}
-                        onChange={(e) => updateImageGenerationType(e.target.value)}
+                        onChange={(e) => setImageGenerationType(e.target.value)}
                         id="objectFieldType" 
                         className="bg-white border border-gray-200 
                         text-slate-700 text-sm rounded

@@ -4,12 +4,11 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-const debug = true;
-
 export default async function (req, res) {
 
     let start = new Date().getTime();
 
+    const debug = req.body.debugMode;
     let aiRole = req.body.aiRole;
     let aiRequest = req.body.aiRequest;
     let aiEndpoint = req.body.aiEndpoint;
@@ -36,7 +35,7 @@ export default async function (req, res) {
         }
       }
 
-    console.log(objectSchema);
+    if(debug)console.log(objectSchema);
 
     const response = await openai.chat.completions.create({
         model: "gpt-3.5-turbo",

@@ -4,11 +4,11 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-const debug = false;
-
 export default async function (req, res) {
 
     let start = new Date().getTime();
+
+    const debug = req.body.debugMode;
 
     const faqSchema = {
         type: "object",

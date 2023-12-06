@@ -8,6 +8,9 @@ import hljs from "highlight.js";
 export default function Review() {
   
   const textDivRef = useRef<HTMLDivElement>(null);
+
+  const [debugMode, setDebugMode] = useState(false);
+
   const [faqTopicInput, setFAQTopicInput] = useState("");
   const [siteIdInput, setSiteIdInput] = useState("");
   const [faqNumberInput, setFAQNumberInput] = useState("5");
@@ -15,6 +18,10 @@ export default function Review() {
   const [faqStructureIdInput, setFAQStructureIdInput] = useState("");
   const [result, setResult] = useState(() => "");
   const [isLoading, setIsLoading] = useState(false);
+
+  const handleDebugModeChange = () => {
+    setDebugMode(!debugMode);
+  };
 
   async function onSubmit(event) {
     event.preventDefault();
@@ -29,7 +36,8 @@ export default function Review() {
         siteId: siteIdInput,
         faqNumber: faqNumberInput, 
         folderId: faqFolderIdInput, 
-        structureId: faqStructureIdInput
+        structureId: faqStructureIdInput,
+        debugMode: debugMode
       }),
     
     });
@@ -85,6 +93,14 @@ export default function Review() {
           </Link>
         </div>
 
+        <div className="fixed bottom-0 right-0">
+          <label className="imgtoggle elative inline-flex items-center cursor-pointer">
+            <input type="checkbox" checked={debugMode} onChange={handleDebugModeChange} value="" className="sr-only peer"/>
+            <div className="absolute w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+            <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Debug Mode</span>
+          </label>
+        </div>
+
         <div className="fixed top-2 right-5 p-5 text-lg download-options p-5 rounded">
             <button id="structure-download" className="bg-gray-200 hover:bg-grey text-grey-lightest font-bold py-2 px-4 rounded inline-flex items-center" onClick={handleStructureClick}>
                 <svg className="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z"/></svg>
@@ -104,7 +120,7 @@ export default function Review() {
         </p>
         <form onSubmit={onSubmit}>
 
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 md:gap-4 mb-4">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 md:gap-4 mb-5">
 
             <label className="flex max-w-xs flex-col text-slate-200">
               Enter a FAQ topic:
@@ -178,7 +194,7 @@ export default function Review() {
           </div>
           
           <button
-            className="text-sm w-full bg-blue-600 h-9 text-white
+            className="text-sm w-full bg-blue-600 h-10 text-white
                               rounded-2xl mb-10"
             type="submit"
           >

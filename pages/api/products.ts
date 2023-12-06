@@ -65,7 +65,7 @@ export default async function (req, res) {
     model: "gpt-3.5-turbo",
     messages: [
       {"role": "system", "content": "You are a commerce administrator responsible for defining product categories for your company."},
-      {"role": "user", "content": "Create a list of products and categories on the subject of: "+req.body.product}
+      {"role": "user", "content": "Create a list of products and categories on the subject of: "+req.body.companyTheme}
     ],
     functions: [
       {name: "get_commerce_categories", "parameters": categorySchema}
@@ -83,7 +83,7 @@ export default async function (req, res) {
   }
 
   let categoryDataStr =  {
-    "Category Vocab": req.body.product + " Type",
+    "Category Vocab": req.body.categoryName + " Type",
     "Category Names": productCategories
   } 
 
@@ -94,7 +94,7 @@ export default async function (req, res) {
   const axios = require("axios");
 
   let apiPath = process.env.LIFERAY_PATH + "/o/headless-admin-taxonomy/v1.0/sites/" + globalSiteId + "/taxonomy-vocabularies";
-  let vocabPostObj = {'name': req.body.product + ' Categories'};
+  let vocabPostObj = {'name': req.body.categoryName + ' Categories'};
 
   const usernamePasswordBuffer = Buffer.from( 
             process.env.LIFERAY_ADMIN_EMAIL_ADDRESS + 

@@ -12,7 +12,8 @@ export default function Review() {
   const [expectedCost, setExpectedCost] = useState("<$0.01");
 
   const [debugMode, setDebugMode] = useState(false);
-  const [productInput, setProductInput] = useState("");
+  const [companyThemeInput, setCompanyThemeInput] = useState("");
+  const [categoryNameInput, setCategoryNameInput] = useState("");
   const [categoryNumberInput, setCategoryNumberInput] = useState("5");
   const [productNumberInput, setProductNumberInput] = useState("3");
   const [imageGenerationType, setImageGenerationType] = useState("none");
@@ -61,7 +62,8 @@ export default function Review() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ 
-        product: productInput, 
+        companyTheme: companyThemeInput, 
+        categoryName: categoryNameInput, 
         numberOfCategoriest: categoryNumberInput, 
         numberofProducts: productNumberInput,
         gloablSiteId:globalSiteIdInput,
@@ -77,7 +79,6 @@ export default function Review() {
     const hljsResult = hljs.highlightAuto(data.result).value;
     setResult(hljsResult);
 
-    setProductInput("");
     setIsLoading(false);
   }
 
@@ -127,10 +128,25 @@ export default function Review() {
                             border-gray-200 text-slate-700 rounded mb-2"
                                     
                   type="text"
-                  name="product"
-                  placeholder="Enter a company theme"
-                  value={productInput}
-                  onChange={(e) => setProductInput(e.target.value)}
+                  name="companyTheme"
+                  placeholder="Enter a Company Theme"
+                  value={companyThemeInput}
+                  onChange={(e) => setCompanyThemeInput(e.target.value)}
+                />
+            </label>
+
+            <label className="flex max-w-xs flex-col text-slate-200">
+              Category Name
+                <input
+                  className="text-sm text-gray-base w-full 
+                            mr-3 py-5 px-4 h-2 border 
+                            border-gray-200 text-slate-700 rounded mb-2"
+                                    
+                  type="text"
+                  name="categoryName"
+                  placeholder="Enter a Category Name"
+                  value={categoryNameInput}
+                  onChange={(e) => setCategoryNameInput(e.target.value)}
                 />
             </label>
 
@@ -142,7 +158,7 @@ export default function Review() {
                             border-gray-200 text-slate-700 rounded mb-2"
                                     
                   type="text"
-                  name="product"
+                  name="numberOfCategories"
                   placeholder="5"
                   value={categoryNumberInput}
                   onChange={(e) => setCategoryNumberInput(e.target.value)}
@@ -157,7 +173,7 @@ export default function Review() {
                             border-gray-200 text-slate-700 rounded mb-2"
                                     
                   type="text"
-                  name="product"
+                  name="numberOfProducts"
                   placeholder="3"
                   value={productNumberInput}
                   onChange={(e) => setProductNumberInput(e.target.value)}
@@ -172,7 +188,7 @@ export default function Review() {
                             border-gray-200 text-slate-700 rounded mb-2"
                                     
                   type="text"
-                  name="product"
+                  name="globalSiteId"
                   placeholder=""
                   value={globalSiteIdInput}
                   onChange={(e) => setGlobalSiteIdInput(e.target.value)}
@@ -187,7 +203,7 @@ export default function Review() {
                             border-gray-200 text-slate-700 rounded mb-2"
                                     
                   type="text"
-                  name="product"
+                  name="catalogId"
                   placeholder=""
                   value={catalogIdInput}
                   onChange={(e) => setCatalogIdInput(e.target.value)}

@@ -11,10 +11,10 @@ export default async function (req, res) {
   let start = new Date().getTime();
 
   const runCount = req.body.newsNumber;
-  const includeImages = req.body.includeImages;
+  const imageGeneration = req.body.imageGeneration;
 
   if(debug) console.log("requesting " + runCount + " news(s)");
-  if(debug) console.log("include images: " + includeImages);
+  if(debug) console.log("include images: " + imageGeneration);
 
   const runCountMax = 10;
   const timestamp = new Date().getTime();
@@ -27,13 +27,6 @@ export default async function (req, res) {
     ':' + process.env.LIFERAY_ADMIN_PASSWORD);
 
   const base64data = usernamePasswordBuffer.toString('base64');
-
-  let headerObj = {
-    headers: {
-      'Authorization': 'Basic ' + base64data, 
-      'Content-Type': 'application/json'
-    }
-  };
 
   const schema = {
     type: "object",
@@ -88,9 +81,9 @@ export default async function (req, res) {
   
     try {
       
-      if(includeImages){
+      if(imageGeneration!="none"){
         const imageResponse = await openai.images.generate({
-          model: "dall-e-3",
+          model: imageGeneration,
           prompt: pictureDescription,
           n: 1,
           size: "1024x1024"});

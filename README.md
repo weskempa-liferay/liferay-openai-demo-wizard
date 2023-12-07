@@ -15,7 +15,7 @@ Utilizing this OpenAI Wizard doesn't just speed up content creation, which many 
 - **FAQs**
 - **News Articles with Images**
 - **Custom Liferay Objects Schemas**
-- **Users**
+- **Users (CSV and OpenAI)**
 
 As we move forward, expect more options for different content types. A big shoutout to Steven Lu for the inspiration and knowledge that brought this functionality to life! Cheers!
 

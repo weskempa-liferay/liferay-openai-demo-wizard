@@ -125,7 +125,7 @@ export default function Review() {
                 <input
                   className="text-sm text-gray-base w-full 
                             mr-3 py-5 px-4 h-2 border 
-                            border-gray-200 text-slate-700 rounded mb-2"
+                            border-gray-200 text-slate-700 rounded"
                                     
                   type="text"
                   name="companyTheme"
@@ -140,7 +140,7 @@ export default function Review() {
                 <input
                   className="text-sm text-gray-base w-full 
                             mr-3 py-5 px-4 h-2 border 
-                            border-gray-200 text-slate-700 rounded mb-2"
+                            border-gray-200 text-slate-700 rounded"
                                     
                   type="text"
                   name="categoryName"
@@ -155,7 +155,7 @@ export default function Review() {
                 <input
                   className="text-sm text-gray-base w-full 
                             mr-3 py-5 px-4 h-2 border 
-                            border-gray-200 text-slate-700 rounded mb-2"
+                            border-gray-200 text-slate-700 rounded"
                                     
                   type="text"
                   name="numberOfCategories"
@@ -170,7 +170,7 @@ export default function Review() {
                 <input
                   className="text-sm text-gray-base w-full 
                             mr-3 py-5 px-4 h-2 border 
-                            border-gray-200 text-slate-700 rounded mb-2"
+                            border-gray-200 text-slate-700 rounded"
                                     
                   type="text"
                   name="numberOfProducts"
@@ -185,7 +185,7 @@ export default function Review() {
                 <input
                   className="text-sm text-gray-base w-full 
                             mr-3 py-5 px-4 h-2 border 
-                            border-gray-200 text-slate-700 rounded mb-2"
+                            border-gray-200 text-slate-700 rounded"
                                     
                   type="text"
                   name="globalSiteId"
@@ -200,7 +200,7 @@ export default function Review() {
                 <input
                   className="text-sm text-gray-base w-full 
                             mr-3 py-5 px-4 h-2 border 
-                            border-gray-200 text-slate-700 rounded mb-2"
+                            border-gray-200 text-slate-700 rounded"
                                     
                   type="text"
                   name="catalogId"
@@ -249,17 +249,12 @@ export default function Review() {
           </div>
         ) : result ? (
           <div className="relative w-2/4 ">
-            <p className="text-slate-200 text-center mb-5">This content has been added to your Liferay Instance.</p>
-            <div
-              ref={textDivRef}
-              className="rounded-md border-spacing-2 border-slate-900 bg-slate-100 break-words max-w-500 overflow-x-auto  "
-            >
-              <pre className="">
-                <code
-                  className=""
-                  dangerouslySetInnerHTML={{ __html: result }}
-                />
-              </pre>
+            <div className="rounded-md border-spacing-2 border-slate-900 bg-slate-100 break-words max-w-500 overflow-x-auto  ">
+              <div
+                ref={textDivRef}
+                className="m-5 "
+                dangerouslySetInnerHTML={{ __html: result }}
+              />
             </div>
           </div>
         ) : null}

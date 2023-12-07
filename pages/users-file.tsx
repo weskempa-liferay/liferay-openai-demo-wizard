@@ -128,7 +128,7 @@ export default function Review() {
         </p>
         <form onSubmit={onSubmit}>
 
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-1 md:gap-4 mb-4">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-1 md:gap-4 mb-5">
 
             <label  className="block mb-2 p-4 text-sm font-medium text-gray-900 dark:text-white" htmlFor="csvFileInput">
               File that contains users
@@ -147,7 +147,7 @@ export default function Review() {
           </div>
           
           <button
-            className="text-sm w-full bg-blue-600 h-9 text-white
+            className="text-sm w-full bg-blue-600 h-10 text-white
                               rounded-2xl mb-10"
             type="submit"
           >

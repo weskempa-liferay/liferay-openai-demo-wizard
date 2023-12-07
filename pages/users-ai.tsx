@@ -84,7 +84,7 @@ export default function Review() {
         </p>
         <form onSubmit={onSubmit}>
 
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:gap-4 mb-4">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:gap-4 mb-5">
 
             <label className="flex max-w-xs flex-col text-slate-200">
               Number of Users to Create
@@ -123,7 +123,7 @@ export default function Review() {
           </div>
           
           <button
-            className="text-sm w-full bg-blue-600 h-9 text-white
+            className="text-sm w-full bg-blue-600 h-10 text-white
                               rounded-2xl mb-10"
             type="submit"
           >

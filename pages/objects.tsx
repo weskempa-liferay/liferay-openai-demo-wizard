@@ -131,7 +131,7 @@ class Review extends React.Component {
           </p>
           <form onSubmit={this.onSubmit}>
 
-              <div className="d-block mb-3">
+              <div className="d-block mb-4">
                   <label className="text-slate-200">
                           Enter the role the OpenAI should act as:
                       <input
@@ -179,7 +179,7 @@ class Review extends React.Component {
                   </label>
               </div>
               
-              <div className=" bg-white/10 rounded p-3 mb-4">
+              <div className=" bg-white/10 rounded p-3 mb-5">
                   <h4 className="text-slate-200 font-bold mb-3">
                       Describe your object structure
                   </h4>
@@ -209,7 +209,7 @@ class Review extends React.Component {
               </div>
             
             <button
-              className="text-sm w-full bg-blue-600 h-9 text-white
+              className="text-sm w-full bg-blue-600 h-10 text-white
                           rounded-2xl mb-10"
               type="submit"
             >

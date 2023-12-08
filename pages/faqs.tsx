@@ -202,8 +202,8 @@ export default function Review() {
                                    py-5 px-4 h-2 border 
                                   border-gray-200 text-slate-700 rounded"
                 type="text"
-                name="siteId"
-                placeholder="Enter a list of Comma-Delimited Category IDs"
+                name="categoryIds"
+                placeholder="List of Comma-Delimited Category IDs"
                 value={categoryIdsInput}
                 onChange={(e) => setCategoryIdsInput(e.target.value)}
               />

@@ -218,6 +218,7 @@ function postNewsToLiferay(base64data,req, newsJson,imageId, debug){
     "contentFields": newsFields,
     "contentStructureId": req.body.structureId,
     "structuredContentFolderId": req.body.folderId,
+    "taxonomyCategoryIds": returnArraySet(req.body.categoryIds),
     "title": newsJson.headline
   }
 
@@ -246,4 +247,14 @@ function postNewsToLiferay(base64data,req, newsJson,imageId, debug){
 
   }},100);
 
+}
+
+function returnArraySet(value){
+  if(value.indexOf(",")>-1){
+    return value.split(",");
+  } else if (parseInt(value)>0){
+    return [value];
+  } else {
+    return [];
+  }
 }

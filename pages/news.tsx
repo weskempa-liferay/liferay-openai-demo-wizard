@@ -18,6 +18,7 @@ export default function Review() {
   const [folderIdInput, setFolderIdInput] = useState("");
   const [imageFolderIdInput, setImageFolderIdInput] = useState("0");
   const [structureIdInput, setStructureIdInput] = useState("");
+  const [categoryIdsInput, setCategoryIdsInput] = useState("");
   const [newsNumberInput, setNewsNumberInput] = useState("3");
   const [imageGenerationType, setImageGenerationType] = useState("none");
   const [result, setResult] = useState(() => "");
@@ -95,6 +96,7 @@ export default function Review() {
         folderId: folderIdInput, 
         imageFolderId:imageFolderIdInput,
         structureId: structureIdInput, 
+        categoryIds:categoryIdsInput,
         newsNumber: newsNumberInput, 
         imageGeneration: imageGenerationType,
         debugMode: debugMode
@@ -159,7 +161,7 @@ export default function Review() {
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 md:gap-4 mb-5">
 
             <label className="flex max-w-xs flex-col text-slate-200">
-              Enter a News topic:
+              Enter a News Topic:
               <input
                   className="text-sm text-gray-base w-full 
                                     mr-3 py-5 px-4 h-2 border 
@@ -187,7 +189,7 @@ export default function Review() {
             </label>
             
             <label className="flex max-w-xs flex-col text-slate-200">
-              Expected News post length (in # of words):
+              Expected News Post Length (in # of words):
               <input
                   className="text-sm text-gray-base w-full 
                                     mr-3 py-5 px-4 h-2 border 
@@ -201,7 +203,7 @@ export default function Review() {
             </label>
             
             <label className="flex max-w-xs flex-col text-slate-200">
-              Site Id
+              Site ID
               <input
                 className="text-sm text-gray-base w-full 
                                   py-5 px-4 h-2 border 
@@ -215,7 +217,7 @@ export default function Review() {
             </label>
             
             <label className="flex max-w-xs flex-col text-slate-200">
-              Web Content Folder Id
+              Web Content Folder ID
               <input
                 className="text-sm text-gray-base w-full 
                                   py-5 px-4 h-2 border 
@@ -229,7 +231,7 @@ export default function Review() {
             </label>
             
             <label className="flex max-w-xs flex-col text-slate-200">
-              Structure Id
+              Structure ID
               <input
                 className="text-sm text-gray-base w-full 
                                   py-5 px-4 h-2 border 
@@ -239,6 +241,20 @@ export default function Review() {
                 placeholder="Enter a Structure ID"
                 value={structureIdInput}
                 onChange={(e) => setStructureIdInput(e.target.value)}
+              />
+            </label>
+            
+            <label className="flex max-w-xs flex-col text-slate-200 w-30">
+              Comma-Delimited Category IDs (Optional)
+              <input
+                className="text-sm text-gray-base w-full 
+                                   py-5 px-4 h-2 border 
+                                  border-gray-200 text-slate-700 rounded"
+                type="text"
+                name="categoryIds"
+                placeholder="List of Comma-Delimited Category IDs"
+                value={categoryIdsInput}
+                onChange={(e) => setCategoryIdsInput(e.target.value)}
               />
             </label>
 
@@ -258,7 +274,7 @@ export default function Review() {
             </label>
             
             <label className="flex max-w-xs flex-col text-slate-200">
-              Image Folder Id (0 for Doc Lib Root)
+              Image Folder ID (0 for Doc Lib Root)
               <input
                 className="text-sm text-gray-base w-full 
                                   py-5 px-4 h-2 border 

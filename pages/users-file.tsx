@@ -146,7 +146,7 @@ export default function Review() {
 
           </div>
           
-          <button
+          <button disabled={isLoading}
             className="text-sm w-full bg-blue-600 h-10 text-white
                               rounded-2xl mb-10"
             type="submit"

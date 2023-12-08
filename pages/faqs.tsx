@@ -28,6 +28,7 @@ export default function Review() {
   async function onSubmit(event) {
     event.preventDefault();
     setIsLoading(true);
+    console.log("Posting!");
     const response = await fetch("/api/faqs", {
       method: "POST",
       headers: {
@@ -188,7 +189,7 @@ export default function Review() {
                                    py-5 px-4 h-2 border 
                                   border-gray-200 text-slate-700 rounded"
                 type="text"
-                name="siteId"
+                name="folderId"
                 placeholder="Enter a Folder ID"
                 value={faqFolderIdInput}
                 onChange={(e) => setFAQFolderIdInput(e.target.value)}
@@ -210,7 +211,7 @@ export default function Review() {
             </label>
           </div>
           
-          <button
+          <button disabled={isLoading}
             className="text-sm w-full bg-blue-600 h-10 text-white
                               rounded-2xl mb-10"
             type="submit"

@@ -19,6 +19,10 @@ as-is from the repository directly without the need for a build step
 Typically this "required" baseline CSS is added by `makestuff.js` during build.
 */
 
+form button:disabled {
+  background: #626a94;
+}
+
 .download-options{
   background-color: rgba(100,100,150,.3);
 }

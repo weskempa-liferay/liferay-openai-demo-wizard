@@ -65,6 +65,7 @@ export default async function (req, res) {
             "contentStructureId": req.body.structureId,
             "siteId": req.body.siteId,
             "structuredContentFolderId": req.body.folderId,
+            "taxonomyCategoryIds": returnArraySet(req.body.categoryIds),
             "title": faqs[i].title
         };
 
@@ -104,4 +105,14 @@ export default async function (req, res) {
     let end = new Date().getTime();
 
     res.status(200).json({ result: "Completed in " + (end - start) + " milliseconds"});
+}
+
+function returnArraySet(value){
+  if(value.indexOf(",")>-1){
+    return value.split(",");
+  } else if (parseInt(value)>0){
+    return [value];
+  } else {
+    return [];
+  }
 }

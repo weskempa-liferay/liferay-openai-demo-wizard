@@ -16,6 +16,8 @@ export default function Review() {
   const [faqNumberInput, setFAQNumberInput] = useState("5");
   const [faqFolderIdInput, setFAQFolderIdInput] = useState("0");
   const [faqStructureIdInput, setFAQStructureIdInput] = useState("");
+  const [categoryIdsInput, setCategoryIdsInput] = useState("");
+  
   const [result, setResult] = useState(() => "");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -37,6 +39,7 @@ export default function Review() {
         faqNumber: faqNumberInput, 
         folderId: faqFolderIdInput, 
         structureId: faqStructureIdInput,
+        categoryIds:categoryIdsInput,
         debugMode: debugMode
       }),
     
@@ -130,7 +133,7 @@ export default function Review() {
                                     border-gray-200 text-slate-700 rounded"
                   type="text"
                   name="topic"
-                  placeholder="Enter a faq topic"
+                  placeholder="Enter a FAQ Topic"
                   value={faqTopicInput}
                   onChange={(e) => setFAQTopicInput(e.target.value)}
                 />
@@ -144,7 +147,7 @@ export default function Review() {
                                   border-gray-200 text-slate-700 rounded"
                 type="text"
                 name="faqNumber"
-                placeholder="Number of FAQ posts"
+                placeholder="Number of FAQ Posts"
                 value={faqNumberInput}
                 onChange={(e) => setFAQNumberInput(e.target.value)}
               />
@@ -158,7 +161,7 @@ export default function Review() {
                                   border-gray-200 text-slate-700 rounded"
                 type="text"
                 name="siteId"
-                placeholder="Enter a site id"
+                placeholder="Enter a Site ID"
                 value={siteIdInput}
                 onChange={(e) => setSiteIdInput(e.target.value)}
               />
@@ -186,9 +189,23 @@ export default function Review() {
                                   border-gray-200 text-slate-700 rounded"
                 type="text"
                 name="siteId"
-                placeholder="Enter a folder id"
+                placeholder="Enter a Folder ID"
                 value={faqFolderIdInput}
                 onChange={(e) => setFAQFolderIdInput(e.target.value)}
+              />
+            </label>
+            
+            <label className="flex max-w-xs flex-col text-slate-200 w-30">
+              Comma-Delimited Category IDs (Optional)
+              <input
+                className="text-sm text-gray-base w-full 
+                                   py-5 px-4 h-2 border 
+                                  border-gray-200 text-slate-700 rounded"
+                type="text"
+                name="siteId"
+                placeholder="Enter a list of Comma-Delimited Category IDs"
+                value={categoryIdsInput}
+                onChange={(e) => setCategoryIdsInput(e.target.value)}
               />
             </label>
           </div>

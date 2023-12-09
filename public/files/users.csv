@@ -1,10 +1,10 @@
 alternateName,emailAddress,givenName,familyName,jobTitle,imageFile
-anna.bailey,anna.bailey@liferay.xyz,Anna,Bailey,Content Creator,./files/personas/anna-bailey-290x290.jpg
-barbara.silva,barbara.silva@liferay.xyz,Barbara,Silva,Content Creator,./files/personas/barbara-silva-290x290.png
-darrell.allen,darrell.allen@liferay.xyz,Darrell,Allen,Content Creator,./files/personas/darrell-allen-253x253.jpg
-emily.zhang,emily.zhang@liferay.xyz,Emily,Zhang,Content Creator,./files/personas/emily-zhang-290x290.png
-keiko.tanaka,keiko.tanaka@liferay.xyz,Keiko,Tanaka,Content Creator,./files/personas/keiko-tanaka-290x290.jpg
-marie.andrews,marie.andrews@mailinator.com,Marie,Andrews,Content Approver,./files/personas/marie-andrews-290x290.png
-sam.larson,sam.larson@liferay.xyz,Sam,Larson,Content Creator,./files/personas/sam-larson-other4-290x290.png
-scott.williams,scott.williams@liferay.xyz,Scott,Williams,CPA,./files/personas/scott-williams-290x290.jpg
-winona.takoda,winona.takoda@liferay.xyz,Winona,Takoda,Content Creator,./files/personas/winona-takoda-290x290.jpg
+a1anna.bailey,anna.bailey@liferay.xyz,a1Anna,Bailey,Content Creator,public/files/user-images/anna-bailey-290x290.jpg
+a1barbara.silva,barbara.silva@liferay.xyz,a1Barbara,Silva,Content Creator,public/files/user-images/barbara-silva-290x290.png
+a1darrell.allen,darrell.allen@liferay.xyz,a1Darrell,Allen,Content Creator,public/files/user-images/darrell-allen-253x253.jpg
+a1emily.zhang,emily.zhang@liferay.xyz,a1Emily,Zhang,Content Creator,public/files/user-images/emily-zhang-290x290.png
+a1keiko.tanaka,keiko.tanaka@liferay.xyz,a1Keiko,Tanaka,Content Creator,public/files/user-images/keiko-tanaka-290x290.jpg
+a1marie.andrews,marie.andrews@mailinator.com,a1Marie,Andrews,Content Approver,public/files/user-images/marie-andrews-290x290.png
+a1sam.larson,sam.larson@liferay.xyz,a1Sam,Larson,Content Creator,public/files/user-images/sam-larson-290x290.png
+a1scott.williams,scott.williams@liferay.xyz,a1Scott,Williams,CPA,public/files/user-images/scott-williams-290x290.jpg
+a1winona.takoda,winona.takoda@liferay.xyz,a1Winona,Takoda,Content Creator,public/files/user-images/winona-takoda-290x290.jpg

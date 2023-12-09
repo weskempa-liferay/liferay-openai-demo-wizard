@@ -13,12 +13,6 @@ export default async function (req, res) {
 
     if(debug) console.log(userlist);
 
-    for(let i=0;i<userlist.length;i++){
-        delete userlist[i].imageFile; //TODO
-    }
-
-    if(debug) console.log(userlist);
-
     const axios = require("axios");
     const fs = require("fs");
 
@@ -28,26 +22,70 @@ export default async function (req, res) {
 
     const base64data = usernamePasswordBuffer.toString('base64');
 
-    let userApiPath = process.env.LIFERAY_PATH + "/o/headless-admin-user/v1.0/user-accounts/batch";
+    let userApiPath = process.env.LIFERAY_PATH + "/o/headless-admin-user/v1.0/user-accounts";
+    let userImagePath = "";
 
-    const options = {
-        method: "POST",
-        port: 443,
-        headers: {
-            'Authorization': 'Basic ' + base64data,
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
+    for(let i=0;i<userlist.length;i++){
+    
+        userImagePath = userlist[i].imageFile;
+        delete userlist[i].imageFile;
+
+        console.log(userlist[i].emailAddress + ", userImagePath: " + userImagePath);
+
+        try {
+
+            let options = {
+                method: "POST",
+                port: 443,
+                headers: {
+                    'Authorization': 'Basic ' + base64data,
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            };
+
+            const response = await axios.post(userApiPath,
+                JSON.stringify(userlist[i]), options);
+    
+            if(debug) console.log("Saved user: " + response.data.id);
+          
+            if(userImagePath.length>0){
+
+                const fs = require('fs');
+                const request = require('request');
+                    
+                let userImageApiPath = process.env.LIFERAY_PATH + "/o/headless-admin-user/v1.0/user-accounts/" + response.data.id + "/image";
+                    
+                if(debug) console.log(userImageApiPath);
+                if(debug) console.log(process.cwd() + "/" + userImagePath);
+                
+                let imgoptions = {
+                    method: "POST",
+                    url: userImageApiPath,
+                    port: 443,
+                    headers: {
+                    'Authorization': 'Basic ' + base64data, 
+                    'Content-Type': 'multipart/form-data'
+                    },
+                    formData : {
+                        "image" : fs.createReadStream(process.cwd() + "/" + userImagePath)
+                    }
+                };
+                
+                request(imgoptions, function (err, res, body) {
+                    if(err) console.log(err);
+
+                    if(debug) console.log("Image Upload Complete");
+            
+                });
+
+            }
+
         }
-    };
+        catch (error) {
+            console.log(error);
+        }
 
-    try {
-        const response = await axios.post(userApiPath,
-            JSON.stringify(userlist), options);
-
-        if(debug) console.log(response.data);
-    }
-    catch (error) {
-        console.log(error);
     }
     
     let end = new Date().getTime();

@@ -172,10 +172,10 @@ export default function Review() {
 
             <label className="flex max-w-xs flex-col text-slate-200">
                 Image Generation
-                <select name="objectFieldType" 
+                <select name="imageGenerationType" 
                         value={imageGenerationType}
                         onChange={(e) => setImageGenerationType(e.target.value)}
-                        id="objectFieldType" 
+                        id="imageGenerationType" 
                         className="bg-white border border-gray-200 
                         text-slate-700 text-sm rounded
                         block w-full p-2.5">

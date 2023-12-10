@@ -19,7 +19,8 @@ export default function Review() {
   const [imageGenerationType, setImageGenerationType] = useState("none");
 
   const [globalSiteIdInput, setGlobalSiteIdInput] = useState("");
-  const [catalogIdInput, setCatalogIdInput] = useState("");
+  const [productCatalogSelect, setProductCatalogSelect] = useState("");
+  const [productCatalogOptions, setProductCatalogOptions] = useState([]);
 
   const [result, setResult] = useState(() => "");
   const [isLoading, setIsLoading] = useState(false);
@@ -32,6 +33,22 @@ export default function Review() {
     style: 'currency',
     currency: 'USD',
   });
+
+  useEffect(() => {
+    console.log("Load");
+
+    const fetchData = async () => {
+      const response = await fetch("/api/catalogs");
+      const catalogs = await response.json();
+
+      console.log(catalogs);
+      setProductCatalogOptions(catalogs);
+    }
+  
+    fetchData()
+      .catch(console.error);
+      
+  }, []);
 
   useEffect(() => {
     updateCost();
@@ -67,7 +84,7 @@ export default function Review() {
         numberOfCategoriest: categoryNumberInput, 
         numberofProducts: productNumberInput,
         gloablSiteId:globalSiteIdInput,
-        catalogId:catalogIdInput,
+        catalogId:productCatalogSelect,
         imageGeneration:imageGenerationType,
         debugMode: debugMode
       }),
@@ -194,28 +211,33 @@ export default function Review() {
                   onChange={(e) => setGlobalSiteIdInput(e.target.value)}
                 />
             </label>
-            
+
             <label className="flex max-w-xs flex-col text-slate-200">
-              Catalog ID for Products
-                <input
-                  className="text-sm text-gray-base w-full 
-                            mr-3 py-5 px-4 h-2 border 
-                            border-gray-200 text-slate-700 rounded"
-                                    
-                  type="text"
-                  name="catalogId"
-                  placeholder=""
-                  value={catalogIdInput}
-                  onChange={(e) => setCatalogIdInput(e.target.value)}
-                />
+                Product Catalog
+                <select name="productCatalogSelect" 
+                        value={productCatalogSelect}
+                        onChange={(e) => setProductCatalogSelect(e.target.value)}
+                        id="productCatalogSelect" 
+                        className="bg-white border border-gray-200 
+                        text-slate-700 text-sm rounded
+                        block w-full p-2.5">
+                        <option value="">None</option>
+                        {productCatalogOptions.map((option) => {
+                          return (
+                            <option key={option.id} value={option.id}>
+                              {option.name}
+                            </option>
+                          );
+                        })}
+                </select>
             </label>
 
             <label className="flex max-w-xs flex-col text-slate-200">
                 Image Generation
-                <select name="objectFieldType" 
+                <select name="imageGenerationType" 
                         value={imageGenerationType}
                         onChange={(e) => setImageGenerationType(e.target.value)}
-                        id="objectFieldType" 
+                        id="imageGenerationType" 
                         className="bg-white border border-gray-200 
                         text-slate-700 text-sm rounded
                         block w-full p-2.5">

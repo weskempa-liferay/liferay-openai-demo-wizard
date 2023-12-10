@@ -25,7 +25,7 @@ export default function Review() {
   };
 
   const handleExampleClick = () => {
-    window.open('files/users.csv');
+    window.open('users/users.csv');
   }
 
   const csvFileToArray = string => {

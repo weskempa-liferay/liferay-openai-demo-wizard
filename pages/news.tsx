@@ -59,7 +59,7 @@ export default function Review() {
 
   const handleStructureClick = () => {
     downloadFile({
-      filePath: "files/Structure-News_Article",
+      filePath: "news/Structure-News_Article",
       fileName: "Structure-News_Article"
     });
   }
@@ -78,7 +78,7 @@ export default function Review() {
   }
 
   const handleFragmentClick = () => {
-    location.href='files/Fragment-News.zip';
+    location.href='news/Fragment-News.zip';
   }
 
   async function onSubmit(event) {

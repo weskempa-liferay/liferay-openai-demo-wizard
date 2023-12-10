@@ -56,7 +56,7 @@ export default function Review() {
 
   const handleStructureClick = () => {
     downloadFile({
-      filePath: "files/Structure-Frequently_Asked_Question.json",
+      filePath: "faqs/Structure-Frequently_Asked_Question.json",
       fileName: "Structure-Frequently_Asked_Question.json"
     });
   }
@@ -75,7 +75,7 @@ export default function Review() {
   }
 
   const handleFragmentClick = () => {
-    location.href='files/Fragment-FAQ.zip';
+    location.href='faqs/Fragment-FAQ.zip';
   }
 
   return (

@@ -79,7 +79,7 @@ export default async function (req, res) {
 
     const base64data = usernamePasswordBuffer.toString('base64');
 
-    let userApiPath = process.env.LIFERAY_PATH + "/o/headless-admin-user/v1.0/user-accounts/batch";
+    let userApiPath = process.env.LIFERAY_PATH + "/o/headless-admin-user/v1.0/user-accounts";
 
     const options = {
         method: "POST",
@@ -91,16 +91,18 @@ export default async function (req, res) {
         }
     };
 
-    try {
-        const response = await axios.post(userApiPath,
-            userlist, options);
+    for(let i=0;i<userlist.length;i++){
+      try {
+          const response = await axios.post(userApiPath,
+              userlist[i], options);
 
-        if(debug) console.log(response.data);
+          if(debug) console.log("Created user:"+response.data.id+", "+response.data.alternateName);
+      }
+      catch (error) {
+          console.log(error.code);
+      }
     }
-    catch (error) {
-        console.log(error);
-    }
-    
+      
     let end = new Date().getTime();
 
     res.status(200).json({ result: "Completed in " + (end - start) + " milliseconds"});

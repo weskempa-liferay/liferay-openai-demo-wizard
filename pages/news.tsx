@@ -153,7 +153,7 @@ export default function Review() {
           Liferay News Generator
         </h3>
         <p className="text-slate-400 text-center text-lg mb-10">
-          <i>Type your topic in the field below and wait for your News. <br/> Leave the field blank for a random News topic.</i>
+          <i>Type your topic in the field below and wait for your News. <br/> Leave the 'News Topic' field blank for a random News topic.</i>
         </p>
         
         <form onSubmit={onSubmit}>

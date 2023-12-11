@@ -150,7 +150,7 @@ export default function Review() {
                                     border-gray-200 text-slate-700 rounded"
                   type="text"
                   name="topic"
-                  placeholder="Enter a blog topic"
+                  placeholder="Enter a the expected blog length"
                   value={blogLengthInput}
                   onChange={(e) => setBlogLengthInput(e.target.value)}
                 />

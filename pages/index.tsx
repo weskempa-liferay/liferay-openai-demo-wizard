@@ -14,19 +14,9 @@ const HomePage: NextPage = () => {
     <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
       <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
         <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
-        Liferay <span className="text-[hsl(210,70%,50%)]">AI</span> Demo Wizard
+        Liferay <span className="text-[hsl(210,70%,50%)]">AI</span> Content Wizard
         </h1>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-4 md:gap-8">
-
-          <Link
-            className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-            href="/products"
-          >
-            <h3 className="text-2xl font-bold text-[hsl(210,70%,70%)]">Commerce Products →</h3>
-            <div className="text-lg">
-              Generate demo products and categories based on your company theme.
-            </div>
-          </Link>
 
           <Link
             className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
@@ -49,10 +39,10 @@ const HomePage: NextPage = () => {
           </Link>
 
           <Link
-            className="hidden flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-            href="#"
+            className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
+            href="/knowledgebase"
           >
-            <h3 className="text-2xl font-bold text-[hsl(210,70%,70%)]">Knowledge Base (TBD)</h3>
+            <h3 className="text-2xl font-bold text-[hsl(210,70%,70%)]">Knowledge Base →</h3>
             <div className="text-lg">
               Create a set of Knowledge Base Sectons and Threads based on a suggested topic.
             </div>
@@ -85,6 +75,16 @@ const HomePage: NextPage = () => {
             <h3 className="text-2xl font-bold text-[hsl(210,70%,70%)]">Objects →</h3>
             <div className="text-lg">
               Populate your custom objects with records based on your prompts.
+            </div>
+          </Link>
+
+          <Link
+            className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
+            href="/products"
+          >
+            <h3 className="text-2xl font-bold text-[hsl(210,70%,70%)]">Products →</h3>
+            <div className="text-lg">
+              Generate demo products and categories based on your company theme.
             </div>
           </Link>
 

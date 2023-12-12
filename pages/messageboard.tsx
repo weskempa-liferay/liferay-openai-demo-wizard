@@ -167,7 +167,7 @@ export default function Review() {
                                   border-gray-200 text-slate-700 rounded"
                 type="text"
                 name="mbNumber"
-                placeholder="Number of message board threads per section"
+                placeholder="Number of message board messages per section"
                 value={mbMessageNumberInput}
                 onChange={(e) => setMBMessageNumberInput(e.target.value)}
               />

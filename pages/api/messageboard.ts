@@ -64,13 +64,13 @@ export default async function (req, res) {
                             type: "string",
                             description: "The message that relates to the message board threads"
                         }
-                        }
+                      }
                     },
                     required: ["messages"]
                   }
                 }
               },
-              required: ["headline","articleBody","messages"]
+              required: ["headline","articleBody","threads"]
             }
           }
         },
@@ -83,7 +83,7 @@ export default async function (req, res) {
     model: "gpt-3.5-turbo",
     messages: [
       {"role": "system", "content": "You are a message board administrator responsible for managing the message board for your company."},
-      {"role": "user", "content": "Create a list of message board categories, threads, and messages subject of: "+req.body.mbTopic}
+      {"role": "user", "content": "Create a list of message board categories, threads, and messages on the subject of: "+req.body.mbTopic}
     ],
     functions: [
       {name: "get_message_board_content", "parameters": messageBoardSchema}

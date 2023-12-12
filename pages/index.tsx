@@ -44,7 +44,7 @@ const HomePage: NextPage = () => {
           >
             <h3 className="text-2xl font-bold text-[hsl(210,70%,70%)]">Knowledge Base →</h3>
             <div className="text-lg">
-              Create a set of Knowledge Base Sectons and Threads based on a suggested topic.
+              Create a set of Knowledge Base Folders and Articles based on a suggested topic.
             </div>
           </Link>
 

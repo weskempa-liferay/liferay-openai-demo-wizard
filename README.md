@@ -14,12 +14,14 @@ Utilizing this OpenAI Wizard doesn't just speed up content creation, which many 
 - **Blogs with Images**
 - **FAQs**
 - **News Articles with Images**
+- **Knowledge Base Folders and Articles**
+- **Message Board Sections, Threads, and Messages**
 - **Custom Liferay Objects Schemas**
 - **Users (CSV and OpenAI)**
 
 As we move forward, expect more options for different content types. A big shoutout to Steven Lu for the inspiration and knowledge that brought this functionality to life! Cheers!
 
-![Screenshot 2023-11-30 at 6 08 12 PM](https://github.com/weskempa-liferay/liferay-openai-demo-wizard/assets/68334638/7f07aa98-a43a-4544-aed9-e9a152ba6fb3)
+![Screen Shot 2023-12-12 at 10 07 11 AM](https://github.com/weskempa-liferay/liferay-openai-demo-wizard/assets/68334638/fc303b12-9bf9-4d94-b3d2-e3e638793317)
 ![Screenshot 2023-11-30 at 6 09 19 PM](https://github.com/weskempa-liferay/liferay-openai-demo-wizard/assets/68334638/3d733f48-a6cc-48e6-af4c-b0578542befa)
 ![Screenshot 2023-11-30 at 6 02 49 PM](https://github.com/weskempa-liferay/liferay-openai-demo-wizard/assets/68334638/7b60a262-e9af-47b4-bbae-7b58d30ee367)
 

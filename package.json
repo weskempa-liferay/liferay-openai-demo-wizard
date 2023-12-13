@@ -1,10 +1,10 @@
 {
-  "name": "openai-gpt3-node-starter",
+  "name": "liferay-openai-content-wizard",
   "version": "1.0.1",
-  "author": "Gannon Hall",
+  "author": "Wes Kempa",
   "license": "MIT",
   "private": false,
-  "description": "OpenAI GPT-3 Node Starter Project",
+  "description": "Liferay OpenAI Content Wizard",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

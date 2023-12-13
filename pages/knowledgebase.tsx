@@ -12,10 +12,10 @@ export default function Review() {
   const [debugMode, setDebugMode] = useState(false);
 
   const [kbTopicInput, setMBTopicInput] = useState("");
-  const [kbArticleLengthInput, setMBArticleLengthInput] = useState("150");
+  const [kbArticleLengthInput, setMBArticleLengthInput] = useState("100");
   const [siteIdInput, setSiteIdInput] = useState("");
   const [kbFolderNumberInput, setMBFolderNumberInput] = useState("3");
-  const [kbArticleNumberInput, setMBArticleNumberInput] = useState("5");
+  const [kbArticleNumberInput, setMBArticleNumberInput] = useState("4");
   const [kbSuggestionNumberInput, setMBSuggestionNumberInput] = useState("2");
   const [result, setResult] = useState(() => "");
   const [isLoading, setIsLoading] = useState(false);
@@ -118,7 +118,7 @@ export default function Review() {
             </label>
             
             <label className="flex max-w-xs flex-col text-slate-200">
-              Expected thread length (in # of words):
+              Expected Article Length (in # of words):
               <input
                   className="text-sm text-gray-base w-full 
                                     mr-3 py-5 px-4 h-2 border 
@@ -146,7 +146,7 @@ export default function Review() {
             </label>
 
             <label className="flex max-w-xs flex-col text-slate-200">
-              Number of Threads to Create per Section
+              Number of Articles to Create per Section
               <input
                 className="text-sm text-gray-base w-full 
                                   py-5 px-4 h-2 border 

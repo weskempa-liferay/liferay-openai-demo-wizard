@@ -2,14 +2,13 @@ import Head from "next/head";
 import { useState, useRef, useEffect } from "react";
 import React from "react";
 import Link from "next/link";
+import AppFooter from "./appfooter";
 
 import hljs from "highlight.js";
 
 export default function Review() {
   
   const textDivRef = useRef<HTMLDivElement>(null);
-
-  const [debugMode, setDebugMode] = useState(false);
 
   const [kbTopicInput, setMBTopicInput] = useState("");
   const [kbArticleLengthInput, setMBArticleLengthInput] = useState("100");
@@ -20,8 +19,10 @@ export default function Review() {
   const [result, setResult] = useState(() => "");
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleDebugModeChange = () => {
-    setDebugMode(!debugMode);
+  const [debugMode, setDebugMode] = useState(false);
+
+  const onDebugModeChange = (value) => {
+    setDebugMode(value);
   };
 
   async function onSubmit(event) {
@@ -68,14 +69,6 @@ export default function Review() {
           >
             <h3 className="text-1xl font-bold text-[hsl(210,70%,70%)]">← Return to Index</h3>
           </Link>
-        </div>
-
-        <div className="fixed bottom-0 right-0">
-          <label className="imgtoggle elative inline-flex items-center cursor-pointer">
-            <input type="checkbox" checked={debugMode} onChange={handleDebugModeChange} value="" className="sr-only peer"/>
-            <div className="absolute w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-            <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Debug Mode</span>
-          </label>
         </div>
         
         <h3 className="text-slate-200 font-bold text-3xl mb-3">
@@ -208,6 +201,9 @@ export default function Review() {
           </div>
         ) : null}
       </main>
+      
+      <AppFooter debugModeChange={onDebugModeChange} />
+
     </div>
   );
 }

@@ -1,8 +1,16 @@
 import Head from "next/head";
 import Link from "next/link";
-import React from "react";
+import {useState} from "react";
+import AppFooter from "./appfooter";
 
 export default function Review() {
+
+  const [debugMode, setDebugMode] = useState(false);
+
+  const onDebugModeChange = (value) => {
+    setDebugMode(value);
+  };
+
   return (
     <div>
     <Head>
@@ -54,6 +62,9 @@ export default function Review() {
        
       </div>
     </main>
+      
+    <AppFooter debugModeChange={onDebugModeChange} />
+      
   </div>
   );
 };

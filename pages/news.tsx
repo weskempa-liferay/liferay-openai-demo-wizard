@@ -60,7 +60,7 @@ export default function Review() {
 
   const handleStructureClick = () => {
     downloadFile({
-      filePath: "news/Fragment-News.zip",
+      filePath: "news/Structure-News_Article.json",
       fileName: "Structure-News_Article"
     });
   }

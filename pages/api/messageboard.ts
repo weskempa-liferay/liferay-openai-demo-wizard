@@ -56,7 +56,7 @@ export default async function (req, res) {
                   },
                   messages: {
                     type: "array",
-                    description: "An array of "+req.body.mbMessageNumber+" message board threads within the category",
+                    description: "An array of "+req.body.mbMessageNumber+" message board messages within the category",
                     items: {
                       type:"object",
                       properties:{
@@ -83,7 +83,12 @@ export default async function (req, res) {
     model: "gpt-3.5-turbo",
     messages: [
       {"role": "system", "content": "You are a message board administrator responsible for managing the message board for your company."},
-      {"role": "user", "content": "Create a list of message board categories, threads, and messages on the subject of: "+req.body.mbTopic}
+      {"role": "user", "content": "Create a list of message board categories, threads, and messages on the subject of '" + 
+            req.body.mbTopic +  "'. It is important to include " +
+            req.body.mbSectionNumber + " or more message board categories, " + 
+            req.body.mbThreadNumber + " message board threads in each category, and " +
+            req.body.mbMessageNumber + " message board threads in each thread. " +
+            "Each message board thread should be " + req.body.mbThreadLength+" words or more." }
     ],
     functions: [
       {name: "get_message_board_content", "parameters": messageBoardSchema}

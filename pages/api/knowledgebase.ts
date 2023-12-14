@@ -70,7 +70,10 @@ export default async function (req, res) {
     model: "gpt-3.5-turbo",
     messages: [
       {"role": "system", "content": "You are a knowledge base administrator responsible for managing the knowledge base for your company."},
-      {"role": "user", "content": "Create a list of knowledge base categories and articles on the subject of '" + req.body.kbTopic + "'. It is important to include "+req.body.kbFolderNumber+" or more knowledge base categories and "+req.body.kbArticleNumber+" knowledge base articles in each category. Each knowledge base article should be "+req.body.kbArticleLength+" words or more."}
+      {"role": "user", "content": "Create a list of knowledge base categories and articles on the subject of '" + 
+        req.body.kbTopic + "'. It is important to include " + req.body.kbFolderNumber + " knowledge base categories and " +
+        req.body.kbArticleNumber + " knowledge base articles in each category. " +
+        "Each knowledge base article should be " + req.body.kbArticleLength + " words or more." }
     ],
     functions: [
       {name: "get_knowledge_base_content", "parameters": knowledgeBaseSchema}

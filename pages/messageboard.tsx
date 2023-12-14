@@ -16,7 +16,7 @@ export default function Review() {
   const [siteIdInput, setSiteIdInput] = useState("");
   const [mbSectionNumberInput, setMBSectionNumberInput] = useState("3");
   const [mbThreadNumberInput, setMBThreadNumberInput] = useState("3");
-  const [mbMessageNumberInput, setMBMessageNumberInput] = useState("3");
+  const [mbMessageNumberInput, setMBMessageNumberInput] = useState("2");
   const [result, setResult] = useState(() => "");
   const [isLoading, setIsLoading] = useState(false);
 

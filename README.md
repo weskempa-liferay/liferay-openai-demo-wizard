@@ -80,4 +80,6 @@ LIFERAY_ADMIN_EMAIL_ADDRESS=
 LIFERAY_ADMIN_PASSWORD=
 ```
 
-## Lets build great things!
+## Note: Recent package updates require re-running npm install
+
+# Lets build great things!

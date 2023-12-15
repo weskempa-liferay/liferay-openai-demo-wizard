@@ -178,14 +178,11 @@ class Review extends React.Component {
                       Describe your object structure
                   </h4>
 
-
                   {Object.entries(this.state.objectFields).map(([key, value], index) => {
-                  return (
-
-                      <ObjectField key={index} id={index} 
-                        handleChange={this.handleFieldChange}  />
-
-                  )})}
+                    return (
+                      <ObjectField key={index} id={index} handleChange={this.handleFieldChange} />
+                    )})
+                  }
 
                   <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:gap-4 mb-2">
                       <button onClick={this.addField}

@@ -7,6 +7,8 @@ const openai = new OpenAI({
 export default async function (req, res) {
 
     let start = new Date().getTime();
+    let successCount = 0;
+    let errorCount = 0;
 
     const debug = req.body.debugMode;
     let userlist = req.body.csvoutput;
@@ -110,9 +112,10 @@ export default async function (req, res) {
                 });
 
             }
-
+            successCount++;
         }
         catch (error) {
+            errorCount++;
             console.log(error);
         }
 
@@ -120,7 +123,11 @@ export default async function (req, res) {
     
     let end = new Date().getTime();
 
-    res.status(200).json({ result: "Completed in " + (end - start) + " milliseconds"});
+    res.status(200).json({ 
+        result: successCount + " users added with " +
+        errorCount + " errors in " +
+        (end - start) + " milliseconds."
+    });
 }
 
 async function getRoleList(base64data,debug){

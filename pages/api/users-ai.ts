@@ -7,6 +7,8 @@ const openai = new OpenAI({
 export default async function (req, res) {
 
     let start = new Date().getTime();
+    let successCount = 0;
+    let errorCount = 0;
 
     const debug = req.body.debugMode;
 
@@ -97,13 +99,19 @@ export default async function (req, res) {
               userlist[i], options);
 
           if(debug) console.log("Created user:"+response.data.id+", "+response.data.alternateName);
+          successCount ++;
       }
       catch (error) {
-          console.log(error.code);
+        errorCount ++;
+        console.log(error.code);
       }
     }
       
     let end = new Date().getTime();
 
-    res.status(200).json({ result: "Completed in " + (end - start) + " milliseconds"});
+    res.status(200).json({ 
+      result: successCount + " users added with " +
+      errorCount + " errors in " +
+      (end - start) + " milliseconds."
+  });
 }

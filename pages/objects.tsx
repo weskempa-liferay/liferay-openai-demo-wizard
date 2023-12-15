@@ -117,13 +117,13 @@ class Review extends React.Component {
             </Link>
           </div>
           
-          <h3 className="text-slate-200 font-bold text-3xl mb-3">
+          <h3 className="text-slate-200 font-bold text-3xl mb-3 mt-3 pt-3">
             Liferay Object Data Generator
           </h3>
           <p className="text-slate-400 text-center text-lg mb-10">
             <i>Complete the prompts below and describe your object to create the object data.</i>
           </p>
-          <form onSubmit={this.onSubmit}>
+          <form className="mb-6" onSubmit={this.onSubmit}>
 
               <div className="d-block mb-4">
                   <label className="text-slate-200">

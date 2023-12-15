@@ -159,7 +159,7 @@ class Review extends React.Component {
 
               <div className="d-block mb-4">
                   <label className="text-slate-200">
-                      Location of your object's bactch endpoint (Example /o/c/exampleobjects/batch):
+                      Location of your object's batch endpoint (Example /o/c/exampleobjects/batch):
                       <input
                           className="text-sm text-gray-base w-full 
                                       mr-3 py-5 px-4 h-2 border 

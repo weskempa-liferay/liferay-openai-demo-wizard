@@ -26,6 +26,15 @@ form button:disabled {
   background: #626a94;
 }
 
+form .btn-popuptoggle{
+  position:absolute;
+  right:-4px;
+  bottom:-4px; 
+  height: 42px;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
 .download-options{
   background-color: rgba(100,100,150,.3);
 }

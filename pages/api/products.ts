@@ -232,9 +232,14 @@ export default async function (req, res) {
         if(debug) console.log("includeImages:"+imageGeneration);
         if(imageGeneration!="none"){
 
+          let imagePrompt = "Create a commerce catalog image for a " + productName;
+          if(req.body.imageStyle){
+            imagePrompt = "Create an image in the style of " + req.body.imageStyle + ". " + imagePrompt;
+          }
+
           const imageResponse = await openai.images.generate({
             model: imageGeneration,
-            prompt: "Create a commerce catalog image for a " + productName,
+            prompt: imagePrompt,
             n: 1,
             size: "1024x1024"});
       

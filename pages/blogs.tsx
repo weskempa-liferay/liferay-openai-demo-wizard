@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import React from "react";
 import Link from "next/link";
 import AppFooter from "./appfooter";
+import AppImageStyle from "./appimagestyle";
 
 import hljs from "highlight.js";
 
@@ -12,8 +13,10 @@ export default function Review() {
 
   const [expectedCost, setExpectedCost] = useState("<$0.01");
   const [imageGenerationType, setImageGenerationType] = useState("none");
-
   const [blogTopicInput, setBlogTopicInput] = useState("");
+  const [showStyleInput, setShowImageStyleInput] = useState(false);
+  const [imageStyleInput, setImageStyleInput] = useState("");
+
   const [blogLengthInput, setBlogLengthInput] = useState("200");
   const [siteIdInput, setSiteIdInput] = useState("");
   const [blogNumberInput, setBlogNumberInput] = useState("3");
@@ -26,6 +29,10 @@ export default function Review() {
     setDebugMode(value);
   };
 
+  const onImageStyleInputChange = (value) => {
+    setImageStyleInput(value);
+  };
+
   let USDollar = new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
@@ -36,12 +43,15 @@ export default function Review() {
   }, [blogNumberInput,imageGenerationType]);
 
   const updateCost = () => {
+    setShowImageStyleInput(false);
+    console.log(blogNumberInput);
+
     let cost = "";
 
-    console.log(blogNumberInput);
     if(isNaN(parseInt(blogNumberInput))){
       cost = "$0.00";
     }else if(imageGenerationType=="dall-e-3"){
+      setShowImageStyleInput(true);
       cost = USDollar.format(parseInt(blogNumberInput) * 0.04);
     }else if(imageGenerationType=="dall-e-2"){
       cost = USDollar.format(parseInt(blogNumberInput) * 0.02);
@@ -66,6 +76,7 @@ export default function Review() {
         siteId: siteIdInput,
         blogNumber: blogNumberInput, 
         imageGeneration: imageGenerationType,
+        imageStyle: imageStyleInput,
         debugMode: debugMode
       }),
     });
@@ -178,6 +189,10 @@ export default function Review() {
                     <option value="dall-e-3">DALL·E 3 (Highest-Quality Images)</option>
                 </select>
             </label>
+      
+            {showStyleInput ? (
+              <AppImageStyle styleInputChange={onImageStyleInputChange}/>
+            ) : null}
 
           </div>
           

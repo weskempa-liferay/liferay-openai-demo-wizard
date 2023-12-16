@@ -74,6 +74,10 @@ export default async function (req, res) {
     let pictureDescription = newsJson.picture_description;
     delete newsJson.picture_description;
 
+    if(req.body.imageStyle){
+      pictureDescription = "Create an image in the style of " + req.body.imageStyle + ". "+ pictureDescription;
+    }
+
     newsJson.articleBody = newsJson.articleBody.replace(/(?:\r\n|\r|\n)/g, '<br>');
 
     if(debug) console.log("pictureDescription: " + pictureDescription)

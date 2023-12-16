@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import React from "react";
 import Link from "next/link";
 import AppFooter from "./appfooter";
+import AppImageStyle from "./appimagestyle";
 
 import hljs from "highlight.js";
 
@@ -17,6 +18,8 @@ export default function Review() {
   const [categoryNumberInput, setCategoryNumberInput] = useState("5");
   const [productNumberInput, setProductNumberInput] = useState("3");
   const [imageGenerationType, setImageGenerationType] = useState("none");
+  const [imageStyleInput, setImageStyleInput] = useState("");
+  const [showStyleInput, setShowImageStyleInput] = useState(false);
 
   const [globalSiteIdInput, setGlobalSiteIdInput] = useState("");
   const [productCatalogSelect, setProductCatalogSelect] = useState("");
@@ -29,6 +32,10 @@ export default function Review() {
 
   const onDebugModeChange = (value) => {
     setDebugMode(value);
+  };
+
+  const onImageStyleInputChange = (value) => {
+    setImageStyleInput(value);
   };
 
   let USDollar = new Intl.NumberFormat('en-US', {
@@ -57,12 +64,14 @@ export default function Review() {
   }, [categoryNumberInput, productNumberInput, imageGenerationType]);
 
   const updateCost = () => {
+    setShowImageStyleInput(false);
     let cost = "";
 
     console.log(categoryNumberInput);
     if(isNaN(parseInt(categoryNumberInput)) && isNaN(parseInt(productNumberInput))){
       cost = "$0.00";
     }else if(imageGenerationType=="dall-e-3"){
+      setShowImageStyleInput(true);
       cost = USDollar.format(parseInt(categoryNumberInput) * parseInt(productNumberInput) * 0.04);
     }else if(imageGenerationType=="dall-e-2"){
       cost = USDollar.format(parseInt(categoryNumberInput) * parseInt(productNumberInput) * 0.02);
@@ -88,6 +97,7 @@ export default function Review() {
         gloablSiteId:globalSiteIdInput,
         catalogId:productCatalogSelect,
         imageGeneration:imageGenerationType,
+        imageStyle: imageStyleInput,
         debugMode: debugMode
       }),
     });
@@ -240,6 +250,10 @@ export default function Review() {
                     <option value="dall-e-3">DALL·E 3 (Highest-Quality Images)</option>
                 </select>
             </label>
+            
+            {showStyleInput ? (
+              <AppImageStyle styleInputChange={onImageStyleInputChange}/>
+            ) : null}
 
           </div>
 

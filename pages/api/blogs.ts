@@ -38,7 +38,7 @@ export default async function (req, res) {
       },
       articleBody: {
         type: "string",
-        description: "The content of the blog article which should be "+req.body.blogLength+" words or more.  Remove any double quotes",
+        description: "The content of the blog article needs to be "+req.body.blogLength+" words or more. Remove any double quotes",
       },
       picture_description: {
         type: "string",
@@ -54,7 +54,7 @@ export default async function (req, res) {
       model: "gpt-3.5-turbo",
       messages: [
         {"role": "system", "content": "You are a blog author."},
-        {"role": "user", "content": "Write blogs on the subject of: "+req.body.blogTopic+". Each blog title needs to be unique."}
+        {"role": "user", "content": "Write blogs on the subject of: "+req.body.blogTopic+". Each blog headline needs to be unique. It is important that each blog article's content is "+req.body.blogLength+" words or more."}
       ],
       functions: [
         {name: "get_blog_content", "parameters": schema}
@@ -62,7 +62,7 @@ export default async function (req, res) {
       function_call: {name: "get_blog_content"},
       max_tokens: 1000,
       temperature: 0.8,
-      frequency_penalty: 0.5,
+      frequency_penalty: 0.6,
       presence_penalty: 0
     });
     
@@ -71,6 +71,10 @@ export default async function (req, res) {
 
     let pictureDescription = blogJson.picture_description;
     delete blogJson.picture_description;
+
+    if(req.body.imageStyle){
+      pictureDescription = "Create an image in the style of " + req.body.imageStyle + ". "+ pictureDescription;
+    }
 
     blogJson.articleBody = blogJson.articleBody.replace(/(?:\r\n|\r|\n)/g, '<br>');
 

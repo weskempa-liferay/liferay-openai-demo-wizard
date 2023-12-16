@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import React from "react";
 import Link from "next/link";
 import AppFooter from "./appfooter";
+import AppImageStyle from "./appimagestyle";
 
 import hljs from "highlight.js";
 
@@ -20,6 +21,9 @@ export default function Review() {
   const [categoryIdsInput, setCategoryIdsInput] = useState("");
   const [newsNumberInput, setNewsNumberInput] = useState("3");
   const [imageGenerationType, setImageGenerationType] = useState("none");
+  const [imageStyleInput, setImageStyleInput] = useState("");
+  const [showStyleInput, setShowImageStyleInput] = useState(false);
+
   const [result, setResult] = useState(() => "");
   const [isLoading, setIsLoading] = useState(false);
   const [imageFolderDisabled, setImageFolderDisabled] = useState(true);
@@ -28,6 +32,10 @@ export default function Review() {
 
   const onDebugModeChange = (value) => {
     setDebugMode(value);
+  };
+
+  const onImageStyleInputChange = (value) => {
+    setImageStyleInput(value);
   };
 
   let USDollar = new Intl.NumberFormat('en-US', {
@@ -40,6 +48,7 @@ export default function Review() {
   }, [newsNumberInput,imageGenerationType]);
 
   const updateCost = () => {
+    setShowImageStyleInput(false);
     let cost = "";
 
     console.log(newsNumberInput);
@@ -47,6 +56,7 @@ export default function Review() {
     if(isNaN(parseInt(newsNumberInput))){
       cost = "$0.00";
     }else if(imageGenerationType=="dall-e-3"){
+      setShowImageStyleInput(true);
       cost = USDollar.format(parseInt(newsNumberInput) * 0.04);
       setImageFolderDisabled(false);
     }else if(imageGenerationType=="dall-e-2"){
@@ -100,6 +110,7 @@ export default function Review() {
         categoryIds:categoryIdsInput,
         newsNumber: newsNumberInput, 
         imageGeneration: imageGenerationType,
+        imageStyle: imageStyleInput,
         debugMode: debugMode
       }),
     });
@@ -265,7 +276,7 @@ export default function Review() {
                     <option value="dall-e-3">DALL·E 3 (Highest-Quality Images)</option>
                 </select>
             </label>
-            
+
             <label className="flex max-w-xs flex-col text-slate-200">
               Image Folder ID (0 for Doc Lib Root)
               <input
@@ -280,6 +291,10 @@ export default function Review() {
                 onChange={(e) => setImageFolderIdInput(e.target.value)}
               />
             </label>
+      
+            {showStyleInput ? (
+                <AppImageStyle styleInputChange={onImageStyleInputChange}/>
+            ) : null}
 
           </div>
           

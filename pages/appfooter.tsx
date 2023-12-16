@@ -31,7 +31,7 @@ export default function AppFooter({debugModeChange}) {
       }, []);
 
     return(
-        <div className="fixed bottom-0 left-0 bg-white/10 footer">
+        <div className="fixed bottom-0 left-0 bg-black/30 footer">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
                 
                 <label className="p-4 ml-4 text-gray-300 elative inline-flex items-center cursor-pointer">

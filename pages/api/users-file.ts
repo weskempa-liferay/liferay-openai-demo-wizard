@@ -124,7 +124,7 @@ export default async function (req, res) {
     let end = new Date().getTime();
 
     res.status(200).json({ 
-        result: successCount + " users added with " +
+        result: successCount + " users added, " +
         errorCount + " errors in " +
         (end - start) + " milliseconds."
     });

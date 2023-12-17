@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Link from "next/link";
 import {useState} from "react";
-import AppFooter from "./appfooter";
+import AppFooter from "./components/appfooter";
 
 export default function Review() {
 

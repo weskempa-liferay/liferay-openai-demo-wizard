@@ -1,8 +1,8 @@
 import Head from "next/head";
 import React from "react";
 import Link from "next/link";
-import ObjectField from "./objectfield";
-import AppFooter from "./appfooter";
+import ObjectField from "./components/objectfield";
+import AppFooter from "./components/appfooter";
 
 import hljs from "highlight.js";
 

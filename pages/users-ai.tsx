@@ -2,7 +2,7 @@ import Head from "next/head";
 import { useState, useRef, useEffect } from "react";
 import React from "react";
 import Link from "next/link";
-import AppFooter from "./appfooter";
+import AppFooter from "./components/appfooter";
 
 import hljs from "highlight.js";
 

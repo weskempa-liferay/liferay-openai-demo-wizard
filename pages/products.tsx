@@ -2,8 +2,8 @@ import Head from "next/head";
 import { useState, useRef, useEffect } from "react";
 import React from "react";
 import Link from "next/link";
-import AppFooter from "./appfooter";
-import AppImageStyle from "./appimagestyle";
+import AppFooter from "./components/appfooter";
+import AppImageStyle from "./components/appimagestyle";
 
 import hljs from "highlight.js";
 

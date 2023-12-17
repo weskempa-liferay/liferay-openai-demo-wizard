@@ -2,7 +2,7 @@ import { NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import {useState} from "react";
-import AppFooter from "./appfooter";
+import AppFooter from "./components/appfooter";
 
 import { RocketLaunchIcon } from '@heroicons/react/24/solid';
 

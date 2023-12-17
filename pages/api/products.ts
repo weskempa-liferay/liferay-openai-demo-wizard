@@ -1,5 +1,7 @@
 import OpenAI  from "openai";
 
+var functions = require('../utils/functions');
+
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
@@ -271,7 +273,8 @@ export default async function (req, res) {
 
   let end = new Date().getTime();
 
-  console.log("Completed in " + (end - start) + " milliseconds");
+  if(debug) console.log("Completed in " +
+    functions.millisToMinutesAndSeconds(end - start));
   
   res.status(200).json({result:JSON.stringify(categories)});
 }

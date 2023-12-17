@@ -1,5 +1,7 @@
 import OpenAI  from "openai";
 
+var functions = require('../utils/functions');
+
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });

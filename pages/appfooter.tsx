@@ -5,10 +5,12 @@ import Cookies from 'universal-cookie';
 const cookies = new Cookies();
 
 import { BoltIcon } from '@heroicons/react/24/solid';
+import { ExclamationTriangleIcon } from '@heroicons/react/24/solid';
 
 export default function AppFooter({debugModeChange}) {
 
     const [envMsg, setEnvMsg] = useState(".");
+    const [envStatus, setEnvStatus] = useState("");
     const [debugMode, setDebugMode] = useState(cookies.get('debug'));  
 
     const handleDebugModeChange = () => {
@@ -19,11 +21,16 @@ export default function AppFooter({debugModeChange}) {
       debugModeChange(!debugMode);
     };
 
+    const setEnv = (response) => {
+        setEnvMsg(response.result);
+        setEnvStatus(response.status);
+    }
+
     useEffect(() => {
         
         fetch("/api/env")
         .then(res => res.json())
-        .then(json => setEnvMsg(json.result));
+        .then(json => setEnv(json));
 
         if(!cookies.get('debug')) cookies.set('debug', false, { path: '/' });
         
@@ -37,8 +44,14 @@ export default function AppFooter({debugModeChange}) {
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
                 
                 <label className="p-4 ml-4 text-gray-300 elative inline-flex items-center cursor-pointer">
-                    <BoltIcon className="h-7 w-7 pr-2 text-[hsl(210,70%,60%)]" />
-                    <i>{envMsg}</i>
+                    {envStatus=="connected" ?
+                        (
+                            <BoltIcon className="h-7 w-7 pr-2 text-[hsl(210,70%,60%)]" />
+                        ) : (
+                            <ExclamationTriangleIcon className="h-7 w-7 pr-2 text-[hsl(25,70%,60%)]" />
+                        ) }
+                    
+                    <i dangerouslySetInnerHTML={{ __html: envMsg }}></i>
                 </label>
             
                 <label className="imgtoggle elative inline-flex items-center cursor-pointer right-0 absolute">

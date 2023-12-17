@@ -6,18 +6,20 @@ export default async function (req, res) {
     const password = process.env.LIFERAY_ADMIN_PASSWORD;
 
     let message = "";
+    let status = "error";
 
     if(openAPIKey.length==0) {
-        message = "Open API Key is required. Please add a api key to your .env properties file."
+        message = "<b>OpenAI API key is required.</b> Please add a api key to your .env properties file."
     } else if(path.length==0) {
-        message = "The path to your Liferay Instance is required. Please add a server path to your .env properties file."
+        message = "<b>A Liferay instance path is required.</b> Please add it to your .env properties file."
     } else if(emailAddress.length==0) {
-        message = "The email address of an admin user is required. Please add an email address to your .env properties file."
+        message = "<b>An admin user email address is required.</b> Please add it to your .env properties file."
     } else if(password.length==0) {
-        message = "The password for your user is required. Please add a password to your .env properties file."
+        message = "<b>A password is required.</b> Please add a password to your .env properties file."
     } else {
-        message = "Connected to " + path + " with user " + emailAddress;
+        message = "Connected to <b>" + path + "</b> with user <b>" + emailAddress + "</b>";
+        status = "connected";
     }
   
-  res.status(200).json({ result: message });
+    res.status(200).json({ result: message, status: status});
 }

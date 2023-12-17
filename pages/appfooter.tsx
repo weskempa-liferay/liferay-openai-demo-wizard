@@ -4,6 +4,8 @@ import React from "react";
 import Cookies from 'universal-cookie';
 const cookies = new Cookies();
 
+import { BoltIcon } from '@heroicons/react/24/solid';
+
 export default function AppFooter({debugModeChange}) {
 
     const [envMsg, setEnvMsg] = useState(".");
@@ -35,6 +37,7 @@ export default function AppFooter({debugModeChange}) {
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
                 
                 <label className="p-4 ml-4 text-gray-300 elative inline-flex items-center cursor-pointer">
+                    <BoltIcon className="h-7 w-7 pr-2 text-[hsl(210,70%,60%)]" />
                     <i>{envMsg}</i>
                 </label>
             

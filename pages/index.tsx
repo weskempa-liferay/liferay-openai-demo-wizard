@@ -3,6 +3,7 @@ import Head from "next/head";
 import Link from "next/link";
 import {useState} from "react";
 import AppFooter from "./components/appfooter";
+import HomepageButton from "./components/homepage-button";
 
 import { RocketLaunchIcon } from '@heroicons/react/24/solid';
 
@@ -30,85 +31,14 @@ const HomePage: NextPage = () => {
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-4 md:gap-8">
 
-          <Link
-            className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-            href="/blogs"
-          >
-            <h3 className="text-2xl font-bold text-[hsl(210,70%,70%)]">Blogs →</h3>
-            <div className="text-lg">
-              Create a set of blogs based on a suggested prompt.
-            </div>
-          </Link>
-
-          <Link
-            className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-            href="/faqs"
-          >
-            <h3 className="text-2xl font-bold text-[hsl(210,70%,70%)]">FAQs →</h3>
-            <div className="text-lg">
-              Create a set of FAQs based on a suggested topic.
-            </div>
-          </Link>
-
-          <Link
-            className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-            href="/knowledgebase"
-          >
-            <h3 className="text-2xl font-bold text-[hsl(210,70%,70%)]">Knowledge Base →</h3>
-            <div className="text-lg">
-              Create a set of Knowledge Base Folders and Articles based on a suggested topic.
-            </div>
-          </Link>
-
-          <Link
-            className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-            href="/messageboard"
-          >
-            <h3 className="text-2xl font-bold text-[hsl(210,70%,70%)]">Message Board →</h3>
-            <div className="text-lg">
-              Create a set of Message Board Sections and Threads based on a suggested topic.
-            </div>
-          </Link>
-
-          <Link
-            className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-            href="/news"
-          >
-            <h3 className="text-2xl font-bold text-[hsl(210,70%,70%)]">News →</h3>
-            <div className="text-lg">
-              Create a set of News Articles based on a suggested topic.
-            </div>
-          </Link>
-
-          <Link
-            className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-            href="/objects"
-          >
-            <h3 className="text-2xl font-bold text-[hsl(210,70%,70%)]">Objects →</h3>
-            <div className="text-lg">
-              Populate your custom objects with records based on your prompts.
-            </div>
-          </Link>
-
-          <Link
-            className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-            href="/products"
-          >
-            <h3 className="text-2xl font-bold text-[hsl(210,70%,70%)]">Products →</h3>
-            <div className="text-lg">
-              Generate demo products and categories based on your company theme.
-            </div>
-          </Link>
-
-          <Link
-            className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-            href="/users"
-          >
-            <h3 className="text-2xl font-bold text-[hsl(210,70%,70%)]">Users →</h3>
-            <div className="text-lg">
-              Create example users for your portal instance.
-            </div>
-          </Link>
+          <HomepageButton title={"Blogs"}          path={"/blogs"}           desc={"Create a set of blogs based on a suggested prompt."} />
+          <HomepageButton title={"FAQs"}           path={"/faqs"}            desc={"Create a set of FAQs based on a suggested topic."} />
+          <HomepageButton title={"Knowledge Base"} path={"/knowledgebase"}   desc={"Create a set of Knowledge Base Folders and Articles based on a suggested topic."} />
+          <HomepageButton title={"Message Board"}  path={"/messageboard"}    desc={"Create a set of Message Board Sections and Threads based on a suggested topic."} />
+          <HomepageButton title={"News"}           path={"/news"}            desc={"Create a set of News Articles based on a suggested topic."} />
+          <HomepageButton title={"Objects"}        path={"/objects"}         desc={"Populate your custom objects with records based on your prompts."} />
+          <HomepageButton title={"Products"}       path={"/products"}        desc={"Generate demo products and categories based on your company theme."} />
+          <HomepageButton title={"Users"}          path={"/users"}           desc={"Create example users for your portal instance."} />
           
         </div> 
       </div>

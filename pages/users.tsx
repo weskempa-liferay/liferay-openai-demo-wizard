@@ -2,6 +2,7 @@ import Head from "next/head";
 import Link from "next/link";
 import {useState} from "react";
 import AppFooter from "./components/appfooter";
+import HomepageButton from "./components/homepage-button";
 
 export default function Review() {
 
@@ -38,25 +39,8 @@ export default function Review() {
         </p>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
 
-          <Link
-            className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-            href="/users-file"
-          >
-            <h3 className="text-2xl font-bold text-[hsl(210,70%,70%)]">CSV Upload →</h3>
-            <div className="text-lg">
-              Upload a list of specific users from a CSV file.
-            </div>
-          </Link>
-
-          <Link
-            className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-            href="/users-ai"
-          >
-            <h3 className="text-2xl font-bold text-[hsl(210,70%,70%)]">AI Generation →</h3>
-            <div className="text-lg">
-              Use OpenAI to generate a list of random demo users.
-            </div>
-          </Link>
+          <HomepageButton title={"CSV Upload"}    path={"/users-file"}  desc={"Upload a list of specific users from a CSV file."} />
+          <HomepageButton title={"AI Generation"} path={"/users-ai"}    desc={"Use OpenAI to generate a list of random demo users."} />
           
         </div>
        

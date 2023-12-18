@@ -91,13 +91,13 @@ export default function Review() {
 
   return (
     <div>
-       <Head>
-      <title>Liferay OpenAI Demo Content Wizard - Blog Generator</title>
-      <meta name="description" content="" />
-      <link rel="icon" href="/favicon.ico" />
-    </Head>
+      <Head>
+        <title>Liferay OpenAI Demo Content Wizard - Blog Generator</title>
+        <meta name="description" content="" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
 
-    <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
+      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
         
         <div className="fixed top-0 left-5 p-5">
           <Link

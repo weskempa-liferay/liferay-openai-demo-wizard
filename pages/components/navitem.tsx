@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 
-export default function HomepageButton({path,title,desc}) {
+export default function Nav({path,title,desc}) {
 
     return(
       <Link

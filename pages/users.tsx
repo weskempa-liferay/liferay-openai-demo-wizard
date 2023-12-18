@@ -2,7 +2,7 @@ import Head from "next/head";
 import Link from "next/link";
 import {useState} from "react";
 import AppFooter from "./components/appfooter";
-import HomepageButton from "./components/homepage-button";
+import NavItem from "./components/navitem";
 
 export default function Review() {
 
@@ -39,8 +39,8 @@ export default function Review() {
         </p>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
 
-          <HomepageButton title={"CSV Upload"}    path={"/users-file"}  desc={"Upload a list of specific users from a CSV file."} />
-          <HomepageButton title={"AI Generation"} path={"/users-ai"}    desc={"Use OpenAI to generate a list of random demo users."} />
+          <NavItem title={"CSV Upload"}    path={"/users-file"}  desc={"Upload a list of specific users from a CSV file."} />
+          <NavItem title={"AI Generation"} path={"/users-ai"}    desc={"Use OpenAI to generate a list of random demo users."} />
           
         </div>
        

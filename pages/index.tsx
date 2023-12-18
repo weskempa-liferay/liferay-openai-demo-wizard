@@ -1,6 +1,6 @@
 import { NextPage } from "next";
-import Head from "next/head";
 import {useState} from "react";
+import AppHead from "./components/apphead";
 import AppFooter from "./components/appfooter";
 import NavItem from "./components/navitem";
 
@@ -15,12 +15,9 @@ const HomePage: NextPage = () => {
   };
 
   return (
-    <>
-    <Head>
-      <title>Liferay OpenAI Demo Content Wizard</title>
-      <meta name="description" content="" />
-      <link rel="icon" href="/favicon.ico" type="image/x-icon"/>
-    </Head>
+  <>
+    <AppHead title={""}/>
+    
     <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
       <div className="container flex flex-col items-center justify-center gap-12 px-4 py-8 ">
         <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">

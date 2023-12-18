@@ -1,7 +1,7 @@
-import Head from "next/head";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import React from "react";
-import Link from "next/link";
+import AppHead from "./components/apphead";
+import AppHeader from "./components/appheader";
 import AppFooter from "./components/appfooter";
 
 import hljs from "highlight.js";
@@ -54,29 +54,11 @@ export default function Review() {
 
   return (
     <div>
-       <Head>
-      <title>Liferay OpenAI Demo Content Wizard - Mesage Board Content Generator</title>
-      <meta name="description" content="" />
-      <link rel="icon" href="/favicon.ico" />
-    </Head>
+      <AppHead title={"Knowledge Base Content Generator"}/>
 
-    <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
+      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
         
-        <div className="fixed top-0 left-5 p-5">
-          <Link
-            className="rounded-xl p-1 text-white "
-            href="/"
-          >
-            <h3 className="text-1xl font-bold text-[hsl(210,70%,70%)]">← Return to Index</h3>
-          </Link>
-        </div>
-        
-        <h3 className="text-slate-200 font-bold text-3xl mb-3">
-          Liferay Knowledge Base Content Generator
-        </h3>
-        <p className="text-slate-400 text-center text-lg mb-10">
-          <i>Type your topic in the field below and wait for your Knowledge Base Threads. <br/> Leave the field blank for a random Knowledge Base topic.</i>
-        </p>
+        <AppHeader title={"Liferay Knowledge Base Content Generator"} desc={"Type your topic in the field below and wait for your Knowledge Base Threads. <br/> Leave the field blank for a random Knowledge Base topic."} />
         
         <form onSubmit={onSubmit}>
           

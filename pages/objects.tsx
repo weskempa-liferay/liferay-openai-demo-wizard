@@ -1,7 +1,7 @@
-import Head from "next/head";
 import React from "react";
-import Link from "next/link";
 import ObjectField from "./components/objectfield";
+import AppHead from "./components/apphead";
+import AppHeader from "./components/appheader";
 import AppFooter from "./components/appfooter";
 
 import hljs from "highlight.js";
@@ -100,29 +100,12 @@ class Review extends React.Component {
 
     return (
       <div>
-        <Head>
-          <title>Liferay OpenAI Demo Content Wizard - Object Generator </title>
-          <meta name="description" content="" />
-          <link rel="icon" href="/favicon.ico" />
-        </Head>
+        <AppHead title={"Object Generator"}/>
 
-      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
+        <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
           
-          <div className="fixed top-0 left-5 p-5">
-            <Link
-              className="rounded-xl p-1 text-white "
-              href="/"
-            >
-              <h3 className="text-1xl font-bold text-[hsl(210,70%,70%)]">← Return to Index</h3>
-            </Link>
-          </div>
-          
-          <h3 className="text-slate-200 font-bold text-3xl mb-3 mt-3 pt-3">
-            Liferay Object Data Generator
-          </h3>
-          <p className="text-slate-400 text-center text-lg mb-10">
-            <i>Complete the prompts below and describe your object to create the object data.</i>
-          </p>
+          <AppHeader title={"Liferay Object Data Generator"} desc={"Complete the prompts below and describe your object to create the object data."} />
+
           <form className="mb-6" onSubmit={this.onSubmit}>
 
               <div className="d-block mb-4">

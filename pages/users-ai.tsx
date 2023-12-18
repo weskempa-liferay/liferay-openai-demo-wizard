@@ -1,7 +1,7 @@
-import Head from "next/head";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import React from "react";
-import Link from "next/link";
+import AppHead from "./components/apphead";
+import AppHeader from "./components/appheader";
 import AppFooter from "./components/appfooter";
 
 import hljs from "highlight.js";
@@ -53,29 +53,12 @@ export default function Review() {
 
   return (
     <div>
-       <Head>
-      <title>Liferay OpenAI Demo Content Wizard - User Generator</title>
-      <meta name="description" content="" />
-      <link rel="icon" href="/favicon.ico" />
-    </Head>
+      <AppHead title={"User Generator"}/>
 
-    <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
+      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
         
-        <div className="fixed top-0 left-5 p-5">
-          <Link
-            className="rounded-xl p-1 text-white "
-            href="/"
-          >
-            <h3 className="text-1xl font-bold text-[hsl(210,70%,70%)]">← Return to Index</h3>
-          </Link>
-        </div>
-        
-        <h3 className="text-slate-200 font-bold text-3xl mb-3">
-          Liferay User Generator
-        </h3>
-        <p className="text-slate-400 text-center text-lg mb-10">
-          <i>Use the form below to create users.</i>
-        </p>
+        <AppHeader title={"Liferay User Generator"} desc={"Use the form below to create users."} />
+
         <form onSubmit={onSubmit}>
 
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:gap-4 mb-5">

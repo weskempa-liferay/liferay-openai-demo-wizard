@@ -1,5 +1,5 @@
-import Head from "next/head";
 import {useState} from "react";
+import AppHead from "./components/apphead";
 import AppHeader from "./components/appheader";
 import AppFooter from "./components/appfooter";
 import NavItem from "./components/navitem";
@@ -14,11 +14,9 @@ export default function Review() {
 
   return (
     <div>
-      <Head>
-        <title>Liferay OpenAI Demo Content Wizard - USers</title>
-        <meta name="description" content="" />
-        <link rel="icon" href="/favicon.ico" type="image/x-icon"/>
-      </Head>
+      
+      <AppHead title={"User Generation Options"}/>
+
       <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
         
         <AppHeader title={"Liferay User Generator"} desc={"How would you like to add users?"} />

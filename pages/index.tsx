@@ -22,10 +22,10 @@ const HomePage: NextPage = () => {
       <link rel="icon" href="/favicon.ico" type="image/x-icon"/>
     </Head>
     <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
-      <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
+      <div className="container flex flex-col items-center justify-center gap-12 px-4 py-8 ">
         <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
           Liferay <span className="text-[hsl(210,70%,50%)]">AI</span> Content Wizard 
-          <RocketLaunchIcon className="inline pl-5 h-20 w-20 relative bottom-2" />
+          <RocketLaunchIcon className="inline pl-3 h-20 w-20 relative bottom-2 text-[hsl(210,50%,80%)]" />
         </h1>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-4 md:gap-8">

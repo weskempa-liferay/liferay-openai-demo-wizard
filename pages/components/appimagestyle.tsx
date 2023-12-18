@@ -89,7 +89,7 @@ export default function AppImageStyle({styleInputChange}) {
                         </div>
                         
                         <div className="relative p-6 flex-auto">               
-                            <div className="grid grid-cols-1 gap-2 sm:grid-cols-4 md:gap-4 mb-5">
+                            <div className="grid grid-cols-1 gap-2 sm:grid-cols-5 md:gap-3 mb-5">
 
                                 {Object.entries(imageStyleList).map(([key,value], index) => {
                                     return (

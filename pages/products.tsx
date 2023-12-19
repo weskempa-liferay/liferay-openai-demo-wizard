@@ -92,8 +92,8 @@ export default function Review() {
       body: JSON.stringify({ 
         companyTheme: companyThemeInput, 
         categoryName: categoryNameInput, 
-        numberOfCategoriest: categoryNumberInput, 
-        numberofProducts: productNumberInput,
+        numberOfCategories: categoryNumberInput, 
+        numberOfProducts: productNumberInput,
         gloablSiteId:globalSiteIdInput,
         catalogId:productCatalogSelect,
         imageGeneration:imageGenerationType,

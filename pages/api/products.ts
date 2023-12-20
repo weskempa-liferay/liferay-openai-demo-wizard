@@ -220,8 +220,6 @@ export default async function (req, res) {
 
         productResponse = await axios.post(apiPath, productJson, headerObj);
 
-        //console.log(productResponse);
-
         productId = productResponse.data.productId;
         if(debug) console.log(productName + " created with id " + productId);
         productCategoryJson = {

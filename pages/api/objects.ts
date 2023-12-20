@@ -37,7 +37,7 @@ export default async function (req, res) {
         }
       }
 
-    if(debug)console.log(objectSchema);
+    if(debug) console.log(objectSchema);
 
     const response = await openai.chat.completions.create({
         model: "gpt-3.5-turbo",

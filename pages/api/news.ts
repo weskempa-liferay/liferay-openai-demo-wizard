@@ -129,7 +129,7 @@ export default async function (req, res) {
   
   let end = new Date().getTime();
 
-  console.log("Completed in " + (end - start) + " milliseconds");
+  if(debug) console.log("Completed in " + (end - start) + " milliseconds");
 
   res.status(200).json({ result: JSON.stringify(newsContentSet) });
 }

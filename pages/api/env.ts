@@ -1,3 +1,7 @@
+const STATE_OK = "OK";
+const STATE_NOT_ADMIN = "NOT ADMIN";
+const STATE_CANNOT_CONNECT = "CANNOT CONNECT";
+
 export default async function (req, res) {
 
     const openAPIKey = process.env.OPENAI_API_KEY;
@@ -17,9 +21,56 @@ export default async function (req, res) {
     } else if(password.length==0) {
         message = "<b>A password is required.</b> Please add a password to your .env properties file."
     } else {
-        message = "Connected to <b>" + path + "</b> with user <b>" + emailAddress + "</b>";
-        status = "connected";
+
+        let test = await isConnected();
+        if(test==STATE_CANNOT_CONNECT){
+            message = "Cannot connect to <b>" + path + "</b> with user <b>" + emailAddress + "</b>";
+        }else if(test==STATE_NOT_ADMIN){
+            message = "User <b>" + emailAddress + "</b> is not an admin. An admin user is required.";
+        }else if(test==STATE_OK){
+            message = "Connected to <b>" + path + "</b> with user <b>" + emailAddress + "</b>";
+            status = "connected";
+        }
     }
   
     res.status(200).json({ result: message, status: status});
+}
+
+async function isConnected(){
+
+    const axios = require("axios");
+
+    const usernamePasswordBuffer = Buffer.from( 
+        process.env.LIFERAY_ADMIN_EMAIL_ADDRESS + 
+        ':' + process.env.LIFERAY_ADMIN_PASSWORD);
+        const base64data = usernamePasswordBuffer.toString('base64');
+
+    let myUserAccountPath = process.env.LIFERAY_PATH + "/o/headless-admin-user/v1.0/my-user-account";
+
+    let options = {
+        method: "GET",
+        port: 443,
+        headers: {
+            'Authorization': 'Basic ' + base64data,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    };
+
+    try{
+        const response = await axios.get(myUserAccountPath, options);
+
+        let userRoles = response.data.roleBriefs;
+
+        for(let i = 0; i < userRoles.length; i++){
+            if(userRoles[i].name=="Administrator"){
+                return STATE_OK;
+            }
+        }
+
+        return STATE_NOT_ADMIN;
+
+    }catch(error){
+        return STATE_CANNOT_CONNECT;
+    }
 }

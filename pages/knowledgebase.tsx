@@ -44,7 +44,6 @@ export default function Review() {
       }),
     });
     const data = await response.json();
-    console.log("data", data);
 
     const hljsResult = hljs.highlightAuto(data.result).value;
     setResult(hljsResult);

@@ -9,8 +9,8 @@ import { ExclamationTriangleIcon } from '@heroicons/react/24/solid';
 
 export default function AppFooter({debugModeChange}) {
 
-    const [envMsg, setEnvMsg] = useState(".");
-    const [envStatus, setEnvStatus] = useState("");
+    const [envMsg, setEnvMsg] = useState("&nbsp;");
+    const [envStatus, setEnvStatus] = useState("connected");
     const [debugMode, setDebugMode] = useState(cookies.get('debug'));  
 
     const handleDebugModeChange = () => {
@@ -44,12 +44,14 @@ export default function AppFooter({debugModeChange}) {
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
                 
                 <label className="p-4 ml-4 text-gray-300 elative inline-flex items-center cursor-pointer">
-                    {envStatus=="connected" ?
+                                        
+                    {   envStatus=="connected" ?
                         (
                             <BoltIcon className="h-7 w-7 pr-2 text-[hsl(210,70%,60%)]" />
                         ) : (
                             <ExclamationTriangleIcon className="h-7 w-7 pr-2 text-[hsl(25,70%,60%)]" />
-                        ) }
+                        ) 
+                    }
                     
                     <i dangerouslySetInnerHTML={{ __html: envMsg }}></i>
                 </label>

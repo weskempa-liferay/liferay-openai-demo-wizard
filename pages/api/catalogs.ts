@@ -1,9 +1,3 @@
-import OpenAI  from "openai";
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 export default async function (req, res) {
     let response = await getCatalogList();
     res.status(200).json(response);

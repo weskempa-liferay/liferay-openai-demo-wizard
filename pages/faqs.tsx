@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import React from "react";
 import AppHead from "./components/apphead";
 import AppHeader from "./components/appheader";
@@ -29,7 +29,7 @@ export default function Review() {
   async function onSubmit(event) {
     event.preventDefault();
     setIsLoading(true);
-    console.log("Posting!");
+    if(debugMode) console.log("Posting!");
     const response = await fetch("/api/faqs", {
       method: "POST",
       headers: {
@@ -47,7 +47,7 @@ export default function Review() {
     
     });
     const data = await response.json();
-    console.log("data", data);
+    if(debugMode) console.log("data", data);
 
     const hljsResult = hljs.highlightAuto(data.result).value;
     setResult(hljsResult);

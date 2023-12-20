@@ -44,13 +44,13 @@ export default function Review() {
   });
 
   useEffect(() => {
-    console.log("Load");
+    if(debugMode) console.log("Load");
 
     const fetchData = async () => {
       const response = await fetch("/api/catalogs");
       const catalogs = await response.json();
 
-      console.log(catalogs);
+      if(debugMode) console.log(catalogs);
       setProductCatalogOptions(catalogs);
     }
   
@@ -67,7 +67,7 @@ export default function Review() {
     setShowImageStyleInput(false);
     let cost = "";
 
-    console.log(categoryNumberInput);
+    if(debugMode) console.log(categoryNumberInput);
     if(isNaN(parseInt(categoryNumberInput)) && isNaN(parseInt(productNumberInput))){
       cost = "$0.00";
     }else if(imageGenerationType=="dall-e-3"){
@@ -102,8 +102,8 @@ export default function Review() {
       }),
     });
     const data = await response.json();
-    console.log("data", data);
-    console.log("data.result", data.result);
+    if(debugMode) console.log("data", data);
+    if(debugMode) console.log("data.result", data.result);
 
     const hljsResult = hljs.highlightAuto(data.result).value;
     setResult(hljsResult);

@@ -7,7 +7,6 @@ import { XCircleIcon } from '@heroicons/react/24/solid'
 import Cookies from 'universal-cookie';
 const cookies = new Cookies();
 
-
 export default function AppImageStyle({styleInputChange}) {
 
     const [showModal, setShowModal] = useState(false);  
@@ -24,7 +23,6 @@ export default function AppImageStyle({styleInputChange}) {
       }, []);
 
     const processImageStyleList = (data) => {
-        console.log(JSON.parse(data));
         setImageStyleList(JSON.parse(data));
     }
 
@@ -42,13 +40,13 @@ export default function AppImageStyle({styleInputChange}) {
         imageStyleChange(choice);
         setShowModal(false);
     }
+    
     const formatStyleName = (nameStr) => {
         return nameStr
                 .replaceAll(".png","")
                 .replaceAll("style-","")
                 .replaceAll("-"," ");
     }
-
 
     return(
         <label className="flex max-w-xs flex-col text-slate-200 pr-18 relative">

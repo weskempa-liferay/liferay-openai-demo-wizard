@@ -54,7 +54,7 @@ class Review extends React.Component {
     
     });
     const data = await response.json();
-    console.log("data", data);
+    if(this.state.debugMode) console.log("data", data);
 
     const hljsResult = hljs.highlightAuto(data.result).value;
 

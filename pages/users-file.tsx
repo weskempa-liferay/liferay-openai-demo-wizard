@@ -53,7 +53,7 @@ export default function Review() {
 
     if (file) {
       fileReader.onload = function (event) {
-        console.log(event.target.result);
+        if(debugMode) console.log(event.target.result);
         csvOutput = csvFileToArray(event.target.result);
 
         postResult(csvOutput);
@@ -79,7 +79,7 @@ export default function Review() {
         }),
       });
       const data = await response.json();
-      console.log("data", data);
+      if(debugMode) console.log("data", data);
 
       const hljsResult = hljs.highlightAuto(data.result).value;
       setResult(hljsResult);

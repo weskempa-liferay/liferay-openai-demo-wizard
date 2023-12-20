@@ -63,7 +63,6 @@ export default function Review() {
           
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 md:gap-4 mb-5">
 
-
           <FieldString 
                   name={"topic"}
                   label={"Knowledge Base Topic"} 

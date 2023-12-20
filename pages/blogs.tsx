@@ -8,23 +8,23 @@ import ResultDisplay from "./components/resultdisplay";
 import ImageStyle from "./components/imagestyle";
 import FieldString from "./components/formfield-string";
 import FieldImageType from "./components/formfield-imagetype";
+import FieldSubmit from "./components/formfield-submit";
 
 import hljs from "highlight.js";
 
 export default function Review() {
 
-  const [expectedCost, setExpectedCost] = useState("<$0.01");
-  const [imageGenerationType, setImageGenerationType] = useState("none");
   const [blogTopicInput, setBlogTopicInput] = useState("");
-  const [showStyleInput, setShowImageStyleInput] = useState(false);
-  const [imageStyleInput, setImageStyleInput] = useState("");
-
+  const [blogNumberInput, setBlogNumberInput] = useState("3");
   const [blogLengthInput, setBlogLengthInput] = useState("200");
   const [siteIdInput, setSiteIdInput] = useState("");
-  const [blogNumberInput, setBlogNumberInput] = useState("3");
+  const [imageGenerationType, setImageGenerationType] = useState("none");
+  const [showStyleInput, setShowImageStyleInput] = useState(false);
+  const [imageStyleInput, setImageStyleInput] = useState("");
+  const [submitLabel, setSubmitLabel] = useState("");
+  
   const [result, setResult] = useState(() => "");
   const [isLoading, setIsLoading] = useState(false);
-
   const [debugMode, setDebugMode] = useState(false);
 
   const onDebugModeChange = (value) => {
@@ -59,7 +59,8 @@ export default function Review() {
     }else{
       cost = "<$0.01";
     }
-    setExpectedCost(cost);
+    
+    setSubmitLabel("Generate Blogs - Estimated cost: " + cost);
   }
 
   async function onSubmit(event) {
@@ -145,11 +146,7 @@ export default function Review() {
 
           </div>
           
-          <button 
-              className="text-sm w-full font-extrabold bg-blue-600 h-10 text-white rounded-2xl mb-10"
-              disabled={isLoading} type="submit">
-            Generate Blogs &nbsp;&nbsp; Estimated cost: {expectedCost}
-          </button>
+          <FieldSubmit label={submitLabel} disabled={isLoading} />
 
         </form>
         

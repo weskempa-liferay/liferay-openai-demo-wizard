@@ -6,12 +6,14 @@ import AppFooter from "./components/appfooter";
 import ImageStyle from "./components/imagestyle";
 import LoadingAnimation from "./components/loadinganimation";
 import ResultDisplay from "./components/resultdisplay";
+import FieldString from "./components/formfield-string";
+import FieldSelect from "./components/formfield-select";
+import FieldImageType from "./components/formfield-imagetype";
+import FieldSubmit from "./components/formfield-submit";
 
 import hljs from "highlight.js";
 
 export default function Review() {
-
-  const [expectedCost, setExpectedCost] = useState("<$0.01");
 
   const [companyThemeInput, setCompanyThemeInput] = useState("");
   const [categoryNameInput, setCategoryNameInput] = useState("");
@@ -24,10 +26,10 @@ export default function Review() {
   const [globalSiteIdInput, setGlobalSiteIdInput] = useState("");
   const [productCatalogSelect, setProductCatalogSelect] = useState("");
   const [productCatalogOptions, setProductCatalogOptions] = useState([]);
+  const [submitLabel, setSubmitLabel] = useState("");
 
   const [result, setResult] = useState(() => "");
   const [isLoading, setIsLoading] = useState(false);
-  
   const [debugMode, setDebugMode] = useState(false);
 
   const onDebugModeChange = (value) => {
@@ -52,6 +54,7 @@ export default function Review() {
 
       if(debugMode) console.log(catalogs);
       setProductCatalogOptions(catalogs);
+      setProductCatalogSelect(catalogs[0].id);
     }
   
     fetchData()
@@ -78,7 +81,8 @@ export default function Review() {
     }else{
       cost = "<$0.01";
     }
-    setExpectedCost(cost);
+    
+    setSubmitLabel("Generate Products - Estimated cost: " + cost);
   }
 
   async function onSubmit(event) {
@@ -123,115 +127,56 @@ export default function Review() {
 
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 md:gap-4 mb-5">
 
-            <label className="flex max-w-xs flex-col text-slate-200">
-              Company Theme
-                <input
-                  className="text-sm text-gray-base w-full 
-                            mr-3 py-5 px-4 h-2 border 
-                            border-gray-200 text-slate-700 rounded"
-                                    
-                  type="text"
-                  name="companyTheme"
-                  placeholder="Enter a Company Theme"
-                  value={companyThemeInput}
-                  onChange={(e) => setCompanyThemeInput(e.target.value)}
-                />
-            </label>
-
-            <label className="flex max-w-xs flex-col text-slate-200">
-              Category Name
-                <input
-                  className="text-sm text-gray-base w-full 
-                            mr-3 py-5 px-4 h-2 border 
-                            border-gray-200 text-slate-700 rounded"
-                                    
-                  type="text"
-                  name="categoryName"
-                  placeholder="Enter a Category Name"
-                  value={categoryNameInput}
-                  onChange={(e) => setCategoryNameInput(e.target.value)}
-                />
-            </label>
-
-            <label className="flex max-w-xs flex-col text-slate-200">
-              Number of Categories
-                <input
-                  className="text-sm text-gray-base w-full 
-                            mr-3 py-5 px-4 h-2 border 
-                            border-gray-200 text-slate-700 rounded"
-                                    
-                  type="text"
-                  name="numberOfCategories"
-                  placeholder="5"
-                  value={categoryNumberInput}
-                  onChange={(e) => setCategoryNumberInput(e.target.value)}
-                />
-            </label>
+            <FieldString 
+                    name={"companyTheme"}
+                    label={"Commerce Theme"} 
+                    placeholder={"Enter a Company Theme"}
+                    inputChange={setCompanyThemeInput}
+                    defaultValue={""}
+                  />
             
-            <label className="flex max-w-xs flex-col text-slate-200">
-              Number of Products per Category
-                <input
-                  className="text-sm text-gray-base w-full 
-                            mr-3 py-5 px-4 h-2 border 
-                            border-gray-200 text-slate-700 rounded"
-                                    
-                  type="text"
-                  name="numberOfProducts"
-                  placeholder="3"
-                  value={productNumberInput}
-                  onChange={(e) => setProductNumberInput(e.target.value)}
-                />
-            </label>
+            <FieldString 
+                    name={"categoryName"}
+                    label={"Category Name"} 
+                    placeholder={"Enter a Category Name"}
+                    inputChange={setCategoryNameInput}
+                    defaultValue={""}
+                  />
             
-            <label className="flex max-w-xs flex-col text-slate-200">
-              Global Site ID for Taxonomy
-                <input
-                  className="text-sm text-gray-base w-full 
-                            mr-3 py-5 px-4 h-2 border 
-                            border-gray-200 text-slate-700 rounded"
-                                    
-                  type="text"
-                  name="globalSiteId"
-                  placeholder=""
-                  value={globalSiteIdInput}
-                  onChange={(e) => setGlobalSiteIdInput(e.target.value)}
-                />
-            </label>
+            <FieldString 
+                    name={"numberOfCategories"}
+                    label={"Number of Categories"} 
+                    placeholder={"Enter the number of Categories"}
+                    inputChange={setCategoryNumberInput}
+                    defaultValue={"5"}
+                  />
+          
+            <FieldString 
+                    name={"numberOfProducts"}
+                    label={"Number of Products per Category"} 
+                    placeholder={"Enter the number of Products per Category"}
+                    inputChange={setProductNumberInput}
+                    defaultValue={"3"}
+                  />
+            
+            <FieldString 
+                    name={"globalSiteId"}
+                    label={"Global Site ID for Taxonomy Assignment"} 
+                    placeholder={"Enter the Global Site ID"}
+                    inputChange={setGlobalSiteIdInput}
+                    defaultValue={""}
+                  />
 
-            <label className="flex max-w-xs flex-col text-slate-200">
-                Product Catalog
-                <select name="productCatalogSelect" 
-                        value={productCatalogSelect}
-                        onChange={(e) => setProductCatalogSelect(e.target.value)}
-                        id="productCatalogSelect" 
-                        className="bg-white border border-gray-200 
-                        text-slate-700 text-sm rounded
-                        block w-full p-2.5">
-                        <option value="">None</option>
-                        {productCatalogOptions.map((option) => {
-                          return (
-                            <option key={option.id} value={option.id}>
-                              {option.name}
-                            </option>
-                          );
-                        })}
-                </select>
-            </label>
+            <FieldSelect 
+                    name={"productCatalogSelect"}
+                    label={"Product Catalog"}
+                    inputChange={setProductCatalogSelect}
+                    optionMap={productCatalogOptions}
+                  />
 
-            <label className="flex max-w-xs flex-col text-slate-200">
-                Image Generation
-                <select name="imageGenerationType" 
-                        value={imageGenerationType}
-                        onChange={(e) => setImageGenerationType(e.target.value)}
-                        id="imageGenerationType" 
-                        className="bg-white border border-gray-200 
-                        text-slate-700 text-sm rounded
-                        block w-full p-2.5">
-                    <option value="none">None</option>
-                    <option value="dall-e-2">DALL·E 2 (Basic Images)</option>
-                    <option value="dall-e-3">DALL·E 3 (Highest-Quality Images)</option>
-                </select>
-            </label>
+            <FieldImageType
+                inputChange={setImageGenerationType}
+              />
             
             {showStyleInput ? (
               <ImageStyle styleInputChange={onImageStyleInputChange}/>
@@ -239,13 +184,7 @@ export default function Review() {
 
           </div>
 
-          <button disabled={isLoading}
-            className="text-sm w-full font-extrabold bg-blue-600 h-10 text-white
-                              rounded-2xl mb-10"
-            type="submit"
-          >
-            Generate Products &nbsp;&nbsp; Estimated cost: {expectedCost}
-          </button>
+          <FieldSubmit label={submitLabel} disabled={isLoading} />
         </form>  
 
         {isLoading ? (

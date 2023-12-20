@@ -1,20 +1,10 @@
-import { useState } from "react";
-
 export default function FieldImageType({inputChange}) {
-
-    const [imageGenerationType, setImageGenerationType] = useState();
-
-    const handleInputChange = (value) => {
-        setImageGenerationType(value);
-        inputChange(value);
-    };
 
     return(
         <label className="flex max-w-xs flex-col text-slate-200">
             Image Generation
             <select name="imageGenerationType" 
-                    value={imageGenerationType}
-                    onChange={(e) => handleInputChange(e.target.value)}
+                    onChange={(e) => inputChange(e.target.value)}
                     id="imageGenerationType" 
                     className="bg-white border border-gray-200 
                     text-slate-700 text-sm rounded

@@ -2,16 +2,19 @@ import { useState, useEffect } from "react";
 import React from "react";
 import AppHead from "./components/apphead";
 import AppHeader from "./components/appheader";
+import TopNavItem from "./components/apptopnavitem";
 import AppFooter from "./components/appfooter";
 import LoadingAnimation from "./components/loadinganimation";
 import ResultDisplay from "./components/resultdisplay";
 import ImageStyle from "./components/imagestyle";
+import FieldString from "./components/formfield-string";
+import FieldImageType from "./components/formfield-imagetype";
+import FieldSubmit from "./components/formfield-submit";
 
 import hljs from "highlight.js";
 
 export default function Review() {
   
-  const [expectedCost, setExpectedCost] = useState("<$0.01");
   const [newsTopicInput, setNewsTopicInput] = useState("");
   const [newsLengthInput, setNewsLengthInput] = useState("150");
   const [siteIdInput, setSiteIdInput] = useState("");
@@ -23,11 +26,11 @@ export default function Review() {
   const [imageGenerationType, setImageGenerationType] = useState("none");
   const [imageStyleInput, setImageStyleInput] = useState("");
   const [showStyleInput, setShowImageStyleInput] = useState(false);
+  const [showImageFolder, showImageFolderInput] = useState(false);
+  const [submitLabel, setSubmitLabel] = useState("");
 
   const [result, setResult] = useState(() => "");
   const [isLoading, setIsLoading] = useState(false);
-  const [imageFolderDisabled, setImageFolderDisabled] = useState(true);
-
   const [debugMode, setDebugMode] = useState(false);
 
   const onDebugModeChange = (value) => {
@@ -51,20 +54,21 @@ export default function Review() {
     setShowImageStyleInput(false);
     let cost = "";
 
-    setImageFolderDisabled(true);
+    showImageFolderInput(false);
     if(isNaN(parseInt(newsNumberInput))){
       cost = "$0.00";
     }else if(imageGenerationType=="dall-e-3"){
       setShowImageStyleInput(true);
       cost = USDollar.format(parseInt(newsNumberInput) * 0.04);
-      setImageFolderDisabled(false);
+      showImageFolderInput(true);
     }else if(imageGenerationType=="dall-e-2"){
       cost = USDollar.format(parseInt(newsNumberInput) * 0.02);
-      setImageFolderDisabled(false);
+      showImageFolderInput(true);
     }else{
       cost = "<$0.01";
     }
-    setExpectedCost(cost);
+    
+    setSubmitLabel("Generate News - Estimated cost: " + cost);
   }
 
   const handleStructureClick = () => {
@@ -131,147 +135,86 @@ export default function Review() {
         <AppHeader title={"Liferay News Generator"} desc={"Type your topic in the field below and wait for your News. <br/> Leave the 'News Topic' field blank for a random News topic."} />
 
         <div className="fixed top-2 right-5 p-5 text-lg download-options p-5 rounded">
-            <button id="structure-download" className="bg-gray-200 hover:bg-grey text-grey-lightest font-bold py-2 px-4 rounded inline-flex items-center" onClick={handleStructureClick}>
-                <svg className="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z"/></svg>
-                <span>News Structure</span>
-            </button>&nbsp;
-            <button className="bg-gray-200 hover:bg-grey text-grey-lightest font-bold py-2 px-4 rounded inline-flex items-center" onClick={handleFragmentClick}>
-                <svg className="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z"/></svg>
-                <span>News Fragment</span>
-            </button>
+
+          <TopNavItem label={"News Structure"} onClick={handleStructureClick} />
+
+          <TopNavItem label={"News Fragment"} onClick={handleFragmentClick} />
+
         </div>
 
         <form onSubmit={onSubmit}>
           
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 md:gap-4 mb-5">
 
-            <label className="flex max-w-xs flex-col text-slate-200">
-              Enter a News Topic:
-              <input
-                  className="text-sm text-gray-base w-full 
-                                    mr-3 py-5 px-4 h-2 border 
-                                    border-gray-200 text-slate-700 rounded"
-                  type="text"
-                  name="topic"
-                  placeholder="Enter a News topic"
-                  value={newsTopicInput}
-                  onChange={(e) => setNewsTopicInput(e.target.value)}
+            <FieldString 
+                    name={"topic"}
+                    label={"News topic"} 
+                    placeholder={"Enter a News topic"}
+                    inputChange={setNewsTopicInput}
+                    defaultValue={""}
+                  />
+
+            <FieldString 
+                  name={"newsNumber"}
+                  label={"Number of Articles to Create (Max 10)"} 
+                  placeholder={"Number of News posts"}
+                  inputChange={setNewsNumberInput}
+                  defaultValue={"3"}
                 />
-            </label>
-
-            <label className="flex max-w-xs flex-col text-slate-200">
-              Number of Articles to Create (Max 10)
-              <input
-                className="text-sm text-gray-base w-full 
-                                  py-5 px-4 h-2 border 
-                                  border-gray-200 text-slate-700 rounded"
-                type="text"
-                name="newsNumber"
-                placeholder="Number of News posts"
-                value={newsNumberInput}
-                onChange={(e) => setNewsNumberInput(e.target.value)}
-              />
-            </label>
             
-            <label className="flex max-w-xs flex-col text-slate-200">
-              Expected News Post Length (in # of words):
-              <input
-                  className="text-sm text-gray-base w-full 
-                                    mr-3 py-5 px-4 h-2 border 
-                                    border-gray-200 text-slate-700 rounded"
-                  type="text"
-                  name="topic"
-                  placeholder="Enter a News Topic"
-                  value={newsLengthInput}
-                  onChange={(e) => setNewsLengthInput(e.target.value)}
+            <FieldString 
+                  name={"newsLength"}
+                  label={"Expected News Post Length (in # of words)"} 
+                  placeholder={"Expected News Post Length"}
+                  inputChange={setNewsLengthInput}
+                  defaultValue={"150"}
                 />
-            </label>
-            
-            <label className="flex max-w-xs flex-col text-slate-200">
-              Site ID
-              <input
-                className="text-sm text-gray-base w-full 
-                                  py-5 px-4 h-2 border 
-                                  border-gray-200 text-slate-700 rounded"
-                type="text"
-                name="siteId"
-                placeholder="Enter a Site ID"
-                value={siteIdInput}
-                onChange={(e) => setSiteIdInput(e.target.value)}
+          
+            <FieldString 
+                  name={"siteId"}
+                  label={"Site ID"} 
+                  placeholder={"Enter a Site ID"}
+                  inputChange={setSiteIdInput}
+                  defaultValue={""}
+                />
+  
+            <FieldString 
+                  name={"webContentFolderId"}
+                  label={"Web Content Folder ID (0 for Root)"} 
+                  placeholder={"Enter a Web Content Folder ID"}
+                  inputChange={setFolderIdInput}
+                  defaultValue={"0"}
+                />
+  
+            <FieldString 
+                name={"structureId"}
+                label={"Structure ID"} 
+                placeholder={"Enter a Structure ID"}
+                inputChange={setStructureIdInput}
+                defaultValue={""}
               />
-            </label>
             
-            <label className="flex max-w-xs flex-col text-slate-200">
-              Web Content Folder ID (0 for Root)
-              <input
-                className="text-sm text-gray-base w-full 
-                                  py-5 px-4 h-2 border 
-                                  border-gray-200 text-slate-700 rounded"
-                type="text"
-                name="webContentFolderId"
-                placeholder="Enter a Web Content Folder ID"
-                value={folderIdInput}
-                onChange={(e) => setFolderIdInput(e.target.value)}
+            <FieldString 
+                name={"categoryIds"}
+                label={"Comma-Delimited Category IDs (Optional)"} 
+                placeholder={"List of Comma-Delimited Category IDs"}
+                inputChange={setCategoryIdsInput}
+                defaultValue={""}
               />
-            </label>
-            
-            <label className="flex max-w-xs flex-col text-slate-200">
-              Structure ID
-              <input
-                className="text-sm text-gray-base w-full 
-                                  py-5 px-4 h-2 border 
-                                  border-gray-200 text-slate-700 rounded"
-                type="text"
-                name="structureId"
-                placeholder="Enter a Structure ID"
-                value={structureIdInput}
-                onChange={(e) => setStructureIdInput(e.target.value)}
-              />
-            </label>
-            
-            <label className="flex max-w-xs flex-col text-slate-200 w-30">
-              Comma-Delimited Category IDs (Optional)
-              <input
-                className="text-sm text-gray-base w-full 
-                                   py-5 px-4 h-2 border 
-                                  border-gray-200 text-slate-700 rounded"
-                type="text"
-                name="categoryIds"
-                placeholder="List of Comma-Delimited Category IDs"
-                value={categoryIdsInput}
-                onChange={(e) => setCategoryIdsInput(e.target.value)}
-              />
-            </label>
 
-            <label className="flex max-w-xs flex-col text-slate-200">
-                Image Generation
-                <select name="imageGenerationType" 
-                        value={imageGenerationType}
-                        onChange={(e) => setImageGenerationType(e.target.value)}
-                        id="imageGenerationType" 
-                        className="bg-white border border-gray-200 
-                        text-slate-700 text-sm rounded
-                        block w-full p-2.5">
-                    <option value="none">None</option>
-                    <option value="dall-e-2">DALL·E 2 (Basic Images)</option>
-                    <option value="dall-e-3">DALL·E 3 (Highest-Quality Images)</option>
-                </select>
-            </label>
-
-            <label className="flex max-w-xs flex-col text-slate-200">
-              Image Folder ID (0 for Doc Lib Root)
-              <input
-                className="text-sm text-gray-base w-full 
-                                  py-5 px-4 h-2 border 
-                                  border-gray-200 text-slate-700 rounded"
-                type="text"
-                name="imageFolderId"
-                disabled={imageFolderDisabled}
-                placeholder="Enter a Document Library Folder ID"
-                value={imageFolderIdInput}
-                onChange={(e) => setImageFolderIdInput(e.target.value)}
+            <FieldImageType
+                inputChange={setImageGenerationType}
               />
-            </label>
+
+            {showImageFolder ? (
+              <FieldString 
+                  name={"imageFolderId"}
+                  label={"Image Folder ID (0 for Doc Lib Root)"} 
+                  placeholder={"Enter a Document Library Folder ID"}
+                  inputChange={setImageFolderIdInput}
+                  defaultValue={"0"}
+                />
+              ) : null}
       
             {showStyleInput ? (
                 <ImageStyle styleInputChange={onImageStyleInputChange}/>
@@ -279,13 +222,8 @@ export default function Review() {
 
           </div>
           
-          <button disabled={isLoading}
-            className="text-sm w-full font-extrabold bg-blue-600 h-10 text-white
-                              rounded-2xl mb-10"
-            type="submit"
-          >
-            Generate News &nbsp;&nbsp; Estimated cost: {expectedCost}
-          </button>
+          <FieldSubmit label={submitLabel} disabled={isLoading} />
+
         </form>
 
         <p className="text-slate-100 text-center text-lg mb-3 rounded p-5 bg-white/10 italic">

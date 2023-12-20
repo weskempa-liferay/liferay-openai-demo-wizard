@@ -6,6 +6,8 @@ import AppFooter from "./components/appfooter";
 import LoadingAnimation from "./components/loadinganimation";
 import ResultDisplay from "./components/resultdisplay";
 import ImageStyle from "./components/imagestyle";
+import FieldString from "./components/formfield-string";
+import FieldImageType from "./components/formfield-imagetype";
 
 import hljs from "highlight.js";
 
@@ -94,82 +96,48 @@ export default function Review() {
 
       <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
       
-        <AppHeader title={"Liferay Blog Generator"} desc={"Type your topic in the field below and wait for your blogs. <br/> Leave the field blank for a random blog topic."} />
+        <AppHeader title={"Liferay Blog Generator"} 
+                   desc={"Type your topic in the field below and wait for your blogs. <br/> Leave the field blank for a random blog topic."} />
         
         <form onSubmit={onSubmit}>
           
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 md:gap-4 mb-5">
 
-            <label className="flex max-w-xs flex-col text-slate-200">
-              Enter a blog topic:
-              <input
-                  className="text-sm text-gray-base w-full 
-                                    mr-3 py-5 px-4 h-2 border 
-                                    border-gray-200 text-slate-700 rounded"
-                  type="text"
-                  name="topic"
-                  placeholder="Enter a blog topic"
-                  value={blogTopicInput}
-                  onChange={(e) => setBlogTopicInput(e.target.value)}
-                />
-            </label>
-
-            <label className="flex max-w-xs flex-col text-slate-200">
-              Number of Posts to Create (Max 10)
-              <input
-                className="text-sm text-gray-base w-full 
-                                  py-5 px-4 h-2 border 
-                                  border-gray-200 text-slate-700 rounded"
-                type="text"
-                name="blogNumber"
-                placeholder="Number of blog posts"
-                value={blogNumberInput}
-                onChange={(e) => setBlogNumberInput(e.target.value)}
+            <FieldString 
+                name={"topic"}
+                label={"Enter a Blog Topic"} 
+                placeholder={"Enter a blog topic"}
+                inputChange={setBlogTopicInput}
+                defaultValue={""}
               />
-            </label>
-            
-            <label className="flex max-w-xs flex-col text-slate-200">
-              Expected blog post length (in # of words):
-              <input
-                  className="text-sm text-gray-base w-full 
-                                    mr-3 py-5 px-4 h-2 border 
-                                    border-gray-200 text-slate-700 rounded"
-                  type="text"
-                  name="topic"
-                  placeholder="Enter a the expected blog length"
-                  value={blogLengthInput}
-                  onChange={(e) => setBlogLengthInput(e.target.value)}
-                />
-            </label>
-            
-            <label className="flex max-w-xs flex-col text-slate-200">
-              Site Id
-              <input
-                className="text-sm text-gray-base w-full 
-                                  py-5 px-4 h-2 border 
-                                  border-gray-200 text-slate-700 rounded"
-                type="text"
-                name="siteId"
-                placeholder="Enter a site id"
-                value={siteIdInput}
-                onChange={(e) => setSiteIdInput(e.target.value)}
-              />
-            </label>
 
-            <label className="flex max-w-xs flex-col text-slate-200">
-                Image Generation
-                <select name="imageGenerationType" 
-                        value={imageGenerationType}
-                        onChange={(e) => setImageGenerationType(e.target.value)}
-                        id="imageGenerationType" 
-                        className="bg-white border border-gray-200 
-                        text-slate-700 text-sm rounded
-                        block w-full p-2.5">
-                    <option value="none">None</option>
-                    <option value="dall-e-2">DALL·E 2 (Basic Images)</option>
-                    <option value="dall-e-3">DALL·E 3 (Highest-Quality Images)</option>
-                </select>
-            </label>
+            <FieldString 
+                name={"blogNumber"}
+                label={"Number of Posts to Create (Max 10)"} 
+                placeholder={"Number of blog posts"}
+                inputChange={setBlogNumberInput}
+                defaultValue={"3"} 
+              />
+
+            <FieldString 
+                name={"blogLength"}
+                label={"Expected Blog Post Length (in # of words)"} 
+                placeholder={"Enter a the expected blog length"}
+                inputChange={setBlogLengthInput}
+                defaultValue={"200"}
+              />
+            
+            <FieldString 
+                name={"siteId"}
+                label={"Site ID"} 
+                placeholder={"Enter a site id"}
+                inputChange={setSiteIdInput}
+                defaultValue={""}
+              />
+            
+            <FieldImageType
+                inputChange={setImageGenerationType}
+              />
       
             {showStyleInput ? (
               <ImageStyle styleInputChange={onImageStyleInputChange}/>
@@ -177,11 +145,9 @@ export default function Review() {
 
           </div>
           
-          <button disabled={isLoading}
-            className="text-sm w-full font-extrabold bg-blue-600 h-10 text-white
-                              rounded-2xl mb-10"
-            type="submit"
-          >
+          <button 
+              className="text-sm w-full font-extrabold bg-blue-600 h-10 text-white rounded-2xl mb-10"
+              disabled={isLoading} type="submit">
             Generate Blogs &nbsp;&nbsp; Estimated cost: {expectedCost}
           </button>
 

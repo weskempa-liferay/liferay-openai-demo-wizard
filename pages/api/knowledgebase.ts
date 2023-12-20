@@ -144,5 +144,4 @@ export default async function (req, res) {
   let end = new Date().getTime();
   res.status(200).json({result:"Completed in " +
     functions.millisToMinutesAndSeconds(end - start)});
-  //res.status(200).json({result:JSON.stringify(categories)});
 }

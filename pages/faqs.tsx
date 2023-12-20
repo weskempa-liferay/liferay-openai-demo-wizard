@@ -105,7 +105,7 @@ export default function Review() {
 
             <FieldString 
                   name={"topic"}
-                  label={"Enter a FAQ topic"} 
+                  label={"FAQ topic"} 
                   placeholder={"Enter a FAQ Topic"}
                   inputChange={setFAQTopicInput}
                   defaultValue={""}

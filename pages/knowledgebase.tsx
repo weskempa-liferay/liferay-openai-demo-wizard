@@ -5,17 +5,18 @@ import AppHeader from "./components/appheader";
 import AppFooter from "./components/appfooter";
 import LoadingAnimation from "./components/loadinganimation";
 import ResultDisplay from "./components/resultdisplay";
+import FieldString from "./components/formfield-string";
+import FieldSubmit from "./components/formfield-submit";
 
 import hljs from "highlight.js";
 
 export default function Review() {
 
-  const [kbTopicInput, setMBTopicInput] = useState("");
-  const [kbArticleLengthInput, setMBArticleLengthInput] = useState("100");
+  const [kbTopicInput, setKBTopicInput] = useState("");
+  const [kbArticleLengthInput, setKBArticleLengthInput] = useState("100");
   const [siteIdInput, setSiteIdInput] = useState("");
-  const [kbFolderNumberInput, setMBFolderNumberInput] = useState("3");
-  const [kbArticleNumberInput, setMBArticleNumberInput] = useState("4");
-  const [kbSuggestionNumberInput, setMBSuggestionNumberInput] = useState("2");
+  const [kbFolderNumberInput, setKBFolderNumberInput] = useState("3");
+  const [kbArticleNumberInput, setKBArticleNumberInput] = useState("4");
   const [result, setResult] = useState(() => "");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -38,7 +39,6 @@ export default function Review() {
         siteId: siteIdInput,
         kbFolderNumber: kbFolderNumberInput, 
         kbArticleNumber: kbArticleNumberInput, 
-        kbSuggestionNumber: kbSuggestionNumberInput, 
         kbArticleLength: kbArticleLengthInput,
         debugMode: debugMode
       }),
@@ -63,99 +63,50 @@ export default function Review() {
           
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 md:gap-4 mb-5">
 
-            <label className="flex max-w-xs flex-col text-slate-200">
-              Enter a Knowledge Base topic:
-              <input
-                  className="text-sm text-gray-base w-full 
-                                    mr-3 py-5 px-4 h-2 border 
-                                    border-gray-200 text-slate-700 rounded"
-                  type="text"
-                  name="topic"
-                  placeholder="Enter a knowledge base topic"
-                  value={kbTopicInput}
-                  onChange={(e) => setMBTopicInput(e.target.value)}
+
+          <FieldString 
+                  name={"topic"}
+                  label={"Knowledge Base Topic"} 
+                  placeholder={"Enter a knowledge base topic"}
+                  inputChange={setKBTopicInput}
+                  defaultValue={""}
                 />
-            </label>
-            
-            <label className="flex max-w-xs flex-col text-slate-200">
-              Site Id
-              <input
-                className="text-sm text-gray-base w-full 
-                                  py-5 px-4 h-2 border 
-                                  border-gray-200 text-slate-700 rounded"
-                type="text"
-                name="siteId"
-                placeholder="Enter a site id"
-                value={siteIdInput}
-                onChange={(e) => setSiteIdInput(e.target.value)}
-              />
-            </label>
-            
-            <label className="flex max-w-xs flex-col text-slate-200">
-              Expected Article Length (in # of words):
-              <input
-                  className="text-sm text-gray-base w-full 
-                                    mr-3 py-5 px-4 h-2 border 
-                                    border-gray-200 text-slate-700 rounded"
-                  type="text"
-                  name="topic"
-                  placeholder="Enter a knowledge base thread length"
-                  value={kbArticleLengthInput}
-                  onChange={(e) => setMBArticleLengthInput(e.target.value)}
+
+            <FieldString 
+                  name={"siteId"}
+                  label={"Site ID"} 
+                  placeholder={"Enter a site id"}
+                  inputChange={setSiteIdInput}
+                  defaultValue={""}
                 />
-            </label>
 
-            <label className="flex max-w-xs flex-col text-slate-200">
-              Number of Folders to Create
-              <input
-                className="text-sm text-gray-base w-full 
-                                  py-5 px-4 h-2 border 
-                                  border-gray-200 text-slate-700 rounded"
-                type="text"
-                name="kbNumber"
-                placeholder="Number of of knowledge base sections"
-                value={kbFolderNumberInput}
-                onChange={(e) => setMBFolderNumberInput(e.target.value)}
-              />
-            </label>
+            <FieldString 
+                  name={"articleLength"}
+                  label={"Expected Article Length (in # of words)"} 
+                  placeholder={"Enter a knowledge base article length"}
+                  inputChange={setKBArticleLengthInput}
+                  defaultValue={"100"}
+                />
 
-            <label className="flex max-w-xs flex-col text-slate-200">
-              Number of Articles to Create per Section
-              <input
-                className="text-sm text-gray-base w-full 
-                                  py-5 px-4 h-2 border 
-                                  border-gray-200 text-slate-700 rounded"
-                type="text"
-                name="kbNumber"
-                placeholder="Number of knowledge base articles per section"
-                value={kbArticleNumberInput}
-                onChange={(e) => setMBArticleNumberInput(e.target.value)}
-              />
-            </label>
+            <FieldString 
+                  name={"kbNumber"}
+                  label={"Number of Folders to Create"} 
+                  placeholder={"Number of of knowledge base sections"}
+                  inputChange={setKBFolderNumberInput}
+                  defaultValue={"3"}
+                />
 
-            <label className="hidden flex max-w-xs flex-col text-slate-200">
-              Suggestions to Create per Article
-              <input
-                className="text-sm text-gray-base w-full 
-                                  py-5 px-4 h-2 border 
-                                  border-gray-200 text-slate-700 rounded"
-                type="text"
-                name="kbNumber"
-                placeholder="Number of knowledge base suggestion per section"
-                value={kbSuggestionNumberInput}
-                onChange={(e) => setMBSuggestionNumberInput(e.target.value)}
-              />
-            </label>
+            <FieldString 
+                  name={"kbSectionNumber"}
+                  label={"Number of Articles to Create per Section"} 
+                  placeholder={"Number of of knowledge base sections"}
+                  inputChange={setKBArticleNumberInput}
+                  defaultValue={"4"}
+                />
 
           </div>
           
-          <button disabled={isLoading}
-            className="text-sm w-full font-extrabold bg-blue-600 h-10 text-white
-                              rounded-2xl mb-10"
-            type="submit"
-          >
-            Generate Knowledge Base Articles
-          </button>
+          <FieldSubmit label={"Generate Knowledge Base Articles"} disabled={isLoading} />
 
         </form>
         

@@ -159,7 +159,7 @@ export default function Review() {
             </label>
             
             <label className="flex max-w-xs flex-col text-slate-200 w-30">
-              Folder ID
+              Web Content Folder ID (0 for Root)
               <input
                 className="text-sm text-gray-base w-full 
                                    py-5 px-4 h-2 border 

@@ -75,7 +75,7 @@ Once you have this up and running locally, make sure to fill in the required Env
 
 ```bash
 OPENAI_API_KEY= <key goes here>
-LIFERAY_PATH= <HTTP: or HTTPS: URL for the server, example: http://localhost:8080>
+LIFERAY_PATH= <HTTP: or HTTPS: URL for the server, example: 'http://localhost:8080' >
 LIFERAY_ADMIN_EMAIL_ADDRESS=
 LIFERAY_ADMIN_PASSWORD=
 ```

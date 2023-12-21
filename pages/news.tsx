@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import React from "react";
 import AppHead from "./components/apphead";
 import AppHeader from "./components/appheader";
 import TopNavItem from "./components/apptopnavitem";

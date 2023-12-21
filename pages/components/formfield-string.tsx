@@ -16,7 +16,7 @@ export default function FieldString({name,label,inputChange,placeholder,defaultV
       }, []);
 
     return(
-        <label className="flex max-w-xs flex-col text-slate-200">
+        <label className="flex flex-col text-slate-200">
           {label}
           <input
               className="text-sm text-gray-base w-full 

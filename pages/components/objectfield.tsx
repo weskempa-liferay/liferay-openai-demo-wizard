@@ -1,95 +1,60 @@
-import { useState, useRef } from "react";
-import React from "react";
+import { useState, useEffect } from "react";
+import FieldString from "./../components/formfield-string";
+import FieldSelect from "./../components/formfield-select";
 
+export default function ObjectField({id, handleChange}) {
 
-class ObjectField extends React.Component<{handleChange,id},{}> {
+    const [fieldName, setFieldName] = useState("");
+    const [fieldDescription, setFieldDescription] = useState("");
+    const [fieldType, setFieldType] = useState("string");
 
-    state = {
-        fieldName : "",
-        fieldDescription : "",
-        fieldType : "string"
+    const fieldOptions = [{id:"string",name:"String"}];
+  
+    useEffect(() => {
+        let changeObject = {fieldName:fieldName,fieldDescription:fieldDescription,fieldType:fieldType};
+        handleChange(changeObject,id);
+    }, [fieldName,fieldDescription,fieldType]);
+
+    const updateFieldName = (newValue) => {
+        setFieldName(newValue);
     }
   
-    updateFieldName  = (newValue) => {
-        this.setState({
-            fieldName: newValue.target.value
-        }, () => {
-          this.updateValues();
-        });
+    const updateFieldDescription = (newValue) => {
+        setFieldDescription(newValue);
     }
   
-    updateFieldDescription = (newValue) => {
-        this.setState({
-            fieldDescription: newValue.target.value
-        }, () => {
-          this.updateValues();
-        });
-    }
-  
-    updateFieldType  = (newValue) => {
-        this.setState({
-            fieldType: newValue.target.value
-        }, () => {
-          this.updateValues();
-        });
+    const updateFieldType = (newValue) => {
+        setFieldType(newValue);
     }
 
-    updateValues  = () => {
-      this.props.handleChange( this.state, this.props.id );
-    }
+    return (
 
-    render(){
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 md:gap-4 mb-4">
 
-        return(
+            <FieldString 
+                name={"objectFieldName"}
+                label={"Object Field Key Name"} 
+                placeholder={"Enter a object field name"}
+                inputChange={updateFieldName}
+                defaultValue={""}
+                />
             
-            <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 md:gap-4 mb-4">
+            <FieldString 
+                name={"objectFieldDescription"}
+                label={"Content Description"} 
+                placeholder={"Example: Country Name"}
+                inputChange={updateFieldDescription}
+                defaultValue={""}
+                />
+            
+            <FieldSelect 
+                    name={"objectFieldType"}
+                    label={"Field Type"}
+                    inputChange={updateFieldType}
+                    optionMap={fieldOptions}
+                  />
 
-                <label className="flex max-w-xs flex-col text-slate-200">
-                    Object Field Key Name:
-                    <input
-                        className="text-sm text-gray-base w-full 
-                                    mr-3 py-5 px-4 h-2 border 
-                                    border-gray-200 text-slate-700 rounded"
-                        type="text"
-                        name="objectFieldName"
-                        id="objectFieldName"
-                        value={this.state.fieldName}
-                        onChange={this.updateFieldName}
-                        placeholder="Enter a object field name"
-                    />
-                </label>
+        </div>
 
-                <label className="flex max-w-xs flex-col text-slate-200">
-                    Content Description
-                    <input
-                        className="text-sm text-gray-base w-full 
-                                    py-5 px-4 h-2 border 
-                                    border-gray-200 text-slate-700 rounded"
-                        type="text"
-                        name="objectFieldDescription"
-                        id="objectFieldDescription"
-                        value={this.state.fieldDescription}
-                        onChange={this.updateFieldDescription}
-                        placeholder="Example: Country Name" 
-                    />
-                </label>
-
-                <label className="flex max-w-xs flex-col text-slate-200">
-                    Field Type
-                    <select name="objectFieldType" 
-                            value={this.state.fieldType}
-                            onChange={this.updateFieldType}
-                            id="objectFieldType" 
-                            className="bg-white border border-gray-200 
-                            text-slate-700 text-sm rounded
-                            block w-full p-2.5">
-                        <option value="string">String</option>
-                    </select>
-                </label>
-
-            </div>
-
-        )
-    }
+    );
 }
-export default ObjectField;

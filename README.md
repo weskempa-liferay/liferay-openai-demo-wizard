@@ -74,8 +74,8 @@ You should now be able to access the app at [http://localhost:3000](http://local
 Once you have this up and running locally, make sure to fill in the required Environment Details. These might become UI-based configurations, but for now it is required to configure these settings in your environment variables. 
 
 ```bash
-OPENAI_API_KEY=<key goes here>
-LIFERAY_PATH=
+OPENAI_API_KEY= <key goes here>
+LIFERAY_PATH= <HTTP: or HTTPS: location of your server, example: http://localhost:8080>
 LIFERAY_ADMIN_EMAIL_ADDRESS=
 LIFERAY_ADMIN_PASSWORD=
 ```

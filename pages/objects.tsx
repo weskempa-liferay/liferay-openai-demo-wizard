@@ -109,16 +109,16 @@ export default function Review() {
 
               <FieldString 
                       name={"role"}
-                      label={"Enter the role the OpenAI should act as"} 
-                      placeholder={"You are a helpful assistant responsible for providing a list of answers"}
+                      label={"Role the OpenAI should act as"} 
+                      placeholder={"Enter the AI role here"}
                       inputChange={setAiRoleInput}
                       defaultValue={"You are a helpful assistant responsible for providing a list of answers"}
                     />
             
               <FieldString 
                     name={"topic"}
-                    label={"Enter your specific request to OpenAI"} 
-                    placeholder={"Provide a list of 10 countries in Europe"}
+                    label={"Specific request to OpenAI"} 
+                    placeholder={"Enter your specific request to OpenAI"}
                     inputChange={setAiRequestInput}
                     defaultValue={"Provide a list of 10 countries in Europe"}
                   />
@@ -126,7 +126,7 @@ export default function Review() {
               <FieldString 
                     name={"endpoint"}
                     label={"Location of your object's batch endpoint (Example /o/c/exampleobjects/batch)"} 
-                    placeholder={"/o/c/exampleobjects/batch"}
+                    placeholder={"Enter an object's batch endpoint"}
                     inputChange={setAiEndpointInput}
                     defaultValue={"/o/c/exampleobjects/batch"}
                   />

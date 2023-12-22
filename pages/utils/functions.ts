@@ -9,7 +9,11 @@ module.exports = {
             return `${date.getSeconds()} seconds`;
         }
     },
-    foo: () => {
-      // whatever
+    getBase64data: () => {
+      const usernamePasswordBuffer = Buffer.from( 
+        process.env.LIFERAY_ADMIN_EMAIL_ADDRESS + 
+        ':' + process.env.LIFERAY_ADMIN_PASSWORD);
+
+        return usernamePasswordBuffer.toString('base64');
     }
 };

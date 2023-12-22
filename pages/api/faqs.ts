@@ -72,7 +72,6 @@ export default async function (req, res) {
         };
 
         const axios = require("axios");
-        const fs = require("fs");
 
         const usernamePasswordBuffer = Buffer.from( 
             process.env.LIFERAY_ADMIN_EMAIL_ADDRESS + 

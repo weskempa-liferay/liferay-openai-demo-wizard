@@ -106,7 +106,7 @@ export default function Review() {
         
         <form onSubmit={onSubmit}>
 
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-1 md:gap-4 mb-5">
+          <div className="w-500 grid grid-cols-1 gap-2 sm:grid-cols-1 md:gap-4 mb-5">
 
             <FieldFile
                     name={"fileUpload"}

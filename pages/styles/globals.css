@@ -52,6 +52,14 @@ form .btn-popuptoggle{
   width:94%;
 }
 
+.w-500{
+  width: 500px;
+}
+
+.w-700{
+  width: 700px;
+}
+
 pre code.hljs {
     display: block;
     overflow-x: auto;

@@ -27,14 +27,15 @@ const HomePage: NextPage = () => {
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-4 md:gap-8">
 
-          <NavItem title={"Blogs"}          path={"/blogs"}           desc={"Create a set of blogs based on a suggested prompt."} />
-          <NavItem title={"FAQs"}           path={"/faqs"}            desc={"Create a set of FAQs based on a suggested topic."} />
-          <NavItem title={"Knowledge Base"} path={"/knowledgebase"}   desc={"Create a set of Knowledge Base Folders and Articles based on a suggested topic."} />
-          <NavItem title={"Message Board"}  path={"/messageboard"}    desc={"Create a set of Message Board Sections and Threads based on a suggested topic."} />
-          <NavItem title={"News"}           path={"/news"}            desc={"Create a set of News Articles based on a suggested topic."} />
-          <NavItem title={"Objects"}        path={"/objects"}         desc={"Populate your custom objects with records based on your prompts."} />
-          <NavItem title={"Products"}       path={"/products"}        desc={"Generate demo products and categories based on your company theme."} />
-          <NavItem title={"Users"}          path={"/users"}           desc={"Create example users for your portal instance."} />
+          <NavItem title={"Accounts"}             path={"/accounts"}       desc={"Create a list of Accounts based on a company type."} />
+          <NavItem title={"Blogs"}                path={"/blogs"}          desc={"Create a set of blogs based on a suggested prompt."} />
+          <NavItem title={"FAQs"}                 path={"/faqs"}           desc={"Create a set of FAQs based on a suggested topic."} />
+          <NavItem title={"Knowledge Base"}       path={"/knowledgebase"}  desc={"Create a set of knowledge base folders and articles based on a suggested topic."} />
+          <NavItem title={"Message Board"}        path={"/messageboard"}   desc={"Create a set of message board Sections and threads based on a suggested topic."} />
+          <NavItem title={"News"}                 path={"/news"}           desc={"Create a set of news articles based on a suggested topic."} />
+          <NavItem title={"Objects"}              path={"/objects"}        desc={"Populate your custom objects with records based on your prompts."} />
+          <NavItem title={"Products"}             path={"/products"}       desc={"Generate demo products and categories based on your company theme."} />
+          <NavItem title={"Users"}                path={"/users"}          desc={"Create example users for your portal instance."} />
           
         </div> 
       </div>

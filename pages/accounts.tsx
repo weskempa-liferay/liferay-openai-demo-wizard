@@ -12,9 +12,9 @@ import hljs from "highlight.js";
 
 export default function Review() {
 
-  const [userNumberInput, setUserNumberInput] = useState("5");
-  const [emailPrefixInput, setEmailPrefixInput] = useState("liferay.xyz");
-
+  const [accountTopicInput, setAccountTopicInput] = useState("");
+  const [accountNumberInput, setAccountNumberInput] = useState("");
+    
   const [result, setResult] = useState(() => "");
   const [isLoading, setIsLoading] = useState(false);
   const [debugMode, setDebugMode] = useState(false);
@@ -26,16 +26,18 @@ export default function Review() {
   async function onSubmit(event) {
     event.preventDefault();
     setIsLoading(true);
-    const response = await fetch("/api/users-ai", {
+    if(debugMode) console.log("Posting!");
+    const response = await fetch("/api/accounts", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        userNumber: userNumberInput,
-        emailPrefix: emailPrefixInput,
+        accountTopic: accountTopicInput,
+        accountNumber: accountNumberInput,
         debugMode: debugMode
       }),
+    
     });
     const data = await response.json();
     if(debugMode) console.log("data", data);
@@ -48,36 +50,38 @@ export default function Review() {
 
   return (
     <div>
-      <AppHead title={"User Generator"}/>
+      <AppHead title={"Account Generator"}/>
 
       <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
         
-        <AppHeader title={"Liferay User Generator"} desc={"Use the form below to create users."} />
-
+        <AppHeader 
+            title={"Liferay Account Generator"} 
+            desc={"Type your business description in the field below and wait for your Accounts. <br/> Leave the field blank for generic business accounts."} />
+        
         <form onSubmit={onSubmit}>
 
-          <div className="w-500 grid grid-cols-1 gap-2 sm:grid-cols-2 md:gap-4 mb-5">
+          <div className="w-700 grid grid-cols-2 gap-2 sm:grid-cols-2 md:gap-4 mb-5">
 
             <FieldString 
-                    name={"userNumber"}
-                    label={"Number of Users to Create"} 
-                    placeholder={"Number of users"}
-                    inputChange={setUserNumberInput}
-                    defaultValue={""}
-                  />
+                name={"topic"}
+                label={"Business Description"} 
+                placeholder={"Enter a Business Description"}
+                inputChange={setAccountTopicInput}
+                defaultValue={""}
+                />
 
             <FieldString 
-                    name={"emailPrefix"}
-                    label={"Email Prefix"} 
-                    placeholder={"@liferay.xyz"}
-                    inputChange={setEmailPrefixInput}
-                    defaultValue={"@liferay.xyz"}
-                  />
-            
+                name={"numberOfAccounts"}
+                label={"Number of Accounts"} 
+                placeholder={"Enter a the number of accounts to generate"}
+                inputChange={setAccountNumberInput}
+                defaultValue={""}
+                />
+
           </div>
-
-          <FieldSubmit label={"Generate Users"} disabled={isLoading} />
-
+          
+          <FieldSubmit label={"Generate Accounts"} disabled={isLoading} />
+          
         </form>
 
         {isLoading ? (
@@ -89,7 +93,7 @@ export default function Review() {
       </main>
       
       <AppFooter debugModeChange={onDebugModeChange} />
-        
+
     </div>
   );
 }

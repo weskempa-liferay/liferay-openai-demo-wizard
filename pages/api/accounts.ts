@@ -36,7 +36,7 @@ export default async function (req, res) {
     const response = await openai.chat.completions.create({
         model: "gpt-3.5-turbo",
         messages: [
-            {"role": "system", "content": "You are an account manager responsible for listed the active acccounts for your company."},
+            {"role": "system", "content": "You are an account manager responsible for listing the active acccounts for your company."},
             {"role": "user", "content": "Create a list of active acccounts for a company that provides "+req.body.accountTopic}
         ],
         functions: [

@@ -15,7 +15,6 @@ const HomePage: NextPage = () => {
   };
 
   // TODO Categories and Tags
-  // TODO Images Only
   // TODO Organizations
   
   return (
@@ -39,6 +38,7 @@ const HomePage: NextPage = () => {
           <NavItem title={"Message Board"}        path={"/messageboard"}   desc={"Create a set of message board Sections and threads based on a suggested topic."} />
           <NavItem title={"News"}                 path={"/news"}           desc={"Create a set of news articles based on a suggested topic."} />
           <NavItem title={"Objects"}              path={"/objects"}        desc={"Populate your custom objects with records based on your prompts."} />
+          <NavItem title={"Organizations"}        path={"/organizations"}  desc={"Create a organizational structure for your company."} />
           <NavItem title={"Products"}             path={"/products"}       desc={"Generate demo products and categories based on your company theme."} />
           <NavItem title={"Users"}                path={"/users"}          desc={"Create example users for your portal instance."} />
 

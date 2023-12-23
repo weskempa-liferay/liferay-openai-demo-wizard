@@ -10,9 +10,11 @@ Utilizing this OpenAI Wizard doesn't just speed up content creation, which many 
 
 ## The Liferay Content Wizard currently supports generating these asset types: 
 
-- **Commerce Categories and Products with Images**
+- **Accounts**
 - **Blogs with Images**
+- **Commerce Categories and Products with Images**
 - **FAQs**
+- **Images Only**
 - **News Articles with Images**
 - **Knowledge Base Folders and Articles**
 - **Message Board Sections, Threads, and Messages**

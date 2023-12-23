@@ -49,7 +49,7 @@ export default function AppImageStyle({styleInputChange}) {
     }
 
     return(
-        <label className="flex max-w-xs flex-col text-slate-200 pr-18 relative">
+        <label className="flex flex-col text-slate-200 relative">
             Image Style
             <input
                 className="text-sm text-gray-base w-full 

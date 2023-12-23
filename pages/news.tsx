@@ -202,6 +202,7 @@ export default function Review() {
               />
 
             <FieldImageType
+                includeNone={true}
                 inputChange={setImageGenerationType}
               />
 

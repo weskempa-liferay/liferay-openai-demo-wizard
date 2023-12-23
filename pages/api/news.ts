@@ -1,5 +1,7 @@
 import OpenAI  from "openai";
 
+var functions = require('../utils/functions');
+
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
@@ -129,9 +131,8 @@ export default async function (req, res) {
   
   let end = new Date().getTime();
 
-  if(debug) console.log("Completed in " + (end - start) + " milliseconds");
-
-  res.status(200).json({ result: JSON.stringify(newsContentSet) });
+  res.status(200).json({ result: "Completed in " +
+    functions.millisToMinutesAndSeconds(end - start)});
 }
 
 function postImageToLiferay(file,base64data,req, newsJson, debug){

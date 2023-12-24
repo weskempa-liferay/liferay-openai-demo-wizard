@@ -12,13 +12,15 @@ Utilizing this OpenAI Wizard doesn't just speed up content creation, which many 
 
 - **Accounts**
 - **Blogs with Images**
+- **Taxonomy with Category Structure**
 - **Commerce Categories and Products with Images**
+- **Custom Liferay Objects Schemas**
 - **FAQs**
 - **Images Only**
 - **News Articles with Images**
 - **Knowledge Base Folders and Articles**
 - **Message Board Sections, Threads, and Messages**
-- **Custom Liferay Objects Schemas**
+- **Organization Structures**
 - **Users (CSV and OpenAI)**
 
 As we move forward, expect more options for different content types. A big shoutout to Steven Lu for the inspiration and knowledge that brought this functionality to life! Cheers!

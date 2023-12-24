@@ -13,7 +13,7 @@ export default async function (req, res) {
     const debug = req.body.debugMode;
 
     if(debug) console.log("childOrganizationtNumber: " + req.body.childOrganizationtNumber +
-                          ", req.body.departmentNumber: " + req.body.departmentNumber);
+                          ", departmentNumber: " + req.body.departmentNumber);
 
     const organizationsSchema = {
         type: "object",

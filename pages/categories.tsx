@@ -11,10 +11,11 @@ import FieldSubmit from "./components/formfield-submit";
 import hljs from "highlight.js";
 
 export default function Review() {
-
-  const [organizationTopicInput, setOrganizationTopicInput] = useState("National Internet, Phone, and Cable");
-  const [childOrganizationtNumberInput, setChildOrganizationtNumberInput] = useState("3");
-  const [departmentNumberInput, setDepartmentNumberInput] = useState("3");
+    
+  const [siteIdInput, setSiteIdInput] = useState("");
+  const [vocabularyNameInput, setVocabularyNameInput] = useState("Types of books");
+  const [categorytNumberInput, setCategorytNumberInput] = useState("5");
+  const [childCategorytNumberInput, setChildCategorytNumberInput] = useState("3");
   
   const [result, setResult] = useState(() => "");
   const [isLoading, setIsLoading] = useState(false);
@@ -28,15 +29,16 @@ export default function Review() {
     event.preventDefault();
     setIsLoading(true);
     if(debugMode) console.log("Posting!");
-    const response = await fetch("/api/organizations", {
+    const response = await fetch("/api/categories", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        organizationTopic: organizationTopicInput,
-        childOrganizationtNumber:childOrganizationtNumberInput,
-        departmentNumber:departmentNumberInput,
+        siteId: siteIdInput,
+        vocabularyName: vocabularyNameInput,
+        categorytNumber:categorytNumberInput,
+        childCategorytNumber:childCategorytNumberInput,
         debugMode: debugMode
       }),
     
@@ -57,40 +59,48 @@ export default function Review() {
       <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
         
         <AppHeader 
-            title={"Liferay Organization Generator"} 
-            desc={"Type your business description in the field below and wait for your organizations."} />
+            title={"Liferay Category Generator"} 
+            desc={"Type your business description in the field below and wait for your categories."} />
         
         <form onSubmit={onSubmit}>
 
           <div className="w-700 grid grid-cols-2 gap-2 sm:grid-cols-2 md:gap-4 mb-5">
 
+          <FieldString 
+                name={"siteId"}
+                label={"Site ID"} 
+                placeholder={"Enter a site id."}
+                inputChange={setSiteIdInput}
+                defaultValue={""}
+                />
+
+            <FieldString 
+                name={"vocabulary"}
+                label={"Vocabulary Name"} 
+                placeholder={"Enter a vocabulary name"}
+                inputChange={setVocabularyNameInput}
+                defaultValue={"Types of books"}
+                />
+
             <FieldString 
                 name={"topic"}
-                label={"Business Description"} 
-                placeholder={"Enter a Business Description"}
-                inputChange={setOrganizationTopicInput}
-                defaultValue={"National Internet, Phone, and Cable"}
+                label={"Number of Categories"} 
+                placeholder={"Enter a the number of categories to generate"}
+                inputChange={setCategorytNumberInput}
+                defaultValue={"5"}
                 />
             
             <FieldString 
-                name={"numberOfChildOrganizations"}
-                label={"Prefered Number of Child Organizations"} 
-                placeholder={"Enter a the number of child organizations to generate"}
-                inputChange={setChildOrganizationtNumberInput}
-                defaultValue={"3"}
-                />
-        
-            <FieldString 
-                name={"numberOfDepartments"}
-                label={"Prefered Number of Departments"} 
-                placeholder={"Enter a the number of departments to generate"}
-                inputChange={setDepartmentNumberInput}
+                name={"numberOfChildCategories"}
+                label={"Prefered Number of Child Categories"} 
+                placeholder={"Enter a the number of child categories to generate"}
+                inputChange={setChildCategorytNumberInput}
                 defaultValue={"3"}
                 />
 
           </div>
           
-          <FieldSubmit label={"Generate Organizations"} disabled={isLoading} />
+          <FieldSubmit label={"Generate Categories"} disabled={isLoading} />
           
         </form>
 

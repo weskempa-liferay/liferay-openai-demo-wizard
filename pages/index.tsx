@@ -13,9 +13,6 @@ const HomePage: NextPage = () => {
   const onDebugModeChange = (value) => {
     setDebugMode(value);
   };
-
-  // TODO Categories and Tags
-  // TODO Organizations
   
   return (
   <>
@@ -32,16 +29,16 @@ const HomePage: NextPage = () => {
 
           <NavItem title={"Accounts"}             path={"/accounts"}       desc={"Create a list of accounts based on a company type."} />
           <NavItem title={"Blogs"}                path={"/blogs"}          desc={"Create a set of blogs based on a suggested prompt."} />
+          <NavItem title={"Categories"}           path={"/categories"}     desc={"Create a taxonomy and category structure based on a suggested theme."} />
           <NavItem title={"FAQs"}                 path={"/faqs"}           desc={"Create a set of FAQs based on a suggested topic."} />
           <NavItem title={"Knowledge Base"}       path={"/knowledgebase"}  desc={"Create a set of knowledge base folders and articles based on a suggested topic."} />
           <NavItem title={"Images Only"}          path={"/images"}         desc={"In some cases, it is important to generate images with making associated content assets."} />
-          <NavItem title={"Message Board"}        path={"/messageboard"}   desc={"Create a set of message board Sections and threads based on a suggested topic."} />
+          <NavItem title={"Message Board"}        path={"/messageboard"}   desc={"Create a set of message board sections and threads based on a suggested topic."} />
           <NavItem title={"News"}                 path={"/news"}           desc={"Create a set of news articles based on a suggested topic."} />
           <NavItem title={"Objects"}              path={"/objects"}        desc={"Populate your custom objects with records based on your prompts."} />
           <NavItem title={"Organizations"}        path={"/organizations"}  desc={"Create a organizational structure for your company."} />
           <NavItem title={"Products"}             path={"/products"}       desc={"Generate demo products and categories based on your company theme."} />
           <NavItem title={"Users"}                path={"/users"}          desc={"Create example users for your portal instance."} />
-
           
         </div> 
       </div>

@@ -39,17 +39,27 @@ form .btn-popuptoggle{
   background-color: rgba(100,100,150,.3);
 }
 
+.toggle{
+  width: 220px;
+  padding: 5px 20px;
+}
+
 .imgtoggle{
-  width: 180px;
+  width: 220px;
   padding: 20px;
 }
 
-.imgtoggle span{
+.imgtoggle span,
+.toggle span{
   margin-left: 50px;
 }
 
 .object-row{
   width:94%;
+}
+
+.w-300{
+  width: 300px;
 }
 
 .w-500{

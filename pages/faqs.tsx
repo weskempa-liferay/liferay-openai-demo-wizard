@@ -8,7 +8,8 @@ import LoadingAnimation from "./components/loadinganimation";
 import ResultDisplay from "./components/resultdisplay";
 import FieldString from "./components/formfield-string";
 import FieldSubmit from "./components/formfield-submit";
-
+import FieldLangauge from "./components/formfield-language";
+               
 import hljs from "highlight.js";
 
 export default function Review() {
@@ -19,6 +20,10 @@ export default function Review() {
   const [faqFolderIdInput, setFAQFolderIdInput] = useState("0");
   const [faqStructureIdInput, setFAQStructureIdInput] = useState("");
   const [categoryIdsInput, setCategoryIdsInput] = useState("");
+
+  const [languagesInput, setLanguages] = useState([]);  
+  const [manageLanguageInput, setManageLanguage] = useState(false);  
+  const [defaultLanguageInput, setDefaultLanguage] = useState("en-US");  
   
   const [result, setResult] = useState(() => "");
   const [isLoading, setIsLoading] = useState(false);
@@ -31,7 +36,9 @@ export default function Review() {
   async function onSubmit(event) {
     event.preventDefault();
     setIsLoading(true);
-    if(debugMode) console.log("Posting!");
+    if(debugMode) console.log("Posting...");
+    if(debugMode) console.log("languagesInput "+languagesInput+", manageLanguageInput "+manageLanguageInput+", defaultLanguagesInput "+defaultLanguageInput);
+
     const response = await fetch("/api/faqs", {
       method: "POST",
       headers: {
@@ -44,6 +51,9 @@ export default function Review() {
         folderId: faqFolderIdInput, 
         structureId: faqStructureIdInput,
         categoryIds:categoryIdsInput,
+        languages: languagesInput,
+        manageLanguage: manageLanguageInput,
+        defaultLanguage: defaultLanguageInput,
         debugMode: debugMode
       }),
     
@@ -151,6 +161,9 @@ export default function Review() {
                   defaultValue={""}
                 />
           </div>
+
+          <FieldLangauge debug={debugMode} manageLanguageChange={setManageLanguage}
+                         defaultLanguageChange={setDefaultLanguage} languagesChange={setLanguages} />
           
           <FieldSubmit label={"Generate FAQs"} disabled={isLoading} />
           

@@ -12,6 +12,44 @@ export default async function (req, res) {
 
     const debug = req.body.debugMode;
 
+    if(debug) console.log("req.body.languages.length: " + req.body.languages.length);
+    if(debug) console.log("req.body.manageLanguage: " + req.body.manageLanguage);
+    if(debug) console.log("req.body.defaultLanguage: " + req.body.defaultLanguage);
+    if(debug) console.log("getLanguageDisplayName " + functions.getLanguageDisplayName(req.body.language));
+
+    let storedProperties = {
+        title:{
+          type: "string",
+          description: "Frequently asked question"
+        },
+        answer:{
+          type: "string",
+          description: "Answer to the frequently asked question. Answers over 30 words are preferred."
+        }
+      };
+
+    let requiredFields = ["title", "answer"];
+    let languages = req.body.languages;
+
+    if(req.body.manageLanguage){
+
+      for(let i = 0; i < languages.length; i++){
+        
+        storedProperties["title_" + languages[i]] = {
+          type: "string",
+          description: "Frequently asked question translated into " + functions.getLanguageDisplayName(languages[i])
+        };
+        requiredFields.push("title_" + languages[i]);
+
+        storedProperties["answer_" + languages[i]] = {
+          type: "string",
+          description: "Answer to the frequently asked question translated into " + functions.getLanguageDisplayName(languages[i])
+        };
+        requiredFields.push("answer_" + languages[i]);
+
+      }
+    }
+
     const faqSchema = {
         type: "object",
         properties: {
@@ -20,17 +58,8 @@ export default async function (req, res) {
             description: "An array of "+req.body.faqNumber+" frequently asked questions",
             items:{
               type:"object",
-              properties:{
-                title:{
-                  type: "string",
-                  description: "Frequently asked question"
-                },
-                answer:{
-                  type: "string",
-                  description: "Answer to the frequently asked question. Answers over 30 words are preferred."
-                }
-              },
-              required: ["title", "question", "answer"]
+              properties: storedProperties,
+              required: requiredFields
             },
             required: ["faqs"]
           }
@@ -41,7 +70,7 @@ export default async function (req, res) {
         model: "gpt-3.5-turbo",
         messages: [
             {"role": "system", "content": "You are an administrator responsible for defining frequently asked questions."},
-            {"role": "user", "content": "Create a list of frequently asked questions and answers on the subject of: "+req.body.faqTopic}
+            {"role": "user", "content": "Create a list of frequently asked questions and answers on the subject of: " + req.body.faqTopic}
         ],
         functions: [
         {name: "get_faqs", "parameters": faqSchema}
@@ -56,20 +85,49 @@ export default async function (req, res) {
         if(debug) console.log(faqs[i]);
         
         let postBody = {
-            "contentFields": [
-              {
-                  "contentFieldValue": {
-                  "data": faqs[i].answer
-                  },
-                  "name": "Answer"
-              }
-            ],
             "contentStructureId": req.body.structureId,
             "siteId": req.body.siteId,
             "structuredContentFolderId": req.body.folderId,
             "taxonomyCategoryIds": returnArraySet(req.body.categoryIds),
             "title": faqs[i].title
         };
+
+        let setContentFields = [
+          {
+              "contentFieldValue": {
+                "data": faqs[i].answer
+              },
+              "name": "Answer"
+          }
+        ];
+
+        if(req.body.manageLanguage){
+
+          let contentFieldValues = {};
+          let titleValues = {};
+
+          for(let i = 0; i < languages.length; i++){
+            try{
+                
+              contentFieldValues[languages[i]] = {
+                "data":faqs[i]["answer_" + languages[i]]
+              };
+
+              titleValues[languages[i]] = faqs[i]["title_" + languages[i]];
+
+            } catch (error){
+              if(debug) console.log("unable to process translation for faq" + i + ":" + languages[i]);
+            }
+          }
+
+          setContentFields[0]["contentFieldValue_i18n"]=contentFieldValues;
+          postBody["title_i18n"]=titleValues;
+        }
+        
+        postBody["contentFields"] = setContentFields;
+
+        if(debug) console.log("postBody");
+        if(debug) console.log(JSON.stringify(postBody));
 
         const axios = require("axios");
 
@@ -87,7 +145,8 @@ export default async function (req, res) {
             headers: {
                 'Authorization': 'Basic ' + base64data,
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Accept-Language': req.body.defaultLanguage,
             }
         };
 

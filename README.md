@@ -15,7 +15,7 @@ Utilizing this OpenAI Wizard doesn't just speed up content creation, which many 
 - **Taxonomy with Category Structure**
 - **Commerce Categories and Products with Images**
 - **Custom Liferay Objects Schemas**
-- **FAQs**
+- **Multilingual FAQs**
 - **Images Only**
 - **News Articles with Images**
 - **Knowledge Base Folders and Articles**

@@ -18,13 +18,13 @@ export default async function (req, res) {
     if(debug) console.log("getLanguageDisplayName " + functions.getLanguageDisplayName(req.body.language));
 
     let storedProperties = {
-        title:{
-          type: "string",
-          description: "Frequently asked question"
+        "title":{
+          "type": "string",
+          "description": "Frequently asked question"
         },
-        answer:{
-          type: "string",
-          description: "Answer to the frequently asked question. Answers over 30 words are preferred."
+        "answer":{
+          "type": "string",
+          "description": "Answer to the frequently asked question. Answers over 30 words are preferred."
         }
       };
 
@@ -107,16 +107,29 @@ export default async function (req, res) {
           let titleValues = {};
 
           for(let i = 0; i < languages.length; i++){
-            try{
-                
-              contentFieldValues[languages[i]] = {
-                "data":faqs[i]["answer_" + languages[i]]
-              };
 
-              titleValues[languages[i]] = faqs[i]["title_" + languages[i]];
+            contentFieldValues = {};
+            titleValues = {};
+            
+            try{
+
+              for (const [key, value] of Object.entries(faqs[i])) {
+                //if(debug) console.log(`${i} : ${key}`);
+
+                if(key.indexOf("_")){
+                  let keySplit=key.split("_");
+                  if(keySplit[0]=="title")
+                    titleValues[keySplit[1]] = value;
+                  
+                  if(keySplit[0]=="answer")
+                    contentFieldValues[keySplit[1]] = {  "data":cleanValue(value) };
+                }
+
+              }
 
             } catch (error){
-              if(debug) console.log("unable to process translation for faq" + i + ":" + languages[i]);
+              if(debug) console.log("unable to process translation for faq " + i + " : " + languages[i]);
+              if(debug) console.log(error);
             }
           }
 
@@ -166,6 +179,13 @@ export default async function (req, res) {
 
     res.status(200).json({ result: "Completed in " +
       functions.millisToMinutesAndSeconds(end - start)});
+}
+
+function cleanValue(value){
+
+  value = value.replace("œ", "");
+
+  return value;
 }
 
 function returnArraySet(value){

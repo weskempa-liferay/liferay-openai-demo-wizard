@@ -99,7 +99,7 @@ export default function Review() {
         
         <AppHeader 
             title={"Liferay FAQ Generator"} 
-            desc={"Type your topic in the field below and wait for your FAQs. <br/> Leave the field blank for a random faq topic."} />
+            desc={"Type your topic in the field below and wait for your FAQs. <br/> Leave the FAQ topic xfield blank for a random faq topic."} />
 
         <div className="fixed top-2 right-5 p-5 text-lg download-options p-5 rounded">
 

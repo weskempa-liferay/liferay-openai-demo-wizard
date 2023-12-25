@@ -106,31 +106,34 @@ export default async function (req, res) {
           let contentFieldValues = {};
           let titleValues = {};
 
-          for(let i = 0; i < languages.length; i++){
+          for(let l = 0; l < languages.length; l++){
 
             contentFieldValues = {};
             titleValues = {};
             
-            try{
-
               for (const [key, value] of Object.entries(faqs[i])) {
-                //if(debug) console.log(`${i} : ${key}`);
 
-                if(key.indexOf("_")){
-                  let keySplit=key.split("_");
-                  if(keySplit[0]=="title")
-                    titleValues[keySplit[1]] = value;
-                  
-                  if(keySplit[0]=="answer")
-                    contentFieldValues[keySplit[1]] = {  "data":cleanValue(value) };
+                try{
+
+                  if(debug) console.log(`${l} : ${key}`);
+
+                  if(key.indexOf("_")){
+                    let keySplit=key.split("_");
+                    if(debug) console.log("storing title")
+                    if(keySplit[0]=="title")
+                      titleValues[keySplit[1]] = value;
+                    
+                    if(debug) console.log("storing answer")
+                    if(keySplit[0]=="answer")
+                      contentFieldValues[keySplit[1]] = {  "data":value };
+                  }
+
+                } catch (error){
+                  if(debug) console.log("unable to process translation for faq " + l + " : " + languages[l]);
+                  if(debug) console.log(error);
                 }
 
               }
-
-            } catch (error){
-              if(debug) console.log("unable to process translation for faq " + i + " : " + languages[i]);
-              if(debug) console.log(error);
-            }
           }
 
           setContentFields[0]["contentFieldValue_i18n"]=contentFieldValues;
@@ -179,13 +182,6 @@ export default async function (req, res) {
 
     res.status(200).json({ result: "Completed in " +
       functions.millisToMinutesAndSeconds(end - start)});
-}
-
-function cleanValue(value){
-
-  value = value.replace("œ", "");
-
-  return value;
 }
 
 function returnArraySet(value){

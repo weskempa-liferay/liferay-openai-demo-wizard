@@ -70,6 +70,7 @@ export default async function (req, res) {
         delete userlist[i].middleName;
         userlist[i].alternateName = userlist[i].givenName+"."+userlist[i].familyName;
         userlist[i].emailAddress = userlist[i].givenName+"."+userlist[i].familyName+"@"+req.body.emailPrefix;
+        userlist[i].password = req.body.password;
     }
 
     if(debug) console.log(userlist);

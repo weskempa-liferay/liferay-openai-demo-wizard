@@ -14,6 +14,8 @@ export default function Review() {
 
   const [userNumberInput, setUserNumberInput] = useState("5");
   const [emailPrefixInput, setEmailPrefixInput] = useState("liferay.xyz");
+  const [passwordInput, setPasswordInput] = useState("password");
+  
 
   const [result, setResult] = useState(() => "");
   const [isLoading, setIsLoading] = useState(false);
@@ -34,6 +36,7 @@ export default function Review() {
       body: JSON.stringify({
         userNumber: userNumberInput,
         emailPrefix: emailPrefixInput,
+        password: passwordInput,
         debugMode: debugMode
       }),
     });
@@ -63,7 +66,7 @@ export default function Review() {
                     label={"Number of Users to Create"} 
                     placeholder={"Number of users"}
                     inputChange={setUserNumberInput}
-                    defaultValue={""}
+                    defaultValue={"5"}
                   />
 
             <FieldString 
@@ -72,6 +75,14 @@ export default function Review() {
                     placeholder={"@liferay.xyz"}
                     inputChange={setEmailPrefixInput}
                     defaultValue={"@liferay.xyz"}
+                  />
+
+            <FieldString 
+                    name={"password"}
+                    label={"User Default Password"} 
+                    placeholder={"password"}
+                    inputChange={setPasswordInput}
+                    defaultValue={"password"}
                   />
             
           </div>

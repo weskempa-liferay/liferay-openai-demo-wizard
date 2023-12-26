@@ -88,7 +88,7 @@ export default async function (req, res) {
             "contentStructureId": req.body.structureId,
             "siteId": req.body.siteId,
             "structuredContentFolderId": req.body.folderId,
-            "taxonomyCategoryIds": returnArraySet(req.body.categoryIds),
+            "taxonomyCategoryIds": functions.returnArraySet(req.body.categoryIds),
             "title": faqs[i].title
         };
 
@@ -146,24 +146,9 @@ export default async function (req, res) {
 
         const axios = require("axios");
 
-        const usernamePasswordBuffer = Buffer.from( 
-            process.env.LIFERAY_ADMIN_EMAIL_ADDRESS + 
-            ':' + process.env.LIFERAY_ADMIN_PASSWORD);
-
-        const base64data = usernamePasswordBuffer.toString('base64');
-
         let faqApiPath = process.env.LIFERAY_PATH + "/o/headless-delivery/v1.0/sites/"+req.body.siteId+"/structured-contents";
 
-        const options = {
-            method: "POST",
-            port: 443,
-            headers: {
-                'Authorization': 'Basic ' + base64data,
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Accept-Language': req.body.defaultLanguage,
-            }
-        };
+        const options = functions.getPostOptions(req.body.defaultLanguage);
 
         try {
             const response = await axios.post(faqApiPath,
@@ -181,14 +166,4 @@ export default async function (req, res) {
 
     res.status(200).json({ result: "Completed in " +
       functions.millisToMinutesAndSeconds(end - start)});
-}
-
-function returnArraySet(value){
-  if(value.indexOf(",")>-1){
-    return value.split(",");
-  } else if (parseInt(value)>0){
-    return [value];
-  } else {
-    return [];
-  }
 }

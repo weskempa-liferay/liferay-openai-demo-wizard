@@ -41,5 +41,27 @@ module.exports = {
 
         return lanuages[0].name;
     },
-
+    returnArraySet: (value) =>{
+        if(value.indexOf(",")>-1){
+            return value.split(",");
+        } else if (parseInt(value)>0){
+            return [value];
+        } else {
+            return [];
+        }
+    },
+    getPostOptions: (defaultLanguage) =>{
+        let base64data = module.exports.getBase64data();
+        return {
+                method: "POST",
+                port: 443,
+                headers: {
+                    'Authorization': 'Basic ' + base64data,
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Accept-Language': defaultLanguage,
+                }
+            
+            }
+        }
 };

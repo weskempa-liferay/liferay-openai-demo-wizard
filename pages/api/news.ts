@@ -143,7 +143,7 @@ export default async function (req, res) {
         });
 
     } else {
-      postNewsToLiferay(base64data,req, newsJson, 0, debug);
+      postNewsToLiferay(base64data,req, newsJson, null, debug);
     }
 
     } catch (error) {
@@ -205,48 +205,35 @@ function postImageToLiferay(file,base64data,req, newsJson, debug){
   },100);
 }
 
-function postNewsToLiferay(base64data,req, newsJson,imageId, debug){
+async function postNewsToLiferay(base64data,req, newsJson,imageId, debug){
 
   let newsFields;
   
+  newsFields = [
+    {
+      "contentFieldValue": {
+        "data": newsJson.alternativeHeadline
+      },
+      "name": "Headline"
+    },
+    {
+      "contentFieldValue": {
+        "data": newsJson.articleBody
+      },
+      "name": "Content"
+    },
+    {
+      "contentFieldValue": {
+        "data": ""
+      },
+      "name": "Image"
+    }
+  ];
+
   if(imageId){
-    newsFields = [
-      {
-        "contentFieldValue": {
-          "data": newsJson.alternativeHeadline
-        },
-        "name": "Headline"
-      },
-      {
-        "contentFieldValue": {
-          "data": newsJson.articleBody
-        },
-        "name": "Content"
-      },
-      {
-        "contentFieldValue": {
-          "image": {
-            "id": imageId
-          }
-        },
-        "name": "Image"
-      }
-    ];
-  } else {
-    newsFields = [
-      {
-        "contentFieldValue": {
-          "data": newsJson.alternativeHeadline
-        },
-        "name": "Headline"
-      },
-      {
-        "contentFieldValue": {
-          "data": newsJson.articleBody
-        },
-        "name": "Content"
-      }
-    ];
+    newsFields[2]["contentFieldValue"]["image"]= {
+      "id": imageId
+    }
   }
 
   let titleValues = {};
@@ -259,8 +246,17 @@ function postNewsToLiferay(base64data,req, newsJson,imageId, debug){
 
     for(let l = 0; l < req.body.languages.length; l++){
 
-      imageValues[req.body.languages[l]] = {
-        data:""
+      if(imageId){
+        imageValues[req.body.languages[l]] = {
+          "data":"",
+          "image": {
+            "id": imageId
+          }
+        }
+      }else{
+        imageValues[req.body.languages[l]] = {
+          "data":""
+        }
       }
 
       alternativeHeadlineFieldValues = {};
@@ -296,63 +292,28 @@ function postNewsToLiferay(base64data,req, newsJson,imageId, debug){
 
     newsFields[0]["contentFieldValue_i18n"]=alternativeHeadlineFieldValues;
     newsFields[1]["contentFieldValue_i18n"]=articleBodyFieldValues;
-
-    newsFields.push({
-      "contentFieldValue": {
-        "data": ""
-      },
-      "name": "Image",
-      "contentFieldValue_i18n": imageValues
-    })
-
+    newsFields[2]["contentFieldValue_i18n"]=imageValues;
+    
   }
 
   const newsSchema = {
     "contentFields": newsFields,
     "contentStructureId": req.body.structureId,
     "structuredContentFolderId": req.body.folderId,
-    "taxonomyCategoryIds": returnArraySet(req.body.categoryIds),
+    "taxonomyCategoryIds": functions.returnArraySet(req.body.categoryIds),
     "title": newsJson.headline,
     "title_i18n":titleValues
   }
 
+  const axios = require("axios");
+
   let apiPath = process.env.LIFERAY_PATH + "/o/headless-delivery/v1.0/sites/"+req.body.siteId+"/structured-contents";
 
-  const options = {
-      method: "POST",
-      url: apiPath,
-      port: 443,
-      headers: {
-        'Authorization': 'Basic ' + base64data,
-        'Content-Type': 'application/json',
-        'Accept-Language': req.body.defaultLanguage,
-      },
-      body: JSON.stringify(newsSchema)
-  };
+  const options = functions.getPostOptions(req.body.defaultLanguage);
 
-  setTimeout(function(){{
+  const response = await axios.post(apiPath,
+    JSON.stringify(newsSchema), options);
 
-    const request = require('request');
+  console.log("News import process complete.");
 
-    request(options, function (err, res, body) {
-        if(debug) console.log("res");
-        if(debug) console.log(res);
-
-        if(err) console.log(err);
-
-        console.log("News import process complete.");
-    });
-
-  }},100);
-
-}
-
-function returnArraySet(value){
-  if(value.indexOf(",")>-1){
-    return value.split(",");
-  } else if (parseInt(value)>0){
-    return [value];
-  } else {
-    return [];
-  }
 }

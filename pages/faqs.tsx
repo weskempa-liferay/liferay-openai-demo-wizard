@@ -95,11 +95,11 @@ export default function Review() {
     <div>
       <AppHead title={"FAQ Generator"}/>
 
-      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
+      <main className="py-20 flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
         
         <AppHeader 
             title={"Liferay FAQ Generator"} 
-            desc={"Type your topic in the field below and wait for your FAQs. <br/> Leave the FAQ topic xfield blank for a random faq topic."} />
+            desc={"Type your topic in the field below and wait for your FAQs. <br/> Leave the FAQ topic field blank for a random faq topic."} />
 
         <div className="fixed top-2 right-5 p-5 text-lg download-options p-5 rounded">
 
@@ -131,8 +131,8 @@ export default function Review() {
             
             <FieldString 
                   name={"siteId"}
-                  label={"Site ID"} 
-                  placeholder={"Enter a Site ID"}
+                  label={"Site ID or Asset Library Group ID"} 
+                  placeholder={"Enter a site ID or asset library group ID"}
                   inputChange={setSiteIdInput}
                   defaultValue={""}
                 />
@@ -140,7 +140,7 @@ export default function Review() {
             <FieldString 
                   name={"faqStructureID"}
                   label={"FAQ Structure ID"} 
-                  placeholder={"Enter the FAQ Structure ID"}
+                  placeholder={"Enter the FAQ structure ID"}
                   inputChange={setFAQStructureIdInput}
                   defaultValue={""}
                 />
@@ -148,7 +148,7 @@ export default function Review() {
             <FieldString 
                   name={"folderId"}
                   label={"Web Content Folder ID (0 for Root)"} 
-                  placeholder={"Enter a Folder ID"}
+                  placeholder={"Enter a folder ID"}
                   inputChange={setFAQFolderIdInput}
                   defaultValue={"0"}
                 />
@@ -156,7 +156,7 @@ export default function Review() {
             <FieldString 
                   name={"categoryIds"}
                   label={"Comma-Delimited Category IDs (Optional)"} 
-                  placeholder={"List of Comma-Delimited Category IDs"}
+                  placeholder={"List of comma-delimited category IDs"}
                   inputChange={setCategoryIdsInput}
                   defaultValue={""}
                 />

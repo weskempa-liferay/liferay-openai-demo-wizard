@@ -180,18 +180,7 @@ function postImageToLiferay(file,base64data,req, newsJson, debug){
       
   if(debug) console.log(newsImageApiPath);
 
-  const options = {
-      method: "POST",
-      url: newsImageApiPath,
-      port: 443,
-      headers: {
-        'Authorization': 'Basic ' + base64data, 
-        'Content-Type': 'multipart/form-data'
-      },
-      formData : {
-          "file" : fs.createReadStream(process.cwd()+"/"+file.path)
-      }
-  };
+  const options = functions.getFilePostOptions(newsImageApiPath,fs.createReadStream(process.cwd()+"/"+file.path));
   
   setTimeout(function(){
 
@@ -266,8 +255,6 @@ async function postNewsToLiferay(base64data,req, newsJson,imageId, debug){
         for (const [key, value] of Object.entries(newsJson)) {
 
           try{
-
-            if(debug) console.log(`${l} : ${key} : ${value}`);
 
             if(key.indexOf("_")>0){
               let keySplit=key.split("_");

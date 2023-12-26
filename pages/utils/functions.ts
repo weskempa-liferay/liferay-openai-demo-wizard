@@ -51,17 +51,30 @@ module.exports = {
         }
     },
     getPostOptions: (defaultLanguage) =>{
-        let base64data = module.exports.getBase64data();
         return {
-                method: "POST",
-                port: 443,
-                headers: {
-                    'Authorization': 'Basic ' + base64data,
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'Accept-Language': defaultLanguage,
-                }
-            
+            method: "POST",
+            port: 443,
+            headers: {
+                'Authorization': 'Basic ' + module.exports.getBase64data(),
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Accept-Language': defaultLanguage,
+            }
+        
+        }
+    },
+    getFilePostOptions: (apiPath, filePath) => {
+        return {
+            method: "POST",
+            url: apiPath,
+            port: 443,
+            headers: {
+            'Authorization': 'Basic ' + module.exports.getBase64data(),
+            'Content-Type': 'multipart/form-data'
+            },
+            formData : {
+                "file" : filePath
             }
         }
+    }
 };

@@ -133,15 +133,7 @@ async function createOrganization (organization, parentOrgId, debug){
 
   let orgApiPath = process.env.LIFERAY_PATH + "/o/headless-admin-user/v1.0/organizations";
 
-  const options = {
-      method: "POST",
-      port: 443,
-      headers: {
-          'Authorization': 'Basic ' + functions.getBase64data(),
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-      }
-  };
+  const options = functions.getPostOptions("en-US");
 
   let returnid = 0;
 

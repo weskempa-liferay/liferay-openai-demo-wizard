@@ -52,7 +52,7 @@ export default function Review() {
     <div>
       <AppHead title={"Account Generator"}/>
 
-      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
+      <main className="py-20 flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
         
         <AppHeader 
             title={"Liferay Account Generator"} 

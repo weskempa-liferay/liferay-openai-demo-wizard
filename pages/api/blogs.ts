@@ -139,18 +139,7 @@ function postImageToLiferay(file,base64data,req, blogJson, debug){
       
   if(debug) console.log(blogImageApiPath);
 
-  const options = {
-      method: "POST",
-      url: blogImageApiPath,
-      port: 443,
-      headers: {
-        'Authorization': 'Basic ' + base64data, 
-        'Content-Type': 'multipart/form-data'
-      },
-      formData : {
-          "file" : fs.createReadStream(process.cwd()+"/"+file.path)
-      }
-  };
+  const options = functions.getFilePostOptions(blogImageApiPath,fs.createReadStream(process.cwd()+"/"+file.path));
   
   setTimeout(function(){
 
@@ -164,7 +153,7 @@ function postImageToLiferay(file,base64data,req, blogJson, debug){
   },100);
 }
 
-function postBlogToLiferay(base64data, req, blogJson,imageId, debug){
+async function postBlogToLiferay(base64data, req, blogJson,imageId, debug){
 
   if(imageId){
     blogJson.image = {
@@ -172,29 +161,22 @@ function postBlogToLiferay(base64data, req, blogJson,imageId, debug){
     }
   }
 
+  const axios = require("axios");
+
   let apiPath = process.env.LIFERAY_PATH + "/o/headless-delivery/v1.0/sites/"+req.body.siteId+"/blog-postings";
 
-  const options = {
-      method: "POST",
-      url: apiPath,
-      port: 443,
-      headers: {
-        'Authorization': 'Basic ' + base64data,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(blogJson)
-  };
+  const options = functions.getPostOptions("en-US");
 
-  setTimeout(function(){{
+  try {
+      const response = await axios.post(apiPath,
+          blogJson, options);
 
-    const request = require('request');
+      if(debug) console.log(response.data);
 
-    request(options, function (err, res, body) {
-        if(err) console.log(err);
-
-        console.log("Blog Import Process Complete.");
-    });
-
-  }},100);
+      console.log("Blog Import Process Complete.");
+  }
+  catch (error) {
+      console.log(error);
+  }
 
 }

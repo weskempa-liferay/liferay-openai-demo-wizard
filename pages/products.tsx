@@ -119,7 +119,7 @@ export default function Review() {
     <div>
       <AppHead title={"Product Generator"}/>
 
-      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
+      <main className="py-20 flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
           
         <AppHeader title={"Liferay Product Generator"} desc={"This is an Open AI integration to generate demo products."} />
 
@@ -130,7 +130,7 @@ export default function Review() {
             <FieldString 
                     name={"companyTheme"}
                     label={"Commerce Theme"} 
-                    placeholder={"Enter a Company Theme"}
+                    placeholder={"Enter a company theme"}
                     inputChange={setCompanyThemeInput}
                     defaultValue={""}
                   />
@@ -138,7 +138,7 @@ export default function Review() {
             <FieldString 
                     name={"categoryName"}
                     label={"Category Name"} 
-                    placeholder={"Enter a Category Name"}
+                    placeholder={"Enter a category name"}
                     inputChange={setCategoryNameInput}
                     defaultValue={""}
                   />
@@ -146,7 +146,7 @@ export default function Review() {
             <FieldString 
                     name={"numberOfCategories"}
                     label={"Number of Categories"} 
-                    placeholder={"Enter the number of Categories"}
+                    placeholder={"Enter the number of categories"}
                     inputChange={setCategoryNumberInput}
                     defaultValue={"5"}
                   />
@@ -154,7 +154,7 @@ export default function Review() {
             <FieldString 
                     name={"numberOfProducts"}
                     label={"Number of Products per Category"} 
-                    placeholder={"Enter the number of Products per Category"}
+                    placeholder={"Enter the number of products per category"}
                     inputChange={setProductNumberInput}
                     defaultValue={"3"}
                   />
@@ -162,7 +162,7 @@ export default function Review() {
             <FieldString 
                     name={"globalSiteId"}
                     label={"Global Site ID for Taxonomy Assignment"} 
-                    placeholder={"Enter the Global Site ID"}
+                    placeholder={"Enter the global site ID"}
                     inputChange={setGlobalSiteIdInput}
                     defaultValue={""}
                   />

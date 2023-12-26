@@ -93,18 +93,7 @@ function postImageToLiferay(file,base64data,req, debug){
       
   if(debug) console.log(imageApiPath);
 
-  const options = {
-      method: "POST",
-      url: imageApiPath,
-      port: 443,
-      headers: {
-        'Authorization': 'Basic ' + base64data, 
-        'Content-Type': 'multipart/form-data'
-      },
-      formData : {
-          "file" : fs.createReadStream(process.cwd()+"/"+file.path)
-      }
-  };
+  const options = functions.getFilePostOptions(imageApiPath,fs.createReadStream(process.cwd()+"/"+file.path));
   
   setTimeout(function(){
 

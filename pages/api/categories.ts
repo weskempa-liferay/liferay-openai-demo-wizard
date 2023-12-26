@@ -135,15 +135,7 @@ async function createCategory (category, parentVocabId, debug){
   
     let categoriesApiPath = process.env.LIFERAY_PATH + "/o/headless-admin-taxonomy/v1.0/taxonomy-vocabularies/" + parentVocabId + "/taxonomy-categories";
     
-    const options = {
-        method: "POST",
-        port: 443,
-        headers: {
-            'Authorization': 'Basic ' + functions.getBase64data(),
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        }
-    };
+    const options = functions.getPostOptions("en-US");
   
     let returnid = 0;
   
@@ -170,15 +162,7 @@ async function createCategory (category, parentVocabId, debug){
   
     let categoriesApiPath = process.env.LIFERAY_PATH + "/o/headless-admin-taxonomy/v1.0/taxonomy-categories/" + parentCategoryId + "/taxonomy-categories";
     
-    const options = {
-        method: "POST",
-        port: 443,
-        headers: {
-            'Authorization': 'Basic ' + functions.getBase64data(),
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        }
-    };
+    const options = functions.getPostOptions("en-US");
   
     let returnid = 0;
   

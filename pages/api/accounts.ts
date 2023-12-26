@@ -61,15 +61,7 @@ export default async function (req, res) {
 
         let faqApiPath = process.env.LIFERAY_PATH + "/o/headless-commerce-admin-account/v1.0/accounts";
 
-        const options = {
-            method: "POST",
-            port: 443,
-            headers: {
-                'Authorization': 'Basic ' + functions.getBase64data(),
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            }
-        };
+        const options = functions.getPostOptions("en-US");
 
         try {
             const response = await axios.post(faqApiPath,

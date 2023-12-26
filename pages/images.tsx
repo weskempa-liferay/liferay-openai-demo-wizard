@@ -14,7 +14,7 @@ import hljs from "highlight.js";
 export default function Review() {
   
   const [imageDescriptionInput, setImageDescriptionInput] = useState("");
-  const [imageFolderIdInput, setImageFolderIdInput] = useState("0");
+  const [imageFolderIdInput, setImageFolderIdInput] = useState("");
   const [imageNumberInput, setImageNumberInput] = useState("1");
   const [imageGenerationType, setImageGenerationType] = useState("none");
   const [showStyleInput, setShowImageStyleInput] = useState(false);
@@ -91,7 +91,7 @@ export default function Review() {
     <div>
       <AppHead title={"Image Generator"}/>
 
-      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
+      <main className="py-20 flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
         
         <AppHeader title={"Liferay Image Generator"} desc={"Type your topic in the field below and wait for your images."} />
 
@@ -125,10 +125,10 @@ export default function Review() {
 
             <FieldString 
                 name={"imageFolderId"}
-                label={"Image Folder ID (0 for Doc Lib Root)"} 
+                label={"Image Folder ID"} 
                 placeholder={"Enter a Document Library Folder ID"}
                 inputChange={setImageFolderIdInput}
-                defaultValue={"0"}
+                defaultValue={""}
               />
 
             <FieldImageType

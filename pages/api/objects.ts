@@ -55,25 +55,10 @@ export default async function (req, res) {
     if(debug) console.log(JSON.stringify(resultlist));
 
     const axios = require("axios");
-    const fs = require("fs");
-
-    const usernamePasswordBuffer = Buffer.from( 
-        process.env.LIFERAY_ADMIN_EMAIL_ADDRESS + 
-        ':' + process.env.LIFERAY_ADMIN_PASSWORD);
-
-    const base64data = usernamePasswordBuffer.toString('base64');
 
     let objectApiPath = process.env.LIFERAY_PATH + aiEndpoint;
 
-    const options = {
-        method: "POST",
-        port: 443,
-        headers: {
-            'Authorization': 'Basic ' + base64data,
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        }
-    };
+    const options = functions.getPostOptions("en-US");
 
     try {
         const response = await axios.post(objectApiPath,

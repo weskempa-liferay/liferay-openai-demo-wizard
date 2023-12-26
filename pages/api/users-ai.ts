@@ -76,25 +76,10 @@ export default async function (req, res) {
     if(debug) console.log(userlist);
 
     const axios = require("axios");
-    const fs = require("fs");
-
-    const usernamePasswordBuffer = Buffer.from( 
-        process.env.LIFERAY_ADMIN_EMAIL_ADDRESS + 
-        ':' + process.env.LIFERAY_ADMIN_PASSWORD);
-
-    const base64data = usernamePasswordBuffer.toString('base64');
 
     let userApiPath = process.env.LIFERAY_PATH + "/o/headless-admin-user/v1.0/user-accounts";
 
-    const options = {
-        method: "POST",
-        port: 443,
-        headers: {
-            'Authorization': 'Basic ' + base64data,
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        }
-    };
+    const options = functions.getPostOptions("en-US");
 
     for(let i=0;i<userlist.length;i++){
       try {

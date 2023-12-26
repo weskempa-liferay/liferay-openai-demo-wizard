@@ -95,7 +95,7 @@ export default function Review() {
     <div>
       <AppHead title={"Blog Generator"}/>
 
-      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
+      <main className="py-20 flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
       
         <AppHeader title={"Liferay Blog Generator"} 
                    desc={"Type your topic in the field below and wait for your blogs. <br/> Leave the field blank for a random blog topic."} />
@@ -130,8 +130,8 @@ export default function Review() {
             
             <FieldString 
                 name={"siteId"}
-                label={"Site ID"} 
-                placeholder={"Enter a site id"}
+                label={"Site ID or Asset Library Group ID"} 
+                placeholder={"Enter a site ID or asset library group ID"}
                 inputChange={setSiteIdInput}
                 defaultValue={""}
               />

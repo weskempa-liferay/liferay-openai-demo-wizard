@@ -29,27 +29,57 @@ export default async function (req, res) {
 
   const base64data = usernamePasswordBuffer.toString('base64');
 
-  const schema = {
-    type: "object",
-    properties: {
-      headline: {
-        type: "string",
-        description: "The title of the news artcile"
-      },
-      alternativeHeadline: {
-        type: "string",
-        description: "A headline that is a summary of the news article"
-      },
-      articleBody: {
-        type: "string",
-        description: "The content of the news article which should be "+req.body.newsLength+" words or more.  Remove any double quotes",
-      },
-      picture_description: {
-        type: "string",
-        description: "A description of an appropriate image for this news in three sentences."
-      }
+  const storedProperties = {
+    headline: {
+      type: "string",
+      description: "The title of the news artcile"
     },
-    required: ["headline", "alternativeHeadline", "articleBody", "picture_description"]
+    alternativeHeadline: {
+      type: "string",
+      description: "A headline that is a summary of the news article"
+    },
+    articleBody: {
+      type: "string",
+      description: "The content of the news article which should be "+req.body.newsLength+" words or more.  Remove any double quotes",
+    },
+    picture_description: {
+      type: "string",
+      description: "A description of an appropriate image for this news in three sentences."
+    }
+  }
+
+  let requiredFields = ["headline", "alternativeHeadline", "articleBody", "picture_description"];
+  let languages = req.body.languages;
+
+  if(req.body.manageLanguage){
+
+    for(let i = 0; i < languages.length; i++){
+      
+      storedProperties["headline_" + languages[i]] = {
+        type: "string",
+        description: "The title of the news artcile translated into " + functions.getLanguageDisplayName(languages[i])
+      };
+      requiredFields.push("headline_" + languages[i]);
+
+      storedProperties["alternativeHeadline_" + languages[i]] = {
+        type: "string",
+        description: "A headline that is a summary of the news article translated into " + functions.getLanguageDisplayName(languages[i])
+      };
+      requiredFields.push("alternativeHeadline_" + languages[i]);
+
+      storedProperties["articleBody_" + languages[i]] = {
+        type: "string",
+        description: "The content of the news article translated into " + functions.getLanguageDisplayName(languages[i])
+      };
+      requiredFields.push("articleBody_" + languages[i]);
+
+    }
+  }
+
+  const newsSchema = {
+    type: "object",
+    properties: storedProperties,
+    required: requiredFields
   }
 
   for(let i=0; i<runCount; i++){
@@ -61,7 +91,7 @@ export default async function (req, res) {
         {"role": "user", "content": "Write news on the subject of: "+req.body.newsTopic+". Each news title needs to be unique. The content of the news article which should be "+req.body.newsLength+" words or more."}
       ],
       functions: [
-        {name: "get_news_content", "parameters": schema}
+        {name: "get_news_content", "parameters": newsSchema}
       ],
       function_call: {name: "get_news_content"},
       max_tokens: 1000,
@@ -219,12 +249,71 @@ function postNewsToLiferay(base64data,req, newsJson,imageId, debug){
     ];
   }
 
+  let titleValues = {};
+
+  if(req.body.manageLanguage){
+
+    let alternativeHeadlineFieldValues = {};
+    let articleBodyFieldValues = {};
+    let imageValues = {};
+
+    for(let l = 0; l < req.body.languages.length; l++){
+
+      imageValues[req.body.languages[l]] = {
+        data:""
+      }
+
+      alternativeHeadlineFieldValues = {};
+      articleBodyFieldValues = {};
+      titleValues = {};
+      
+        for (const [key, value] of Object.entries(newsJson)) {
+
+          try{
+
+            if(debug) console.log(`${l} : ${key} : ${value}`);
+
+            if(key.indexOf("_")>0){
+              let keySplit=key.split("_");
+              
+              if(keySplit[0]=="headline")
+                titleValues[keySplit[1]] = value;
+              
+              if(keySplit[0]=="alternativeHeadline")
+                alternativeHeadlineFieldValues[keySplit[1]] = { "data":value };
+          
+              if(keySplit[0]=="articleBody")
+                articleBodyFieldValues[keySplit[1]] = { "data":value };
+            }
+
+          } catch (error){
+            if(debug) console.log("unable to process translation for faq " + l + " : " + req.body.languages[l]);
+            if(debug) console.log(error);
+          }
+
+        }
+    }
+
+    newsFields[0]["contentFieldValue_i18n"]=alternativeHeadlineFieldValues;
+    newsFields[1]["contentFieldValue_i18n"]=articleBodyFieldValues;
+
+    newsFields.push({
+      "contentFieldValue": {
+        "data": ""
+      },
+      "name": "Image",
+      "contentFieldValue_i18n": imageValues
+    })
+
+  }
+
   const newsSchema = {
     "contentFields": newsFields,
     "contentStructureId": req.body.structureId,
     "structuredContentFolderId": req.body.folderId,
     "taxonomyCategoryIds": returnArraySet(req.body.categoryIds),
-    "title": newsJson.headline
+    "title": newsJson.headline,
+    "title_i18n":titleValues
   }
 
   let apiPath = process.env.LIFERAY_PATH + "/o/headless-delivery/v1.0/sites/"+req.body.siteId+"/structured-contents";
@@ -235,7 +324,8 @@ function postNewsToLiferay(base64data,req, newsJson,imageId, debug){
       port: 443,
       headers: {
         'Authorization': 'Basic ' + base64data,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Accept-Language': req.body.defaultLanguage,
       },
       body: JSON.stringify(newsSchema)
   };
@@ -245,6 +335,9 @@ function postNewsToLiferay(base64data,req, newsJson,imageId, debug){
     const request = require('request');
 
     request(options, function (err, res, body) {
+        if(debug) console.log("res");
+        if(debug) console.log(res);
+
         if(err) console.log(err);
 
         console.log("News import process complete.");

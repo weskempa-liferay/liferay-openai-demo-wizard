@@ -119,11 +119,10 @@ export default async function (req, res) {
 
                   if(key.indexOf("_")){
                     let keySplit=key.split("_");
-                    if(debug) console.log("storing title")
+                    
                     if(keySplit[0]=="title")
                       titleValues[keySplit[1]] = value;
                     
-                    if(debug) console.log("storing answer")
                     if(keySplit[0]=="answer")
                       contentFieldValues[keySplit[1]] = {  "data":value };
                   }

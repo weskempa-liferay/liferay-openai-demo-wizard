@@ -9,6 +9,7 @@ import ImageStyle from "./components/imagestyle";
 import FieldString from "./components/formfield-string";
 import FieldImageType from "./components/formfield-imagetype";
 import FieldSubmit from "./components/formfield-submit";
+import FieldLangauge from "./components/formfield-language";
 
 import hljs from "highlight.js";
 
@@ -27,6 +28,10 @@ export default function Review() {
   const [showStyleInput, setShowImageStyleInput] = useState(false);
   const [showImageFolder, showImageFolderInput] = useState(false);
   const [submitLabel, setSubmitLabel] = useState("");
+
+  const [languagesInput, setLanguages] = useState([]);  
+  const [manageLanguageInput, setManageLanguage] = useState(false);  
+  const [defaultLanguageInput, setDefaultLanguage] = useState("en-US");  
 
   const [result, setResult] = useState(() => "");
   const [isLoading, setIsLoading] = useState(false);
@@ -113,6 +118,9 @@ export default function Review() {
         newsNumber: newsNumberInput, 
         imageGeneration: imageGenerationType,
         imageStyle: imageStyleInput,
+        languages: languagesInput,
+        manageLanguage: manageLanguageInput,
+        defaultLanguage: defaultLanguageInput,
         debugMode: debugMode
       }),
     });
@@ -221,6 +229,9 @@ export default function Review() {
             ) : null}
 
           </div>
+
+          <FieldLangauge debug={debugMode} manageLanguageChange={setManageLanguage}
+               defaultLanguageChange={setDefaultLanguage} languagesChange={setLanguages} />
           
           <FieldSubmit label={submitLabel} disabled={isLoading} />
 

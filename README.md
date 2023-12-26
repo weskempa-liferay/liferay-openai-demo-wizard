@@ -17,7 +17,7 @@ Utilizing this OpenAI Wizard doesn't just speed up content creation, which many 
 - **Custom Liferay Objects Schemas**
 - **Multilingual FAQs**
 - **Images Only**
-- **News Articles with Images**
+- **Multilingual News Articles with Images**
 - **Knowledge Base Folders and Articles**
 - **Message Board Sections, Threads, and Messages**
 - **Organization Structures**

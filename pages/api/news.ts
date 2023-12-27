@@ -192,7 +192,7 @@ function postImageToLiferay(file,req, newsJson, debug){
   if(debug) console.log(newsImageApiPath);
 
   let fileStream = fs.createReadStream(process.cwd()+"/"+file.path);
-  const options = functions.getFilePostOptions(newsImageApiPath,fileStream);
+  const options = functions.getFilePostOptions(newsImageApiPath, fileStream, "file");
   
   setTimeout(function(){
 

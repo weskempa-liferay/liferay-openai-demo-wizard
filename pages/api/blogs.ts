@@ -135,7 +135,7 @@ function postImageToLiferay(file, req, blogJson, debug){
   if(debug) console.log(blogImageApiPath);
 
   let fileStream = fs.createReadStream(process.cwd()+"/"+file.path);
-  const options = functions.getFilePostOptions(blogImageApiPath,fileStream);
+  const options = functions.getFilePostOptions(blogImageApiPath, fileStream, "file");
   
   setTimeout(function(){
 

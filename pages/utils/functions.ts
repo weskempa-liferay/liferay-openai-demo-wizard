@@ -74,18 +74,18 @@ module.exports = {
             }
         }
     },
-    getFilePostOptions: (apiPath, fileStream) => {
-        return {
-            method: "POST",
-            url: apiPath,
-            port: 443,
-            headers: {
-            'Authorization': 'Basic ' + module.exports.getBase64data(),
-            'Content-Type': 'multipart/form-data'
-            },
-            formData : {
-                "file" :  fileStream
+    getFilePostOptions: (apiPath, fileStream, key) => {
+        let options = {
+                method: "POST",
+                url: apiPath,
+                port: 443,
+                headers: {
+                    'Authorization': 'Basic ' + module.exports.getBase64data(),
+                    'Content-Type': 'multipart/form-data'
+                },
+                formData: {}
             }
-        }
+        options.formData[key] = fileStream;
+        return options;
     }
 };

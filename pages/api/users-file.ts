@@ -67,11 +67,11 @@ export default async function (req, res) {
                 let userImageApiPath = process.env.LIFERAY_PATH + "/o/headless-admin-user/v1.0/user-accounts/" + response.data.id + "/image";
                     
                 if(debug) console.log(userImageApiPath);
-                if(debug) console.log(process.cwd() + "/" + userImagePath);
+                if(debug) console.log(process.cwd() + "/public/users/user-images/" + userImagePath);
                 
                 const fs = require('fs');
                 let fileStream = fs.createReadStream(process.cwd() + "/public/users/user-images/" + userImagePath);
-                const imgoptions = functions.getFilePostOptions(userImageApiPath, fileStream);
+                const imgoptions = functions.getFilePostOptions(userImageApiPath, fileStream, "image");
                 
                 request(imgoptions, function (err, res, body) {
                     if(err) console.log(err);

@@ -84,16 +84,12 @@ function postImageToLiferay(file,req, debug){
   const request = require('request');
   const fs = require('fs');
 
-  let imageApiPath = process.env.LIFERAY_PATH + "/o/headless-delivery/v1.0/sites/"+req.body.siteId+"/documents";
-
-  if(imageFolderId){
-    imageApiPath = process.env.LIFERAY_PATH + "/o/headless-delivery/v1.0/document-folders/"+imageFolderId+"/documents";
-  }
+  let imageApiPath = process.env.LIFERAY_PATH + "/o/headless-delivery/v1.0/document-folders/"+imageFolderId+"/documents";
       
   if(debug) console.log(imageApiPath);
 
   let fileStream = fs.createReadStream(process.cwd()+"/"+file.path);
-  const options = functions.getFilePostOptions(imageApiPath,fileStream);
+  const options = functions.getFilePostOptions(imageApiPath, fileStream, "file");
   
   setTimeout(function(){
 

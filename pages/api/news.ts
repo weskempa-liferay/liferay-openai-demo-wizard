@@ -87,14 +87,27 @@ export default async function (req, res) {
         {name: "get_news_content", "parameters": newsSchema}
       ],
       function_call: {name: "get_news_content"},
-      max_tokens: 1000,
       temperature: 0.8,
-      frequency_penalty: 0.5,
-      presence_penalty: 0
+      frequency_penalty: 0.5
     });
     
-    if(debug) console.log(response.choices[0].message.function_call.arguments);
-    newsJson = JSON.parse(response.choices[0].message.function_call.arguments);
+    try{
+
+      if(debug) console.log(response.choices[0].message.function_call.arguments);
+      newsJson = JSON.parse(response.choices[0].message.function_call.arguments);
+
+    }catch(parseException){
+
+      console.log("-----------------------------------------------------");
+      console.log("********Parse Exception on News Article " + (i+1)+"********");
+      console.log("-----------------------------------------------------");
+      console.log(response.choices[0].message.function_call)
+      console.log("-----------------------------------------------------");
+      console.log("------------------------END--------------------------");
+      console.log("-----------------------------------------------------");
+      continue;
+
+    }
 
     let pictureDescription = newsJson.picture_description;
     delete newsJson.picture_description;

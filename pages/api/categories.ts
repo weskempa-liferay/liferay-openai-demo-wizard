@@ -2,6 +2,8 @@ import OpenAI  from "openai";
 
 var functions = require('../utils/functions');
 
+const axios = require("axios");
+
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
@@ -96,24 +98,15 @@ async function createVocabulary(vocabularyName, siteId, debug){
 
   /* Setup Vocabulary */
 
-  const axios = require("axios");
-
   let apiPath = process.env.LIFERAY_PATH + "/o/headless-admin-taxonomy/v1.0/sites/" + siteId + "/taxonomy-vocabularies";
   let vocabPostObj = {'name': vocabularyName};
 
-  let headerObj = {
-    headers: {
-    'Authorization': 'Basic ' + functions.getBase64data(),
-    'Content-Type': 'application/json'
-    }
-  };
-  
+  let options = functions.getAPIOptions("POST","");
   let vocabularyId = "";
 
   try {
     const vocabResponse = await axios.post(apiPath,
-      vocabPostObj, 
-      headerObj);
+      vocabPostObj, options);
   
       vocabularyId = vocabResponse.data.id;
 
@@ -128,20 +121,17 @@ async function createVocabulary(vocabularyName, siteId, debug){
 }
 
 async function createCategory (category, parentVocabId, debug){
-
-    const axios = require("axios");
   
     let categoryJson = {'taxonomyVocabularyId' : parentVocabId, 'name' : category};
   
     let categoriesApiPath = process.env.LIFERAY_PATH + "/o/headless-admin-taxonomy/v1.0/taxonomy-vocabularies/" + parentVocabId + "/taxonomy-categories";
     
-    const options = functions.getPostOptions("en-US");
+    const options = functions.getAPIOptions("POST","");
   
     let returnid = 0;
   
     try {
-        const response = await axios.post(categoriesApiPath,
-              categoryJson, options);
+        const response = await axios.post(categoriesApiPath, categoryJson, options);
         
         returnid = response.data.id;
   
@@ -156,19 +146,16 @@ async function createCategory (category, parentVocabId, debug){
 
   async function createChildCategory (category, parentCategoryId, debug){
   
-    const axios = require("axios");
-  
     let categoryJson = {'parentTaxonomyCategory' : {"id":parentCategoryId}, 'name' : category};
   
     let categoriesApiPath = process.env.LIFERAY_PATH + "/o/headless-admin-taxonomy/v1.0/taxonomy-categories/" + parentCategoryId + "/taxonomy-categories";
     
-    const options = functions.getPostOptions("en-US");
+    const options = functions.getAPIOptions("POST","");
   
     let returnid = 0;
   
     try {
-        const response = await axios.post(categoriesApiPath,
-              categoryJson, options);
+        const response = await axios.post(categoriesApiPath, categoryJson, options);
         
         returnid = response.data.id;
   

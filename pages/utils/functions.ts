@@ -50,20 +50,31 @@ module.exports = {
             return [];
         }
     },
-    getPostOptions: (defaultLanguage) =>{
-        return {
-            method: "POST",
-            port: 443,
-            headers: {
-                'Authorization': 'Basic ' + module.exports.getBase64data(),
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Accept-Language': defaultLanguage,
+    getAPIOptions: (method,defaultLanguage) =>{
+        if(defaultLanguage){
+            return {
+                method: method,
+                port: 443,
+                headers: {
+                    'Authorization': 'Basic ' + module.exports.getBase64data(),
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Accept-Language': defaultLanguage,
+                }
             }
-        
+        } else {
+            return {
+                method: method,
+                port: 443,
+                headers: {
+                    'Authorization': 'Basic ' + module.exports.getBase64data(),
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            }
         }
     },
-    getFilePostOptions: (apiPath, filePath) => {
+    getFilePostOptions: (apiPath, fileStream) => {
         return {
             method: "POST",
             url: apiPath,
@@ -73,7 +84,7 @@ module.exports = {
             'Content-Type': 'multipart/form-data'
             },
             formData : {
-                "file" : filePath
+                "file" :  fileStream
             }
         }
     }

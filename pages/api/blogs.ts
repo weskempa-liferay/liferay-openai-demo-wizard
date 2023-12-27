@@ -16,23 +16,16 @@ export default async function (req, res) {
   if(debug) console.log("include images: " + imageGeneration);
 
   const runCountMax = 10;
-  const timestamp = new Date().getTime();
 
   let blogJson, response;
   const blogContentSet = [];
-
-  const usernamePasswordBuffer = Buffer.from( 
-    process.env.LIFERAY_ADMIN_EMAIL_ADDRESS + 
-    ':' + process.env.LIFERAY_ADMIN_PASSWORD);
-
-  const base64data = usernamePasswordBuffer.toString('base64');
 
   const schema = {
     type: "object",
     properties: {
       headline: {
         type: "string",
-        description: "The title of the blog artcile"
+        description: "The title of the blog artcile."
       },
       alternativeHeadline: {
         type: "string",
@@ -56,7 +49,7 @@ export default async function (req, res) {
       model: "gpt-3.5-turbo",
       messages: [
         {"role": "system", "content": "You are a blog author."},
-        {"role": "user", "content": "Write blogs on the subject of: "+req.body.blogTopic+". Each blog headline needs to be unique. It is important that each blog article's content is "+req.body.blogLength+" words or more."}
+        {"role": "user", "content": "Write blogs on the subject of: "+req.body.blogTopic+". It is important that each blog article's content is "+req.body.blogLength+" words or more."}
       ],
       functions: [
         {name: "get_blog_content", "parameters": schema}
@@ -85,33 +78,35 @@ export default async function (req, res) {
     try {
       
       if(imageGeneration!="none"){
+
         const imageResponse = await openai.images.generate({
           model: imageGeneration,
           prompt: pictureDescription,
           n: 1,
           size: "1024x1024"});
-    
-        if(debug) console.log(imageResponse.data[0].url);
 
-        const fs = require('fs');
-        const http = require('https'); 
+        if(debug) console.log(imageResponse.data[0].url);
         
+        const fs = require('fs');
+        const timestamp = new Date().getTime();
         const file = fs.createWriteStream("generatedimages/img"+timestamp+"-"+i+".jpg");
 
-        const request = http.get(imageResponse.data[0].url, function(response) {
+        console.log("In Exports, getGeneratedImage:"+imageResponse);
+
+        const http = require('https'); 
+
+        http.get(imageResponse.data[0].url, function(response) {
           response.pipe(file);
 
           file.on("finish", () => {
             file.close();
-            if(debug) console.log("Download Completed");
-            postImageToLiferay(file,base64data,req, blogJson, debug);
+            postImageToLiferay(file, req, blogJson, debug);
           });
   
-          if(debug) console.log("upload image " + file.path );
         });
 
       } else {
-        postBlogToLiferay(base64data,req, blogJson, 0, debug);
+        postBlogToLiferay(req, blogJson, 0, debug);
       }
 
     } catch (error) {
@@ -130,30 +125,31 @@ export default async function (req, res) {
   res.status(200).json({ result: JSON.stringify(blogContentSet) });
 }
 
-function postImageToLiferay(file,base64data,req, blogJson, debug){
+function postImageToLiferay(file, req, blogJson, debug){
 
-  const fs = require('fs');
   const request = require('request');
+  const fs = require('fs');
 
   let blogImageApiPath = process.env.LIFERAY_PATH + "/o/headless-delivery/v1.0/sites/"+req.body.siteId+"/blog-posting-images";
       
   if(debug) console.log(blogImageApiPath);
 
-  const options = functions.getFilePostOptions(blogImageApiPath,fs.createReadStream(process.cwd()+"/"+file.path));
+  let fileStream = fs.createReadStream(process.cwd()+"/"+file.path);
+  const options = functions.getFilePostOptions(blogImageApiPath,fileStream);
   
   setTimeout(function(){
 
     request(options, function (err, res, body) {
         if(err) console.log(err);
         
-        postBlogToLiferay(base64data,req, blogJson, JSON.parse(body).id, debug)
+        postBlogToLiferay(req, blogJson, JSON.parse(body).id, debug)
 
     });
 
   },100);
 }
 
-async function postBlogToLiferay(base64data, req, blogJson,imageId, debug){
+async function postBlogToLiferay(req, blogJson,imageId, debug){
 
   if(imageId){
     blogJson.image = {
@@ -165,15 +161,14 @@ async function postBlogToLiferay(base64data, req, blogJson,imageId, debug){
 
   let apiPath = process.env.LIFERAY_PATH + "/o/headless-delivery/v1.0/sites/"+req.body.siteId+"/blog-postings";
 
-  const options = functions.getPostOptions("en-US");
+  let options = functions.getAPIOptions("POST","en-US");
 
   try {
-      const response = await axios.post(apiPath,
-          blogJson, options);
+      const response = await axios.post(apiPath, blogJson, options);
 
       if(debug) console.log(response.data);
+      if(debug) console.log("Blog Import Process Complete.");
 
-      console.log("Blog Import Process Complete.");
   }
   catch (error) {
       console.log(error);

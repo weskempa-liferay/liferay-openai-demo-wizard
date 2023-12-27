@@ -9,7 +9,7 @@ export default function Nav({path,title,desc}) {
         href={path}
       >
         <h3 className="text-2xl font-bold text-[hsl(210,70%,70%)]">{title} →</h3>
-        <div className="text-lg">
+        <div className="text-md">
             {desc}
         </div>
       </Link>

@@ -58,11 +58,10 @@ export default async function (req, res) {
 
     let objectApiPath = process.env.LIFERAY_PATH + aiEndpoint;
 
-    const options = functions.getPostOptions("en-US");
+    const options = functions.getAPIOptions("POST","en-US");
 
     try {
-        const response = await axios.post(objectApiPath,
-          resultlist, options);
+        const response = await axios.post(objectApiPath, resultlist, options);
 
         if(debug) console.log(response.data);
     }

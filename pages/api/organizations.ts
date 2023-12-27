@@ -133,13 +133,12 @@ async function createOrganization (organization, parentOrgId, debug){
 
   let orgApiPath = process.env.LIFERAY_PATH + "/o/headless-admin-user/v1.0/organizations";
 
-  const options = functions.getPostOptions("en-US");
+  const options = functions.getAPIOptions("POST","en-US");
 
   let returnid = 0;
 
   try {
-      const response = await axios.post(orgApiPath,
-          postBody, options);
+      const response = await axios.post(orgApiPath, postBody, options);
       
       returnid = response.data.id;
 

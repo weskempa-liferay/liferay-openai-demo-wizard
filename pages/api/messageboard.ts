@@ -8,18 +8,7 @@ const openai = new OpenAI({
 
 const axios = require("axios");
 
-const usernamePasswordBuffer = Buffer.from( 
-    process.env.LIFERAY_ADMIN_EMAIL_ADDRESS + 
-    ':' + process.env.LIFERAY_ADMIN_PASSWORD);
-
-const base64data = usernamePasswordBuffer.toString('base64');
-
-let headerObj = {
-    headers: {
-    'Authorization': 'Basic ' + base64data, 
-    'Content-Type': 'application/json'
-    }
-  };
+let options = functions.getAPIOptions("POST","en-US");
 
 export default async function (req, res) {
 
@@ -111,7 +100,7 @@ export default async function (req, res) {
         "title": categories[i].category
     }
 
-    let mbSectionResponse = await axios.post(sectionApiPath, mbSectionJson, headerObj);
+    let mbSectionResponse = await axios.post(sectionApiPath, mbSectionJson, options);
     let sectionId = mbSectionResponse.data.id;
 
     if(debug) console.log("C:" + categories[i].category + " created with id " + sectionId);
@@ -129,7 +118,7 @@ export default async function (req, res) {
             "articleBody": threads[t].articleBody
         }
 
-        let mbThreadResponse = await axios.post(threadApiPath, mbThreadJson, headerObj);
+        let mbThreadResponse = await axios.post(threadApiPath, mbThreadJson, options);
         let threadId = mbThreadResponse.data.id;
 
         if(debug) console.log("T:" + threads[t].headline + " created with id " + threadId);
@@ -145,18 +134,16 @@ export default async function (req, res) {
                 "articleBody": messages[m].message
             }
     
-            let mbMessageThreadResponse = await axios.post(messageApiPath, mbMessageJson, headerObj);
+            let mbMessageThreadResponse = await axios.post(messageApiPath, mbMessageJson, options);
             let messageId = mbMessageThreadResponse.data.id;
     
             if(debug) console.log("M:" + messages[m].message + " created with id " + messageId);
 
         }
     }
-    
   }
   
   let end = new Date().getTime();
   res.status(200).json({result:"Completed in " +
     functions.millisToMinutesAndSeconds(end - start)});
-    
 }

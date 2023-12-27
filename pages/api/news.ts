@@ -18,16 +18,9 @@ export default async function (req, res) {
   if(debug) console.log("include images: " + imageGeneration);
 
   const runCountMax = 10;
-  const timestamp = new Date().getTime();
 
   let newsJson, response;
   const newsContentSet = [];
-
-  const usernamePasswordBuffer = Buffer.from( 
-    process.env.LIFERAY_ADMIN_EMAIL_ADDRESS + 
-    ':' + process.env.LIFERAY_ADMIN_PASSWORD);
-
-  const base64data = usernamePasswordBuffer.toString('base64');
 
   const storedProperties = {
     headline: {
@@ -126,24 +119,25 @@ export default async function (req, res) {
         if(debug) console.log(imageResponse.data[0].url);
 
         const fs = require('fs');
-        const http = require('https'); 
-        
+        const timestamp = new Date().getTime();
         const file = fs.createWriteStream("generatedimages/img"+timestamp+"-"+i+".jpg");
-
-        const request = http.get(imageResponse.data[0].url, function(response) {
+  
+        console.log("In Exports, getGeneratedImage:"+imageResponse);
+  
+        const http = require('https'); 
+  
+        http.get(imageResponse.data[0].url, function(response) {
           response.pipe(file);
-
+  
           file.on("finish", () => {
             file.close();
-            if(debug) console.log("Download Completed");
-            postImageToLiferay(file,base64data,req, newsJson, debug);
+            postImageToLiferay(file, req, newsJson, debug);
           });
-    
-          if(debug) console.log("upload image " + file.path );
+  
         });
 
     } else {
-      postNewsToLiferay(base64data,req, newsJson, null, debug);
+      postNewsToLiferay(req, newsJson, null, debug);
     }
 
     } catch (error) {
@@ -165,12 +159,12 @@ export default async function (req, res) {
     functions.millisToMinutesAndSeconds(end - start)});
 }
 
-function postImageToLiferay(file,base64data,req, newsJson, debug){
+function postImageToLiferay(file,req, newsJson, debug){
 
   const imageFolderId = parseInt(req.body.imageFolderId);
 
-  const fs = require('fs');
   const request = require('request');
+  const fs = require('fs');
 
   let newsImageApiPath = process.env.LIFERAY_PATH + "/o/headless-delivery/v1.0/sites/"+req.body.siteId+"/documents";
 
@@ -180,21 +174,22 @@ function postImageToLiferay(file,base64data,req, newsJson, debug){
       
   if(debug) console.log(newsImageApiPath);
 
-  const options = functions.getFilePostOptions(newsImageApiPath,fs.createReadStream(process.cwd()+"/"+file.path));
+  let fileStream = fs.createReadStream(process.cwd()+"/"+file.path);
+  const options = functions.getFilePostOptions(newsImageApiPath,fileStream);
   
   setTimeout(function(){
 
     request(options, function (err, res, body) {
         if(err) console.log(err);
         
-        postNewsToLiferay(base64data,req, newsJson, JSON.parse(body).id, debug);
+        postNewsToLiferay(req, newsJson, JSON.parse(body).id, debug);
 
     });
 
   },100);
 }
 
-async function postNewsToLiferay(base64data,req, newsJson,imageId, debug){
+async function postNewsToLiferay(req, newsJson,imageId, debug){
 
   let newsFields;
   
@@ -242,7 +237,7 @@ async function postNewsToLiferay(base64data,req, newsJson,imageId, debug){
             "id": imageId
           }
         }
-      }else{
+      } else {
         imageValues[req.body.languages[l]] = {
           "data":""
         }
@@ -252,35 +247,34 @@ async function postNewsToLiferay(base64data,req, newsJson,imageId, debug){
       articleBodyFieldValues = {};
       titleValues = {};
       
-        for (const [key, value] of Object.entries(newsJson)) {
+      for (const [key, value] of Object.entries(newsJson)) {
 
-          try{
+        try{
 
-            if(key.indexOf("_")>0){
-              let keySplit=key.split("_");
-              
-              if(keySplit[0]=="headline")
-                titleValues[keySplit[1]] = value;
-              
-              if(keySplit[0]=="alternativeHeadline")
-                alternativeHeadlineFieldValues[keySplit[1]] = { "data":value };
-          
-              if(keySplit[0]=="articleBody")
-                articleBodyFieldValues[keySplit[1]] = { "data":value };
-            }
-
-          } catch (error){
-            if(debug) console.log("unable to process translation for faq " + l + " : " + req.body.languages[l]);
-            if(debug) console.log(error);
+          if(key.indexOf("_")>0){
+            let keySplit=key.split("_");
+            
+            if(keySplit[0]=="headline")
+              titleValues[keySplit[1]] = value;
+            
+            if(keySplit[0]=="alternativeHeadline")
+              alternativeHeadlineFieldValues[keySplit[1]] = { "data":value };
+        
+            if(keySplit[0]=="articleBody")
+              articleBodyFieldValues[keySplit[1]] = { "data":value };
           }
 
+        } catch (error){
+          console.log("unable to process translation for faq " + l + " : " + req.body.languages[l]);
+          if(debug) console.log(error);
         }
+
+      }
     }
 
     newsFields[0]["contentFieldValue_i18n"]=alternativeHeadlineFieldValues;
     newsFields[1]["contentFieldValue_i18n"]=articleBodyFieldValues;
     newsFields[2]["contentFieldValue_i18n"]=imageValues;
-    
   }
 
   const newsSchema = {
@@ -296,11 +290,10 @@ async function postNewsToLiferay(base64data,req, newsJson,imageId, debug){
 
   let apiPath = process.env.LIFERAY_PATH + "/o/headless-delivery/v1.0/sites/"+req.body.siteId+"/structured-contents";
 
-  const options = functions.getPostOptions(req.body.defaultLanguage);
+  const options = functions.getAPIOptions("POST",req.body.defaultLanguage);
 
   const response = await axios.post(apiPath,
     JSON.stringify(newsSchema), options);
 
-  console.log("News import process complete.");
-
+  if(debug) console.log("News import process complete.");
 }

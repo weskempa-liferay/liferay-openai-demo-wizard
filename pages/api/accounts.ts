@@ -49,6 +49,7 @@ export default async function (req, res) {
     if(debug) console.log(JSON.stringify(accounts));
 
     for(let i=0;i<accounts.length;i++){
+      
         if(debug) console.log(accounts[i]);
         
         let postBody = {
@@ -61,11 +62,10 @@ export default async function (req, res) {
 
         let faqApiPath = process.env.LIFERAY_PATH + "/o/headless-commerce-admin-account/v1.0/accounts";
 
-        const options = functions.getPostOptions("en-US");
+        const options = functions.getAPIOptions("POST","en-US");
 
         try {
-            const response = await axios.post(faqApiPath,
-                postBody, options);
+            const response = await axios.post(faqApiPath, postBody, options);
 
             if(debug) console.log(response.data);
         }

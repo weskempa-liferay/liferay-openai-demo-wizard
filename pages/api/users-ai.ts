@@ -79,12 +79,11 @@ export default async function (req, res) {
 
     let userApiPath = process.env.LIFERAY_PATH + "/o/headless-admin-user/v1.0/user-accounts";
 
-    const options = functions.getPostOptions("en-US");
+    const options = functions.getAPIOptions("POST","en-US");
 
     for(let i=0;i<userlist.length;i++){
       try {
-          const response = await axios.post(userApiPath,
-              userlist[i], options);
+          const response = await axios.post(userApiPath, userlist[i], options);
 
           if(debug) console.log("Created user:"+response.data.id+", "+response.data.alternateName);
           successCount ++;

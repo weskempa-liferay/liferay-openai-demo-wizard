@@ -1,3 +1,5 @@
+var functions = require('../utils/functions');
+
 const STATE_OK = "OK";
 const STATE_NOT_ADMIN = "NOT ADMIN";
 const STATE_CANNOT_CONNECT = "CANNOT CONNECT";
@@ -40,22 +42,9 @@ async function isConnected(){
 
     const axios = require("axios");
 
-    const usernamePasswordBuffer = Buffer.from( 
-        process.env.LIFERAY_ADMIN_EMAIL_ADDRESS + 
-        ':' + process.env.LIFERAY_ADMIN_PASSWORD);
-        const base64data = usernamePasswordBuffer.toString('base64');
-
     let myUserAccountPath = process.env.LIFERAY_PATH + "/o/headless-admin-user/v1.0/my-user-account";
 
-    let options = {
-        method: "GET",
-        port: 443,
-        headers: {
-            'Authorization': 'Basic ' + base64data,
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        }
-    };
+    let options = functions.getAPIOptions("GET","en-US");
 
     try{
         const response = await axios.get(myUserAccountPath, options);

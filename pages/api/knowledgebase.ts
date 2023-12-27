@@ -8,18 +8,7 @@ const openai = new OpenAI({
 
 const axios = require("axios");
 
-const usernamePasswordBuffer = Buffer.from( 
-    process.env.LIFERAY_ADMIN_EMAIL_ADDRESS + 
-    ':' + process.env.LIFERAY_ADMIN_PASSWORD);
-
-const base64data = usernamePasswordBuffer.toString('base64');
-
-let headerObj = {
-    headers: {
-    'Authorization': 'Basic ' + base64data, 
-    'Content-Type': 'application/json'
-    }
-  };
+let options = functions.getAPIOptions("POST","en-US");
 
 export default async function (req, res) {
 
@@ -96,7 +85,7 @@ export default async function (req, res) {
         "name": categories[i].category
     }
 
-    let kbSectionResponse = await axios.post(sectionApiPath, kbSectionJson, headerObj);
+    let kbSectionResponse = await axios.post(sectionApiPath, kbSectionJson, options);
     let sectionId = kbSectionResponse.data.id;
 
     if(debug) console.log("C:" + categories[i].category + " created with id " + sectionId);
@@ -114,7 +103,7 @@ export default async function (req, res) {
             "articleBody": articles[t].articleBody
         }
 
-        let kbThreadResponse = await axios.post(threadApiPath, kbThreadJson, headerObj);
+        let kbThreadResponse = await axios.post(threadApiPath, kbThreadJson, options);
         let threadId = kbThreadResponse.data.id;
 
         if(debug) console.log("T:" + articles[t].headline + " created with id " + threadId);
@@ -131,14 +120,13 @@ export default async function (req, res) {
                 "articleBody": suggestions[m].suggestion
             }
     
-            let kbSuggestionThreadResponse = await axios.post(suggestionApiPath, kbSuggestionJson, headerObj);
+            let kbSuggestionThreadResponse = await axios.post(suggestionApiPath, kbSuggestionJson, options);
             let suggestionId = kbMessageThreadResponse.data.id;
     
             if(debug) console.log("M:" + suggestions[m].suggestion + " created with id " + suggestionId);
         }
         */
     }
-    
   }
   
   let end = new Date().getTime();

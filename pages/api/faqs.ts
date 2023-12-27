@@ -148,7 +148,7 @@ export default async function (req, res) {
 
         let faqApiPath = process.env.LIFERAY_PATH + "/o/headless-delivery/v1.0/sites/"+req.body.siteId+"/structured-contents";
 
-        const options = functions.getPostOptions(req.body.defaultLanguage);
+        const options = functions.getAPIOptions("POST",req.body.defaultLanguage);
 
         try {
             const response = await axios.post(faqApiPath,

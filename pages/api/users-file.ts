@@ -6,6 +6,8 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+const axios = require("axios");
+
 export default async function (req, res) {
 
     let start = new Date().getTime();
@@ -17,16 +19,7 @@ export default async function (req, res) {
 
     if(debug) console.log(userlist);
 
-    const axios = require("axios");
-    const fs = require("fs");
-
-    const usernamePasswordBuffer = Buffer.from( 
-        process.env.LIFERAY_ADMIN_EMAIL_ADDRESS + 
-        ':' + process.env.LIFERAY_ADMIN_PASSWORD);
-
-    const base64data = usernamePasswordBuffer.toString('base64');
-
-    let roleList = await getRoleList(base64data,debug);
+    let roleList = await getRoleList();
 
     let userApiPath = process.env.LIFERAY_PATH + "/o/headless-admin-user/v1.0/user-accounts";
     let userImagePath = "";
@@ -44,46 +37,28 @@ export default async function (req, res) {
 
         try {
 
-            let options = {
-                method: "POST",
-                port: 443,
-                headers: {
-                    'Authorization': 'Basic ' + base64data,
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                }
-            };
+            let options = functions.getAPIOptions("POST","en-US");
 
             const response = await axios.post(userApiPath,
                 JSON.stringify(userlist[i]), options);
     
             if(debug) console.log("Saved user: " + response.data.id);
 
-            const fs = require('fs');
             const request = require('request');
 
             let roleBriefs = getRoleBriefs(userlist[i].jobTitle, roleList, debug);
+            
             if(roleBriefs.length>0){
 
-                let userRoleApiPath = process.env.LIFERAY_PATH + "/o/headless-admin-user/v1.0/roles/"+roleBriefs[0].id+"/association/user-account/"+ response.data.id;
+                let userRoleApiPath = process.env.LIFERAY_PATH + "/o/headless-admin-user/v1.0/roles/"+roleBriefs[0].id+"/association/user-account/" + response.data.id;
                     
                 if(debug) console.log(userRoleApiPath);
-                
-                let roleoptions = {
-                    method: "POST",
-                    url: userRoleApiPath,
-                    port: 443,
-                    headers: {
-                    'Authorization': 'Basic ' + base64data, 
-                    'Content-Type': 'multipart/form-data'
-                    }
-                };
-                
-                request(roleoptions, function (err, res, body) {
-                    if(err) console.log(err);
 
-                    if(debug) console.log("Role Association Complete");
-                });
+                const options = functions.getAPIOptions("POST",req.body.defaultLanguage);
+
+                await axios.post(userRoleApiPath,"", options);
+
+                if(debug) console.log("Role Association Complete");
 
             }
           
@@ -94,18 +69,9 @@ export default async function (req, res) {
                 if(debug) console.log(userImageApiPath);
                 if(debug) console.log(process.cwd() + "/" + userImagePath);
                 
-                let imgoptions = {
-                    method: "POST",
-                    url: userImageApiPath,
-                    port: 443,
-                    headers: {
-                    'Authorization': 'Basic ' + base64data, 
-                    'Content-Type': 'multipart/form-data'
-                    },
-                    formData : {
-                        "image" : fs.createReadStream(process.cwd() + "/public/users/user-images/" + userImagePath)
-                    }
-                };
+                const fs = require('fs');
+                let fileStream = fs.createReadStream(process.cwd() + "/public/users/user-images/" + userImagePath);
+                const imgoptions = functions.getFilePostOptions(userImageApiPath, fileStream);
                 
                 request(imgoptions, function (err, res, body) {
                     if(err) console.log(err);
@@ -132,24 +98,13 @@ export default async function (req, res) {
     });
 }
 
-async function getRoleList(base64data,debug){
-
-    const axios = require("axios");
+async function getRoleList(){
 
     let userApiPath = process.env.LIFERAY_PATH + "/o/headless-admin-user/v1.0/roles";
 
-    let roleoptions = {
-        method: "GET",
-        port: 443,
-        headers: {
-            'Authorization': 'Basic ' + base64data,
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        }
-    };
+    let roleoptions = functions.getAPIOptions("GET","en-US");
 
     const roleresponse = await axios.get(userApiPath, roleoptions);
-
 
     return roleresponse.data.items;
 }

@@ -98,26 +98,13 @@ export default async function (req, res) {
   let apiPath = process.env.LIFERAY_PATH + "/o/headless-admin-taxonomy/v1.0/sites/" + globalSiteId + "/taxonomy-vocabularies";
   let vocabPostObj = {'name': req.body.categoryName + ' Categories'};
 
-  const usernamePasswordBuffer = Buffer.from( 
-            process.env.LIFERAY_ADMIN_EMAIL_ADDRESS + 
-            ':' + process.env.LIFERAY_ADMIN_PASSWORD);
-
-  const base64data = usernamePasswordBuffer.toString('base64');
-
-  let headerObj = {
-    headers: {
-    'Authorization': 'Basic ' + base64data, 
-    'Content-Type': 'application/json'
-    }
-  };
+  let options = functions.getAPIOptions("POST","en-US");
   
   let apiRes = "";
 
   // wait for the vocab to complete before adding categories
   try {
-    const vocabResponse = await axios.post(apiPath,
-      vocabPostObj, 
-      headerObj);
+    const vocabResponse = await axios.post(apiPath, vocabPostObj, options);
   
       if(debug) console.log(vocabResponse.data);
       apiRes = vocabResponse.data.id;
@@ -144,9 +131,7 @@ export default async function (req, res) {
     if(debug) console.log(currCategoryJson);
 
     try {
-      categResponse = await axios.post(apiPath,
-        currCategoryJson, 
-        headerObj);
+      categResponse = await axios.post(apiPath, currCategoryJson, options);
 
         if(debug) console.log(categResponse.data.id + " is the id for " + currCategory);
 
@@ -216,9 +201,9 @@ export default async function (req, res) {
         if(debug) console.log("sending: "+ productName);
         if(debug) console.log(apiPath);
         if(debug) console.log(productJson);
-        if(debug) console.log(headerObj);
+        if(debug) console.log(options);
 
-        productResponse = await axios.post(apiPath, productJson, headerObj);
+        productResponse = await axios.post(apiPath, productJson, options);
 
         productId = productResponse.data.productId;
         if(debug) console.log(productName + " created with id " + productId);
@@ -257,7 +242,7 @@ export default async function (req, res) {
 
           let imgApiPath = process.env.LIFERAY_PATH + "/o/headless-commerce-admin-catalog/v1.0/products/"+productResponse.data.productId+"/images/by-url";
 
-          let productImageResponse = await axios.post(imgApiPath, imgschema, headerObj);
+          let productImageResponse = await axios.post(imgApiPath, imgschema, options);
           
           if(debug) console.log(productImageResponse.data[0])
         }

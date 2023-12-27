@@ -19,8 +19,6 @@ export default async function (req, res) {
   if(debug) console.log("include images: " + imageGeneration + " " +imageDescription);
 
   const runCountMax = 10;
-  const timestamp = new Date().getTime();
-  const base64data = functions.getBase64data();
 
   let pictureDescription = imageDescription;
 
@@ -41,22 +39,23 @@ export default async function (req, res) {
         size: "1024x1024"});
   
       if(debug) console.log(imageResponse.data[0].url);
-
+  
       const fs = require('fs');
-      const http = require('https'); 
-      
+      const timestamp = new Date().getTime();
       const file = fs.createWriteStream("generatedimages/img"+timestamp+"-"+i+".jpg");
 
-      const request = http.get(imageResponse.data[0].url, function(response) {
+      console.log("In Exports, getGeneratedImage:"+imageResponse);
+
+      const http = require('https'); 
+
+      http.get(imageResponse.data[0].url, function(response) {
         response.pipe(file);
 
         file.on("finish", () => {
           file.close();
-          if(debug) console.log("Download Completed");
-          postImageToLiferay(file,base64data,req, debug);
+          postImageToLiferay(file,req, debug);
         });
-  
-        if(debug) console.log("upload image " + file.path );
+
       });
 
     } catch (error) {
@@ -78,12 +77,12 @@ export default async function (req, res) {
     functions.millisToMinutesAndSeconds(end - start)});
 }
 
-function postImageToLiferay(file,base64data,req, debug){
+function postImageToLiferay(file,req, debug){
 
   const imageFolderId = parseInt(req.body.imageFolderId);
 
-  const fs = require('fs');
   const request = require('request');
+  const fs = require('fs');
 
   let imageApiPath = process.env.LIFERAY_PATH + "/o/headless-delivery/v1.0/sites/"+req.body.siteId+"/documents";
 
@@ -93,7 +92,8 @@ function postImageToLiferay(file,base64data,req, debug){
       
   if(debug) console.log(imageApiPath);
 
-  const options = functions.getFilePostOptions(imageApiPath,fs.createReadStream(process.cwd()+"/"+file.path));
+  let fileStream = fs.createReadStream(process.cwd()+"/"+file.path);
+  const options = functions.getFilePostOptions(imageApiPath,fileStream);
   
   setTimeout(function(){
 

@@ -16,7 +16,7 @@ import hljs from "highlight.js";
 export default function Review() {
   
   const [newsTopicInput, setNewsTopicInput] = useState("");
-  const [newsLengthInput, setNewsLengthInput] = useState("150");
+  const [newsLengthInput, setNewsLengthInput] = useState("75");
   const [siteIdInput, setSiteIdInput] = useState("");
   const [folderIdInput, setFolderIdInput] = useState("");
   const [imageFolderIdInput, setImageFolderIdInput] = useState("0");
@@ -174,7 +174,7 @@ export default function Review() {
                   label={"Expected News Post Length (in # of words)"} 
                   placeholder={"Expected News Post Length"}
                   inputChange={setNewsLengthInput}
-                  defaultValue={"150"}
+                  defaultValue={"75"}
                 />
           
             <FieldString 

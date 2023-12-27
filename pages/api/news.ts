@@ -9,6 +9,7 @@ const openai = new OpenAI({
 export default async function (req, res) {
 
   let start = new Date().getTime();
+  let successes = 0;
 
   const debug = req.body.debugMode;
   const runCount = req.body.newsNumber;
@@ -101,7 +102,9 @@ export default async function (req, res) {
       console.log("-----------------------------------------------------");
       console.log("********Parse Exception on News Article " + (i+1)+"********");
       console.log("-----------------------------------------------------");
-      console.log(response.choices[0].message.function_call)
+      console.log(response)
+      console.log(response.choices.length)
+      console.log(response.choices[0].message)
       console.log("-----------------------------------------------------");
       console.log("------------------------END--------------------------");
       console.log("-----------------------------------------------------");
@@ -162,14 +165,15 @@ export default async function (req, res) {
     }
 
     newsContentSet.push(newsJson);
+    successes++;
 
     if(i>=runCountMax)break;
   }
   
   let end = new Date().getTime();
 
-  res.status(200).json({ result: "Completed in " +
-    functions.millisToMinutesAndSeconds(end - start)});
+  res.status(200).json({ result: "Imported " + successes + " of " + runCount + " News Articles. "+
+    "Completed in " + functions.millisToMinutesAndSeconds(end - start)});
 }
 
 function postImageToLiferay(file,req, newsJson, debug){

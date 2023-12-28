@@ -1,10 +1,13 @@
 alternateName,emailAddress,password,givenName,familyName,jobTitle,imageFile
-anna.bailey,anna.bailey@liferay.xyz,password,Anna,Bailey,Content Creator,anna-bailey-290x290.png
-brenda.harvey,brenda.harvey@liferay.xyz,password,Harvey,Brenda,Content Creator,brenda-harvey-290x290.png
-darrell.allen,darrell.allen@liferay.xyz,password,Darrell,Allen,Content Creator,darrell-allen-290x290.png
-emily.zhang,emily.zhang@liferay.xyz,password,Emily,Zhang,Content Creator,emily-zhang-290x290.png
-susan.thomas,susan.thomas@liferay.xyz,password,Susan,Thomas,Content Creator,susan-thomas-290x290.png
-marie.andrews,marie.andrews@mailinator.com,password,Marie,Andrews,Administrator,marie-andrews-290x290.png
-sam.larson,sam.larson@liferay.xyz,password,Sam,Larson,Portal Content Reviewer,sam-larson-290x290.png
-scott.williams,scott.williams@liferay.xyz,password,Scott,Williams,Administrator,scott-williams-290x290.png
-winona.takoda,winona.takoda@liferay.xyz,password,Winona,Takoda,Portal Content Reviewer,winona-takoda-290x290.png
+scott.williams,scott.williams@liferay.xyz,password,Scott,Williams,Administrator,male-scott-williams-300x300.png
+marie.andrews,marie.andrews@mailinator.com,password,Marie,Andrews,Administrator,female-marie-andrews-300x300.png
+darrell.allen,darrell.allen@liferay.xyz,password,Darrell,Allen,Content Creator,male-darrell-allen-300x300.png
+anna.bailey,anna.bailey@liferay.xyz,password,Anna,Bailey,Content Creator,female-anna-bailey-300x300.png
+louis.everitt,louis.everitt@liferay.xyz,password,Louis,Everett,Content Creator,male-louis-everitt-300x300.png
+brenda.harvey,brenda.harvey@liferay.xyz,password,Brenda,Harvey,Content Creator,female-brenda-harvey-300x300.png
+sam.larson,sam.larson@liferay.xyz,password,Sam,Larson,Content Creator,male-sam-larson-300x300.png
+emily.zhang,emily.zhang@liferay.xyz,password,Emily,Zhang,Content Creator,female-emily-zhang-300x300.png
+greg.harris,greg.harris@liferay.xyz,password,Greg,Harris,Portal Content Reviewer,male-greg-harris-300x300.png
+susan.thomas,susan.thomas@liferay.xyz,password,Susan,Thomas,Portal Content Reviewer,female-susan-thomas-300x300.png
+thomas.weston,thomas.weston@liferay.xyz,password,Thomas,Weston,Portal Content Reviewer,male-thomas-weston-300x300.png
+winona.takoda,winona.takoda@liferay.xyz,password,Winona,Takoda,Portal Content Reviewer,female-winona-takoda-300x300.png

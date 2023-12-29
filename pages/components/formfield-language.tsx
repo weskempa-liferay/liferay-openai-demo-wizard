@@ -1,7 +1,6 @@
 import { useState } from 'react';
 
-var functions = require('../utils/functions');
-
+import functions from '../utils/functions';
 import FieldSelect from './formfield-select';
 import FieldToggle from './formfield-toggle';
 

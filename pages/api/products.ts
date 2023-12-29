@@ -1,6 +1,7 @@
+import axios from 'axios';
 import OpenAI from 'openai';
 
-var functions = require('../utils/functions');
+import functions from '../utils/functions';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -108,8 +109,6 @@ export default async function Action(req, res) {
   if (debug) console.log(categoryDataStr);
 
   /* Setup Vocabulary */
-
-  const axios = require('axios');
 
   let apiPath =
     process.env.LIFERAY_PATH +

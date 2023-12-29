@@ -1,9 +1,9 @@
+import axios from 'axios';
+import fs from 'fs';
 import OpenAI from 'openai';
+import request from 'request';
 
-var functions = require('../utils/functions');
-const fs = require('fs');
-const axios = require('axios');
-const request = require('request');
+import functions from '../utils/functions';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -184,7 +184,6 @@ async function getImagePath(gender, index) {
 
   /*
     const folder = process.cwd()+"/public/users/user-images/";
-    const fs = require('fs');
 
     let styleList = [];
 

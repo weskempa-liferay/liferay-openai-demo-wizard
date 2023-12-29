@@ -26,7 +26,7 @@ const getBase64data = () => {
   return usernamePasswordBuffer.toString('base64');
 };
 
-export default {
+const functions = {
   getAPIOptions: (method, defaultLanguage) => {
     return {
       headers: {
@@ -81,3 +81,5 @@ export default {
     }
   },
 };
+
+export default functions;

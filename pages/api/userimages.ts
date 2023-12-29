@@ -1,6 +1,7 @@
+import fs from 'fs';
+
 export default async function Action(req, res) {
   const folder = process.cwd() + '/public/users/user-images/';
-  const fs = require('fs');
 
   let styleList = [];
 

@@ -1,12 +1,11 @@
+import axios from 'axios';
 import OpenAI from 'openai';
 
-var functions = require('../utils/functions');
+import functions from '../utils/functions';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
-
-const axios = require('axios');
 
 let options = functions.getAPIOptions('POST', 'en-US');
 
@@ -209,10 +208,7 @@ export default async function Action(req, res) {
   }
 
   let end = new Date().getTime();
-  res
-    .status(200)
-    .json({
-      result:
-        'Completed in ' + functions.millisToMinutesAndSeconds(end - start),
-    });
+  res.status(200).json({
+    result: 'Completed in ' + functions.millisToMinutesAndSeconds(end - start),
+  });
 }

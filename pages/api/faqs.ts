@@ -1,6 +1,7 @@
+import axios from 'axios';
 import OpenAI from 'openai';
 
-var functions = require('../utils/functions');
+import functions from '../utils/functions';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -160,8 +161,6 @@ export default async function Action(req, res) {
     if (debug) console.log('postBody');
     if (debug) console.log(JSON.stringify(postBody));
 
-    const axios = require('axios');
-
     let faqApiPath =
       process.env.LIFERAY_PATH +
       '/o/headless-delivery/v1.0/sites/' +
@@ -181,10 +180,7 @@ export default async function Action(req, res) {
 
   let end = new Date().getTime();
 
-  res
-    .status(200)
-    .json({
-      result:
-        'Completed in ' + functions.millisToMinutesAndSeconds(end - start),
-    });
+  res.status(200).json({
+    result: 'Completed in ' + functions.millisToMinutesAndSeconds(end - start),
+  });
 }

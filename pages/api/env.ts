@@ -1,4 +1,6 @@
-var functions = require('../utils/functions');
+import axios from 'axios';
+
+import functions from '../utils/functions';
 
 const STATE_OK = 'OK';
 const STATE_NOT_ADMIN = 'NOT ADMIN';
@@ -54,8 +56,6 @@ export default async function Action(req, res) {
 }
 
 async function isConnected() {
-  const axios = require('axios');
-
   let myUserAccountPath =
     process.env.LIFERAY_PATH + '/o/headless-admin-user/v1.0/my-user-account';
 

@@ -1,6 +1,7 @@
+import axios from 'axios';
 import OpenAI from 'openai';
 
-var functions = require('../utils/functions');
+import functions from '../utils/functions';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -157,8 +158,6 @@ async function createOrganization(organization, parentOrgId, debug) {
       name: organization.name,
     };
   }
-
-  const axios = require('axios');
 
   let orgApiPath =
     process.env.LIFERAY_PATH + '/o/headless-admin-user/v1.0/organizations';

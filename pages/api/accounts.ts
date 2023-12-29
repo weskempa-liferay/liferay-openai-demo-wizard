@@ -1,6 +1,6 @@
 import OpenAI from 'openai';
 
-var functions = require('../utils/functions');
+import functions from '../utils/functions';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -68,7 +68,7 @@ export default async function Action(req, res) {
       type: 2,
     };
 
-    const axios = require('axios');
+    import axios from 'axios';
 
     let faqApiPath =
       process.env.LIFERAY_PATH +

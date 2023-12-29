@@ -1,12 +1,8 @@
-import OpenAI from 'openai';
+import axios from 'axios';
+import fs from 'fs';
+import request from 'request';
 
-var functions = require('../utils/functions');
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
-const axios = require('axios');
+import functions from '../utils/functions';
 
 export default async function Action(req, res) {
   let start = new Date().getTime();
@@ -48,8 +44,6 @@ export default async function Action(req, res) {
 
       if (debug) console.log('Saved user: ' + response.data.id);
 
-      const request = require('request');
-
       let roleBriefs = getRoleBriefs(userlist[i].jobTitle, roleList, debug);
 
       if (roleBriefs.length > 0) {
@@ -85,7 +79,6 @@ export default async function Action(req, res) {
             process.cwd() + '/public/users/user-images/' + userImagePath
           );
 
-        const fs = require('fs');
         let fileStream = fs.createReadStream(
           process.cwd() + '/public/users/user-images/' + userImagePath
         );

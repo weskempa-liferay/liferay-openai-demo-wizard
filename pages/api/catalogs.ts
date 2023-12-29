@@ -1,4 +1,6 @@
-var functions = require('../utils/functions');
+import axios from 'axios';
+
+import functions from '../utils/functions';
 
 export default async function Action(req, res) {
   let response = await getCatalogList();
@@ -6,9 +8,7 @@ export default async function Action(req, res) {
 }
 
 async function getCatalogList() {
-  const axios = require('axios');
-
-  let catalogApiPath =
+  const catalogApiPath =
     process.env.LIFERAY_PATH +
     '/o/headless-commerce-admin-catalog/v1.0/catalogs';
 

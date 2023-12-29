@@ -1,6 +1,10 @@
+import axios from 'axios';
+import fs from 'fs';
+import http from 'https';
 import OpenAI from 'openai';
+import request from 'request';
 
-var functions = require('../utils/functions');
+import functions from '../utils/functions';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -158,15 +162,12 @@ export default async function Action(req, res) {
 
         if (debug) console.log(imageResponse.data[0].url);
 
-        const fs = require('fs');
         const timestamp = new Date().getTime();
         const file = fs.createWriteStream(
           'generatedimages/img' + timestamp + '-' + i + '.jpg'
         );
 
         console.log('In Exports, getGeneratedImage:' + imageResponse);
-
-        const http = require('https');
 
         http.get(imageResponse.data[0].url, function (response) {
           response.pipe(file);
@@ -195,25 +196,20 @@ export default async function Action(req, res) {
 
   let end = new Date().getTime();
 
-  res
-    .status(200)
-    .json({
-      result:
-        'Imported ' +
-        successes +
-        ' of ' +
-        runCount +
-        ' News Articles. ' +
-        'Completed in ' +
-        functions.millisToMinutesAndSeconds(end - start),
-    });
+  res.status(200).json({
+    result:
+      'Imported ' +
+      successes +
+      ' of ' +
+      runCount +
+      ' News Articles. ' +
+      'Completed in ' +
+      functions.millisToMinutesAndSeconds(end - start),
+  });
 }
 
 function postImageToLiferay(file, req, newsJson, debug) {
   const imageFolderId = parseInt(req.body.imageFolderId);
-
-  const request = require('request');
-  const fs = require('fs');
 
   let newsImageApiPath =
     process.env.LIFERAY_PATH +
@@ -340,8 +336,6 @@ async function postNewsToLiferay(req, newsJson, imageId, debug) {
     title: newsJson.headline,
     title_i18n: titleValues,
   };
-
-  const axios = require('axios');
 
   let apiPath =
     process.env.LIFERAY_PATH +

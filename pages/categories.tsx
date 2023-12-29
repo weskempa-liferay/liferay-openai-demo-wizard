@@ -1,23 +1,24 @@
-import { useState } from "react";
-import React from "react";
-import AppHead from "./components/apphead";
-import AppHeader from "./components/appheader";
-import AppFooter from "./components/appfooter";
-import LoadingAnimation from "./components/loadinganimation";
-import ResultDisplay from "./components/resultdisplay";
-import FieldString from "./components/formfield-string";
-import FieldSubmit from "./components/formfield-submit";
+import hljs from 'highlight.js';
+import { useState } from 'react';
+import React from 'react';
 
-import hljs from "highlight.js";
+import AppFooter from './components/appfooter';
+import AppHead from './components/apphead';
+import AppHeader from './components/appheader';
+import FieldString from './components/formfield-string';
+import FieldSubmit from './components/formfield-submit';
+import LoadingAnimation from './components/loadinganimation';
+import ResultDisplay from './components/resultdisplay';
 
 export default function Review() {
-    
-  const [siteIdInput, setSiteIdInput] = useState("");
-  const [vocabularyNameInput, setVocabularyNameInput] = useState("Types of books");
-  const [categorytNumberInput, setCategorytNumberInput] = useState("5");
-  const [childCategorytNumberInput, setChildCategorytNumberInput] = useState("3");
-  
-  const [result, setResult] = useState(() => "");
+  const [siteIdInput, setSiteIdInput] = useState('');
+  const [vocabularyNameInput, setVocabularyNameInput] =
+    useState('Types of books');
+  const [categorytNumberInput, setCategorytNumberInput] = useState('5');
+  const [childCategorytNumberInput, setChildCategorytNumberInput] =
+    useState('3');
+
+  const [result, setResult] = useState(() => '');
   const [isLoading, setIsLoading] = useState(false);
   const [debugMode, setDebugMode] = useState(false);
 
@@ -28,23 +29,22 @@ export default function Review() {
   async function onSubmit(event) {
     event.preventDefault();
     setIsLoading(true);
-    if(debugMode) console.log("Posting!");
-    const response = await fetch("/api/categories", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+    if (debugMode) console.log('Posting!');
+    const response = await fetch('/api/categories', {
       body: JSON.stringify({
+        categorytNumber: categorytNumberInput,
+        childCategorytNumber: childCategorytNumberInput,
+        debugMode: debugMode,
         siteId: siteIdInput,
         vocabularyName: vocabularyNameInput,
-        categorytNumber:categorytNumberInput,
-        childCategorytNumber:childCategorytNumberInput,
-        debugMode: debugMode
       }),
-    
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      method: 'POST',
     });
     const data = await response.json();
-    if(debugMode) console.log("data", data);
+    if (debugMode) console.log('data', data);
 
     const hljsResult = hljs.highlightAuto(data.result).value;
     setResult(hljsResult);
@@ -54,66 +54,62 @@ export default function Review() {
 
   return (
     <div>
-      <AppHead title={"Account Generator"}/>
+      <AppHead title="Account Generator" />
 
       <main className="py-20 flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
-        
-        <AppHeader 
-            title={"Liferay Category Generator"} 
-            desc={"Type your business description in the field below and wait for your categories."} />
-        
+        <AppHeader
+          desc={
+            'Type your business description in the field below and wait for your categories.'
+          }
+          title="Liferay Category Generator"
+        />
+
         <form onSubmit={onSubmit}>
-
           <div className="w-700 grid grid-cols-2 gap-2 sm:grid-cols-2 md:gap-4 mb-5">
+            <FieldString
+              defaultValue=""
+              inputChange={setSiteIdInput}
+              label="Site ID or Asset Library Group ID"
+              name="siteId"
+              placeholder="Enter a site ID or asset library group ID"
+            />
 
-          <FieldString 
-                name={"siteId"}
-                label={"Site ID or Asset Library Group ID"} 
-                placeholder={"Enter a site ID or asset library group ID"}
-                inputChange={setSiteIdInput}
-                defaultValue={""}
-                />
+            <FieldString
+              defaultValue="Types of books"
+              inputChange={setVocabularyNameInput}
+              label="Vocabulary Name"
+              name="vocabulary"
+              placeholder="Enter a vocabulary name"
+            />
 
-            <FieldString 
-                name={"vocabulary"}
-                label={"Vocabulary Name"} 
-                placeholder={"Enter a vocabulary name"}
-                inputChange={setVocabularyNameInput}
-                defaultValue={"Types of books"}
-                />
+            <FieldString
+              defaultValue="5"
+              inputChange={setCategorytNumberInput}
+              label="Number of Categories"
+              name="topic"
+              placeholder="Enter a the number of categories to generate"
+            />
 
-            <FieldString 
-                name={"topic"}
-                label={"Number of Categories"} 
-                placeholder={"Enter a the number of categories to generate"}
-                inputChange={setCategorytNumberInput}
-                defaultValue={"5"}
-                />
-            
-            <FieldString 
-                name={"numberOfChildCategories"}
-                label={"Prefered Number of Child Categories"} 
-                placeholder={"Enter a the number of child categories to generate"}
-                inputChange={setChildCategorytNumberInput}
-                defaultValue={"3"}
-                />
-
+            <FieldString
+              defaultValue="3"
+              inputChange={setChildCategorytNumberInput}
+              label="Prefered Number of Child Categories"
+              name="numberOfChildCategories"
+              placeholder="Enter a the number of child categories to generate"
+            />
           </div>
-          
-          <FieldSubmit label={"Generate Categories"} disabled={isLoading} />
-          
+
+          <FieldSubmit disabled={isLoading} label={'Generate Categories'} />
         </form>
 
         {isLoading ? (
-          <LoadingAnimation/>
-        ) : result ? (
-          <ResultDisplay result={result} />
-        ) : null}
-
+          <LoadingAnimation />
+        ) : (
+          result && <ResultDisplay result={result} />
+        )}
       </main>
-      
-      <AppFooter debugModeChange={onDebugModeChange} />
 
+      <AppFooter debugModeChange={onDebugModeChange} />
     </div>
   );
 }

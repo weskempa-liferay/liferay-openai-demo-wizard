@@ -1,26 +1,24 @@
-import { useState } from "react";
-import React from "react";
-import AppHead from "./components/apphead";
-import AppHeader from "./components/appheader";
-import AppFooter from "./components/appfooter";
-import LoadingAnimation from "./components/loadinganimation";
-import ResultDisplay from "./components/resultdisplay";
-import FieldString from "./components/formfield-string";
-import FieldSubmit from "./components/formfield-submit";
+import hljs from 'highlight.js';
+import { useState } from 'react';
+import React from 'react';
 
-import hljs from "highlight.js";
+import AppFooter from './components/appfooter';
+import AppHead from './components/apphead';
+import AppHeader from './components/appheader';
+import FieldString from './components/formfield-string';
+import FieldSubmit from './components/formfield-submit';
+import LoadingAnimation from './components/loadinganimation';
+import ResultDisplay from './components/resultdisplay';
 
 export default function Review() {
-
-  const [kbTopicInput, setKBTopicInput] = useState("");
-  const [kbArticleLengthInput, setKBArticleLengthInput] = useState("100");
-  const [siteIdInput, setSiteIdInput] = useState("");
-  const [kbFolderNumberInput, setKBFolderNumberInput] = useState("3");
-  const [kbArticleNumberInput, setKBArticleNumberInput] = useState("4");
-  const [result, setResult] = useState(() => "");
-  const [isLoading, setIsLoading] = useState(false);
-
   const [debugMode, setDebugMode] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [kbArticleLengthInput, setKBArticleLengthInput] = useState('100');
+  const [kbArticleNumberInput, setKBArticleNumberInput] = useState('4');
+  const [kbFolderNumberInput, setKBFolderNumberInput] = useState('3');
+  const [kbTopicInput, setKBTopicInput] = useState('');
+  const [result, setResult] = useState(() => '');
+  const [siteIdInput, setSiteIdInput] = useState('');
 
   const onDebugModeChange = (value) => {
     setDebugMode(value);
@@ -29,19 +27,20 @@ export default function Review() {
   async function onSubmit(event) {
     event.preventDefault();
     setIsLoading(true);
-    const response = await fetch("/api/knowledgebase", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+
+    const response = await fetch('/api/knowledgebase', {
       body: JSON.stringify({
+        debugMode: debugMode,
+        kbArticleLength: kbArticleLengthInput,
+        kbArticleNumber: kbArticleNumberInput,
+        kbFolderNumber: kbFolderNumberInput,
         kbTopic: kbTopicInput,
         siteId: siteIdInput,
-        kbFolderNumber: kbFolderNumberInput, 
-        kbArticleNumber: kbArticleNumberInput, 
-        kbArticleLength: kbArticleLengthInput,
-        debugMode: debugMode
       }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      method: 'POST',
     });
     const data = await response.json();
 
@@ -53,72 +52,73 @@ export default function Review() {
 
   return (
     <div>
-      <AppHead title={"Knowledge Base Content Generator"}/>
+      <AppHead title={'Knowledge Base Content Generator'} />
 
       <main className="py-20 flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
-        
-        <AppHeader title={"Liferay Knowledge Base Content Generator"} desc={"Type your topic in the field below and wait for your Knowledge Base Threads. <br/> Leave the field blank for a random Knowledge Base topic."} />
-        
+        <AppHeader
+          desc={
+            'Type your topic in the field below and wait for your Knowledge Base Threads. <br/> Leave the field blank for a random Knowledge Base topic.'
+          }
+          title={'Liferay Knowledge Base Content Generator'}
+        />
+
         <form onSubmit={onSubmit}>
-          
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 md:gap-4 mb-5">
+            <FieldString
+              defaultValue=""
+              inputChange={setKBTopicInput}
+              label="Knowledge Base Topic"
+              name="topic"
+              placeholder="Enter a knowledge base topic"
+            />
 
-          <FieldString 
-                  name={"topic"}
-                  label={"Knowledge Base Topic"} 
-                  placeholder={"Enter a knowledge base topic"}
-                  inputChange={setKBTopicInput}
-                  defaultValue={""}
-                />
+            <FieldString
+              defaultValue=""
+              inputChange={setSiteIdInput}
+              label="Site ID or Asset Library Group ID"
+              name="siteId"
+              placeholder="Enter a site ID or asset library group ID"
+            />
 
-            <FieldString 
-                  name={"siteId"}
-                  label={"Site ID or Asset Library Group ID"} 
-                  placeholder={"Enter a site ID or asset library group ID"}
-                  inputChange={setSiteIdInput}
-                  defaultValue={""}
-                />
+            <FieldString
+              defaultValue="100"
+              inputChange={setKBArticleLengthInput}
+              label="Expected Article Length (in # of words)"
+              name="articleLength"
+              placeholder="Enter a knowledge base article length"
+            />
 
-            <FieldString 
-                  name={"articleLength"}
-                  label={"Expected Article Length (in # of words)"} 
-                  placeholder={"Enter a knowledge base article length"}
-                  inputChange={setKBArticleLengthInput}
-                  defaultValue={"100"}
-                />
+            <FieldString
+              defaultValue="3"
+              inputChange={setKBFolderNumberInput}
+              label="Number of Folders to Create"
+              name="kbNumber"
+              placeholder="Number of of knowledge base sections"
+            />
 
-            <FieldString 
-                  name={"kbNumber"}
-                  label={"Number of Folders to Create"} 
-                  placeholder={"Number of of knowledge base sections"}
-                  inputChange={setKBFolderNumberInput}
-                  defaultValue={"3"}
-                />
-
-            <FieldString 
-                  name={"kbSectionNumber"}
-                  label={"Number of Articles to Create per Section"} 
-                  placeholder={"Number of of knowledge base sections"}
-                  inputChange={setKBArticleNumberInput}
-                  defaultValue={"4"}
-                />
-
+            <FieldString
+              defaultValue="4"
+              inputChange={setKBArticleNumberInput}
+              label="Number of Articles to Create per Section"
+              name="kbSectionNumber"
+              placeholder="Number of of knowledge base sections"
+            />
           </div>
-          
-          <FieldSubmit label={"Generate Knowledge Base Articles"} disabled={isLoading} />
 
+          <FieldSubmit
+            disabled={isLoading}
+            label="Generate Knowledge Base Articles"
+          />
         </form>
-        
-        {isLoading ? (
-          <LoadingAnimation/>
-        ) : result ? (
-          <ResultDisplay result={result} />
-        ) : null}
-        
-      </main>
-      
-      <AppFooter debugModeChange={onDebugModeChange} />
 
+        {isLoading ? (
+          <LoadingAnimation />
+        ) : (
+          result && <ResultDisplay result={result} />
+        )}
+      </main>
+
+      <AppFooter debugModeChange={onDebugModeChange} />
     </div>
   );
 }

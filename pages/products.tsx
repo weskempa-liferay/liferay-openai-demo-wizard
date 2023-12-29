@@ -1,34 +1,33 @@
-import { useState, useEffect } from "react";
-import React from "react";
-import AppHead from "./components/apphead";
-import AppHeader from "./components/appheader";
-import AppFooter from "./components/appfooter";
-import ImageStyle from "./components/imagestyle";
-import LoadingAnimation from "./components/loadinganimation";
-import ResultDisplay from "./components/resultdisplay";
-import FieldString from "./components/formfield-string";
-import FieldSelect from "./components/formfield-select";
-import FieldImageType from "./components/formfield-imagetype";
-import FieldSubmit from "./components/formfield-submit";
+import hljs from 'highlight.js';
+import { useEffect, useState } from 'react';
+import React from 'react';
 
-import hljs from "highlight.js";
+import AppFooter from './components/appfooter';
+import AppHead from './components/apphead';
+import AppHeader from './components/appheader';
+import FieldImageType from './components/formfield-imagetype';
+import FieldSelect from './components/formfield-select';
+import FieldString from './components/formfield-string';
+import FieldSubmit from './components/formfield-submit';
+import ImageStyle from './components/imagestyle';
+import LoadingAnimation from './components/loadinganimation';
+import ResultDisplay from './components/resultdisplay';
 
 export default function Review() {
-
-  const [companyThemeInput, setCompanyThemeInput] = useState("");
-  const [categoryNameInput, setCategoryNameInput] = useState("");
-  const [categoryNumberInput, setCategoryNumberInput] = useState("5");
-  const [productNumberInput, setProductNumberInput] = useState("3");
-  const [imageGenerationType, setImageGenerationType] = useState("none");
-  const [imageStyleInput, setImageStyleInput] = useState("");
+  const [companyThemeInput, setCompanyThemeInput] = useState('');
+  const [categoryNameInput, setCategoryNameInput] = useState('');
+  const [categoryNumberInput, setCategoryNumberInput] = useState('5');
+  const [productNumberInput, setProductNumberInput] = useState('3');
+  const [imageGenerationType, setImageGenerationType] = useState('none');
+  const [imageStyleInput, setImageStyleInput] = useState('');
   const [showStyleInput, setShowImageStyleInput] = useState(false);
 
-  const [globalSiteIdInput, setGlobalSiteIdInput] = useState("");
-  const [productCatalogSelect, setProductCatalogSelect] = useState("");
+  const [globalSiteIdInput, setGlobalSiteIdInput] = useState('');
+  const [productCatalogSelect, setProductCatalogSelect] = useState('');
   const [productCatalogOptions, setProductCatalogOptions] = useState([]);
-  const [submitLabel, setSubmitLabel] = useState("");
+  const [submitLabel, setSubmitLabel] = useState('');
 
-  const [result, setResult] = useState(() => "");
+  const [result, setResult] = useState(() => '');
   const [isLoading, setIsLoading] = useState(false);
   const [debugMode, setDebugMode] = useState(false);
 
@@ -41,25 +40,23 @@ export default function Review() {
   };
 
   let USDollar = new Intl.NumberFormat('en-US', {
-    style: 'currency',
     currency: 'USD',
+    style: 'currency',
   });
 
   useEffect(() => {
-    if(debugMode) console.log("Load");
+    if (debugMode) console.log('Load');
 
     const fetchData = async () => {
-      const response = await fetch("/api/catalogs");
+      const response = await fetch('/api/catalogs');
       const catalogs = await response.json();
 
-      if(debugMode) console.log(catalogs);
+      if (debugMode) console.log(catalogs);
       setProductCatalogOptions(catalogs);
       setProductCatalogSelect(catalogs[0].id);
-    }
-  
-    fetchData()
-      .catch(console.error);
-      
+    };
+
+    fetchData().catch(console.error);
   }, []);
 
   useEffect(() => {
@@ -68,46 +65,53 @@ export default function Review() {
 
   const updateCost = () => {
     setShowImageStyleInput(false);
-    let cost = "";
+    let cost = '';
 
-    if(debugMode) console.log(categoryNumberInput);
-    if(isNaN(parseInt(categoryNumberInput)) && isNaN(parseInt(productNumberInput))){
-      cost = "$0.00";
-    }else if(imageGenerationType=="dall-e-3"){
+    if (debugMode) console.log(categoryNumberInput);
+    if (
+      isNaN(parseInt(categoryNumberInput)) &&
+      isNaN(parseInt(productNumberInput))
+    ) {
+      cost = '$0.00';
+    } else if (imageGenerationType == 'dall-e-3') {
       setShowImageStyleInput(true);
-      cost = USDollar.format(parseInt(categoryNumberInput) * parseInt(productNumberInput) * 0.04);
-    }else if(imageGenerationType=="dall-e-2"){
-      cost = USDollar.format(parseInt(categoryNumberInput) * parseInt(productNumberInput) * 0.02);
-    }else{
-      cost = "<$0.01";
+      cost = USDollar.format(
+        parseInt(categoryNumberInput) * parseInt(productNumberInput) * 0.04
+      );
+    } else if (imageGenerationType == 'dall-e-2') {
+      cost = USDollar.format(
+        parseInt(categoryNumberInput) * parseInt(productNumberInput) * 0.02
+      );
+    } else {
+      cost = '<$0.01';
     }
-    
-    setSubmitLabel("Generate Products - Estimated cost: " + cost);
-  }
+
+    setSubmitLabel('Generate Products - Estimated cost: ' + cost);
+  };
 
   async function onSubmit(event) {
     event.preventDefault();
     setIsLoading(true);
-    const response = await fetch("/api/products", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ 
-        companyTheme: companyThemeInput, 
-        categoryName: categoryNameInput, 
-        numberOfCategories: categoryNumberInput, 
-        numberOfProducts: productNumberInput,
-        gloablSiteId:globalSiteIdInput,
-        catalogId:productCatalogSelect,
-        imageGeneration:imageGenerationType,
+    const response = await fetch('/api/products', {
+      body: JSON.stringify({
+        catalogId: productCatalogSelect,
+        categoryName: categoryNameInput,
+        companyTheme: companyThemeInput,
+        debugMode: debugMode,
+        gloablSiteId: globalSiteIdInput,
+        imageGeneration: imageGenerationType,
         imageStyle: imageStyleInput,
-        debugMode: debugMode
+        numberOfCategories: categoryNumberInput,
+        numberOfProducts: productNumberInput,
       }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      method: 'POST',
     });
     const data = await response.json();
-    if(debugMode) console.log("data", data);
-    if(debugMode) console.log("data.result", data.result);
+    if (debugMode) console.log('data', data);
+    if (debugMode) console.log('data.result', data.result);
 
     const hljsResult = hljs.highlightAuto(data.result).value;
     setResult(hljsResult);
@@ -117,87 +121,81 @@ export default function Review() {
 
   return (
     <div>
-      <AppHead title={"Product Generator"}/>
+      <AppHead title="Product Generator" />
 
       <main className="py-20 flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
-          
-        <AppHeader title={"Liferay Product Generator"} desc={"This is an Open AI integration to generate demo products."} />
+        <AppHeader
+          desc="This is an Open AI integration to generate demo products."
+          title="Liferay Product Generator"
+        />
 
         <form onSubmit={onSubmit}>
-
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 md:gap-4 mb-5">
+            <FieldString
+              defaultValue=""
+              inputChange={setCompanyThemeInput}
+              label="Commerce Theme"
+              name="companyTheme"
+              placeholder="Enter a company theme"
+            />
 
-            <FieldString 
-                    name={"companyTheme"}
-                    label={"Commerce Theme"} 
-                    placeholder={"Enter a company theme"}
-                    inputChange={setCompanyThemeInput}
-                    defaultValue={""}
-                  />
-            
-            <FieldString 
-                    name={"categoryName"}
-                    label={"Category Name"} 
-                    placeholder={"Enter a category name"}
-                    inputChange={setCategoryNameInput}
-                    defaultValue={""}
-                  />
-            
-            <FieldString 
-                    name={"numberOfCategories"}
-                    label={"Number of Categories"} 
-                    placeholder={"Enter the number of categories"}
-                    inputChange={setCategoryNumberInput}
-                    defaultValue={"5"}
-                  />
-          
-            <FieldString 
-                    name={"numberOfProducts"}
-                    label={"Number of Products per Category"} 
-                    placeholder={"Enter the number of products per category"}
-                    inputChange={setProductNumberInput}
-                    defaultValue={"3"}
-                  />
-            
-            <FieldString 
-                    name={"globalSiteId"}
-                    label={"Global Site ID for Taxonomy Assignment"} 
-                    placeholder={"Enter the global site ID"}
-                    inputChange={setGlobalSiteIdInput}
-                    defaultValue={""}
-                  />
+            <FieldString
+              defaultValue=""
+              inputChange={setCategoryNameInput}
+              label="Category Name"
+              name="categoryName"
+              placeholder="Enter a category name"
+            />
 
-            <FieldSelect 
-                    name={"productCatalogSelect"}
-                    label={"Product Catalog"}
-                    inputChange={setProductCatalogSelect}
-                    optionMap={productCatalogOptions}
-                  />
+            <FieldString
+              defaultValue="5"
+              inputChange={setCategoryNumberInput}
+              label="Number of Categories"
+              name="numberOfCategories"
+              placeholder="Enter the number of categories"
+            />
 
-            <FieldImageType
-                includeNone={true}
-                inputChange={setImageGenerationType}
-              />
-            
-            {showStyleInput ? (
-              <ImageStyle styleInputChange={onImageStyleInputChange}/>
-            ) : null}
+            <FieldString
+              defaultValue="3"
+              inputChange={setProductNumberInput}
+              label="Number of Products per Category"
+              name="numberOfProducts"
+              placeholder="Enter the number of products per category"
+            />
 
+            <FieldString
+              defaultValue=""
+              inputChange={setGlobalSiteIdInput}
+              label="Global Site ID for Taxonomy Assignment"
+              name="globalSiteId"
+              placeholder="Enter the global site ID"
+            />
+
+            <FieldSelect
+              inputChange={setProductCatalogSelect}
+              label="Product Catalog"
+              name="productCatalogSelect"
+              optionMap={productCatalogOptions}
+            />
+
+            <FieldImageType includeNone inputChange={setImageGenerationType} />
+
+            {showStyleInput && (
+              <ImageStyle styleInputChange={onImageStyleInputChange} />
+            )}
           </div>
 
-          <FieldSubmit label={submitLabel} disabled={isLoading} />
-        </form>  
+          <FieldSubmit disabled={isLoading} label={submitLabel} />
+        </form>
 
         {isLoading ? (
-          <LoadingAnimation/>
-        ) : result ? (
-          <ResultDisplay result={result} />
-        ) : null}
-
+          <LoadingAnimation />
+        ) : (
+          result && <ResultDisplay result={result} />
+        )}
       </main>
-      
+
       <AppFooter debugModeChange={onDebugModeChange} />
-      
     </div>
   );
 }

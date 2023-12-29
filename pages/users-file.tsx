@@ -10,16 +10,14 @@ import FieldFile from './components/formfield-file';
 import FieldSubmit from './components/formfield-submit';
 import LoadingAnimation from './components/loadinganimation';
 import ResultDisplay from './components/resultdisplay';
+import { logger } from './utils/logger';
 
-export default function Review() {
-  const [debugMode, setDebugMode] = useState(false);
+const debug = logger('UsersFile');
+
+export default function UsersFile() {
   const [file, setFile] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState(() => '');
-
-  const onDebugModeChange = (value) => {
-    setDebugMode(value);
-  };
 
   const handleOnChange = (file) => {
     setFile(file.target.files[0]);
@@ -53,7 +51,7 @@ export default function Review() {
 
     if (file) {
       fileReader.onload = function (event) {
-        if (debugMode) console.log(event.target.result);
+        debug(event.target.result);
         csvOutput = csvFileToArray(event.target.result);
 
         postResult(csvOutput);
@@ -68,7 +66,6 @@ export default function Review() {
     const response = await fetch('/api/users-file', {
       body: JSON.stringify({
         csvoutput: csvOutput,
-        debugMode: debugMode,
       }),
       headers: {
         'Content-Type': 'application/json',
@@ -76,7 +73,7 @@ export default function Review() {
       method: 'POST',
     });
     const data = await response.json();
-    if (debugMode) console.log('data', data);
+    debug('data', data);
 
     const hljsResult = hljs.highlightAuto(data.result).value;
     setResult(hljsResult);
@@ -120,7 +117,7 @@ export default function Review() {
         )}
       </main>
 
-      <AppFooter debugModeChange={onDebugModeChange} />
+      <AppFooter />
     </div>
   );
 }

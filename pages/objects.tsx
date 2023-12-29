@@ -10,7 +10,7 @@ import LoadingAnimation from './components/loadinganimation';
 import ObjectField from './components/objectfield';
 import ResultDisplay from './components/resultdisplay';
 
-export default function Review() {
+export default function Objects() {
   const [aiRoleInput, setAiRoleInput] = useState(
     'You are a helpful assistant responsible for providing a list of answers'
   );
@@ -27,11 +27,6 @@ export default function Review() {
 
   const [result, setResult] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [debugMode, setDebugMode] = useState(false);
-
-  const onDebugModeChange = () => {
-    setDebugMode(!debugMode);
-  };
 
   const onSubmit = async (event) => {
     event.preventDefault();
@@ -52,7 +47,6 @@ export default function Review() {
         aiEndpoint: aiEndpointInput,
         aiRequest: aiRequestInput,
         aiRole: aiRoleInput,
-        debugMode: debugMode,
         objectFields: postFields,
       }),
       headers: {
@@ -61,7 +55,6 @@ export default function Review() {
       method: 'POST',
     });
     const data = await response.json();
-    if (debugMode) console.log('data', data);
 
     const hljsResult = hljs.highlightAuto(data.result).value;
 
@@ -180,7 +173,7 @@ export default function Review() {
         )}
       </main>
 
-      <AppFooter debugModeChange={onDebugModeChange} />
+      <AppFooter />
 
       <div className="hidden">{updateCount}</div>
     </div>

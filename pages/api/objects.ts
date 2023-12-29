@@ -2,19 +2,18 @@ import axios from 'axios';
 import OpenAI from 'openai';
 
 import functions from '../utils/functions';
+import { logger } from '../utils/logger';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-export default async function Action(req, res) {
+const debug = logger('ObjectsAction');
+
+export default async function ObjectsAction(req, res) {
   let start = new Date().getTime();
 
-  const debug = req.body.debugMode;
-  let aiRole = req.body.aiRole;
-  let aiRequest = req.body.aiRequest;
-  let aiEndpoint = req.body.aiEndpoint;
-  let objectFields = req.body.objectFields;
+  const { aiEndpoint, aiRequest, aiRole, objectFields } = req.body;
 
   let requiredList = [];
   for (let i = 0; i < objectFields.length; i++) {
@@ -37,7 +36,7 @@ export default async function Action(req, res) {
     type: 'object',
   };
 
-  if (debug) console.log(objectSchema);
+  debug(objectSchema);
 
   const response = await openai.chat.completions.create({
     functions: [{ name: 'get_objects', parameters: objectSchema }],
@@ -52,7 +51,7 @@ export default async function Action(req, res) {
   let resultlist = JSON.parse(
     response.choices[0].message.function_call.arguments
   ).resultlist;
-  if (debug) console.log(JSON.stringify(resultlist));
+  debug(JSON.stringify(resultlist));
 
   let objectApiPath = process.env.LIFERAY_PATH + aiEndpoint;
 
@@ -61,12 +60,12 @@ export default async function Action(req, res) {
   try {
     const response = await axios.post(objectApiPath, resultlist, options);
 
-    if (debug) console.log(response.data);
+    debug(response.data);
   } catch (error) {
     console.log(error);
   }
 
-  let end = new Date().getTime();
+  const end = new Date().getTime();
 
   res.status(200).json({
     result: 'Completed in ' + functions.millisToMinutesAndSeconds(end - start),

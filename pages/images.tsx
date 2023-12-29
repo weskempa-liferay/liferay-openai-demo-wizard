@@ -10,9 +10,11 @@ import FieldSubmit from './components/formfield-submit';
 import ImageStyle from './components/imagestyle';
 import LoadingAnimation from './components/loadinganimation';
 import ResultDisplay from './components/resultdisplay';
+import { logger } from './utils/logger';
 
-export default function Review() {
-  const [debugMode, setDebugMode] = useState(false);
+const debug = logger('Images');
+
+export default function Images() {
   const [imageDescriptionInput, setImageDescriptionInput] = useState('');
   const [imageFolderIdInput, setImageFolderIdInput] = useState('');
   const [imageGenerationType, setImageGenerationType] = useState('none');
@@ -56,7 +58,6 @@ export default function Review() {
     setIsLoading(true);
     const response = await fetch('/api/images', {
       body: JSON.stringify({
-        debugMode: debugMode,
         imageDescription: imageDescriptionInput,
         imageFolderId: imageFolderIdInput,
         imageGeneration: imageGenerationType,
@@ -69,7 +70,7 @@ export default function Review() {
       method: 'POST',
     });
     const data = await response.json();
-    if (debugMode) console.log('data', data);
+    debug('data', data);
 
     const hljsResult = hljs.highlightAuto(data.result).value;
     setResult(hljsResult);
@@ -137,7 +138,7 @@ export default function Review() {
         )}
       </main>
 
-      <AppFooter debugModeChange={setDebugMode} />
+      <AppFooter />
     </div>
   );
 }

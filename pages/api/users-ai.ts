@@ -4,17 +4,18 @@ import OpenAI from 'openai';
 import request from 'request';
 
 import functions from '../utils/functions';
+import { logger } from '../utils/logger';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-export default async function Action(req, res) {
+const debug = logger('UsersAIAction');
+
+export default async function UsersAIAction(req, res) {
   let start = new Date().getTime();
   let successCount = 0;
   let errorCount = 0;
-
-  const debug = req.body.debugMode;
 
   const userSchema = {
     properties: {
@@ -115,14 +116,9 @@ export default async function Action(req, res) {
       let userApiPath =
         process.env.LIFERAY_PATH + '/o/headless-admin-user/v1.0/user-accounts';
       const response = await axios.post(userApiPath, userlist[i], options);
-
-      if (debug)
-        console.log(
-          'Created user:' +
-            response.data.id +
-            ', ' +
-            response.data.alternateName
-        );
+      debug(
+        'Created user:' + response.data.id + ', ' + response.data.alternateName
+      );
 
       let userImageApiPath =
         process.env.LIFERAY_PATH +
@@ -131,12 +127,9 @@ export default async function Action(req, res) {
         '/image';
       let userImagePath = await getImagePath(gender, genderCount[gender]);
 
-      if (debug) console.log('userImageApiPath:' + userImageApiPath);
-      if (debug) console.log('userImagePath:' + userImagePath);
-      if (debug)
-        console.log(
-          process.cwd() + '/public/users/user-images/' + userImagePath
-        );
+      debug('userImageApiPath:' + userImageApiPath);
+      debug('userImagePath:' + userImagePath);
+      debug(process.cwd() + '/public/users/user-images/' + userImagePath);
 
       let fileStream = fs.createReadStream(
         process.cwd() + '/public/users/user-images/' + userImagePath
@@ -150,7 +143,7 @@ export default async function Action(req, res) {
       request(imgoptions, function (err, res, body) {
         if (err) console.log(err);
 
-        if (debug) console.log('Image Upload Complete');
+        debug('Image Upload Complete');
       });
 
       successCount++;

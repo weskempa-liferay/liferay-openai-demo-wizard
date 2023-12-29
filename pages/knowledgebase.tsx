@@ -11,7 +11,6 @@ import LoadingAnimation from './components/loadinganimation';
 import ResultDisplay from './components/resultdisplay';
 
 export default function Review() {
-  const [debugMode, setDebugMode] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [kbArticleLengthInput, setKBArticleLengthInput] = useState('100');
   const [kbArticleNumberInput, setKBArticleNumberInput] = useState('4');
@@ -20,17 +19,12 @@ export default function Review() {
   const [result, setResult] = useState(() => '');
   const [siteIdInput, setSiteIdInput] = useState('');
 
-  const onDebugModeChange = (value) => {
-    setDebugMode(value);
-  };
-
   async function onSubmit(event) {
     event.preventDefault();
     setIsLoading(true);
 
     const response = await fetch('/api/knowledgebase', {
       body: JSON.stringify({
-        debugMode: debugMode,
         kbArticleLength: kbArticleLengthInput,
         kbArticleNumber: kbArticleNumberInput,
         kbFolderNumber: kbFolderNumberInput,
@@ -118,7 +112,7 @@ export default function Review() {
         )}
       </main>
 
-      <AppFooter debugModeChange={onDebugModeChange} />
+      <AppFooter />
     </div>
   );
 }

@@ -9,40 +9,39 @@ import FieldString from './components/formfield-string';
 import FieldSubmit from './components/formfield-submit';
 import LoadingAnimation from './components/loadinganimation';
 import ResultDisplay from './components/resultdisplay';
+import { logger } from './utils/logger';
+
+const debug = logger('Accounts');
 
 export default function Review() {
-  const [accountTopicInput, setAccountTopicInput] = useState('');
   const [accountNumberInput, setAccountNumberInput] = useState('');
-
-  const [result, setResult] = useState(() => '');
+  const [accountTopicInput, setAccountTopicInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [debugMode, setDebugMode] = useState(false);
-
-  const onDebugModeChange = (value) => {
-    setDebugMode(value);
-  };
+  const [result, setResult] = useState('');
 
   async function onSubmit(event) {
     event.preventDefault();
     setIsLoading(true);
-    if (debugMode) console.log('Posting!');
+
+    debug('Posting Accounts');
     const response = await fetch('/api/accounts', {
       body: JSON.stringify({
         accountNumber: accountNumberInput,
         accountTopic: accountTopicInput,
-        debugMode: debugMode,
       }),
       headers: {
         'Content-Type': 'application/json',
       },
       method: 'POST',
     });
+
     const data = await response.json();
-    if (debugMode) console.log('data', data);
+
+    debug('data', data);
 
     const hljsResult = hljs.highlightAuto(data.result).value;
-    setResult(hljsResult);
 
+    setResult(hljsResult);
     setIsLoading(false);
   }
 
@@ -87,7 +86,7 @@ export default function Review() {
         )}
       </main>
 
-      <AppFooter debugModeChange={onDebugModeChange} />
+      <AppFooter />
     </div>
   );
 }

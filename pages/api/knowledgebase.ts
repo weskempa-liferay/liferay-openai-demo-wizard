@@ -2,6 +2,7 @@ import axios from 'axios';
 import OpenAI from 'openai';
 
 import functions from '../utils/functions';
+import { logger } from '../utils/logger';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -9,18 +10,13 @@ const openai = new OpenAI({
 
 let options = functions.getAPIOptions('POST', 'en-US');
 
-export default async function Action(req, res) {
+const debug = logger('KnowledgeBaseAction');
+
+export default async function KnowledgeBaseAction(req, res) {
   let start = new Date().getTime();
 
-  const debug = req.body.debugMode;
+  debug(req.body);
 
-  if (debug)
-    console.log(
-      'kbFolderNumber:' +
-        req.body.kbFolderNumber +
-        ', kbArticleNumber:' +
-        req.body.kbArticleNumber
-    );
   //TODO Liferay's API does not yet support Suggestions. Once that is available development can continue.
 
   const knowledgeBaseSchema = {
@@ -99,10 +95,11 @@ export default async function Action(req, res) {
     temperature: 0.6,
   });
 
-  let categories = JSON.parse(
+  const categories = JSON.parse(
     response.choices[0].message.function_call.arguments
   ).categories;
-  if (debug) console.log(JSON.stringify(categories));
+
+  debug(JSON.stringify(categories));
 
   for (let i = 0; categories.length > i; i++) {
     let sectionApiPath =
@@ -111,7 +108,7 @@ export default async function Action(req, res) {
       req.body.siteId +
       '/knowledge-base-folders';
 
-    if (debug) console.log(sectionApiPath);
+    debug(sectionApiPath);
 
     let kbSectionJson = {
       name: categories[i].category,
@@ -124,10 +121,7 @@ export default async function Action(req, res) {
     );
     let sectionId = kbSectionResponse.data.id;
 
-    if (debug)
-      console.log(
-        'C:' + categories[i].category + ' created with id ' + sectionId
-      );
+    debug('C:' + categories[i].category + ' created with id ' + sectionId);
 
     let articles = categories[i].articles;
 
@@ -138,7 +132,7 @@ export default async function Action(req, res) {
         sectionId +
         '/knowledge-base-articles';
 
-      if (debug) console.log(threadApiPath);
+      debug(threadApiPath);
 
       let kbThreadJson = {
         articleBody: articles[t].articleBody,
@@ -150,12 +144,10 @@ export default async function Action(req, res) {
         kbThreadJson,
         options
       );
-      let threadId = kbThreadResponse.data.id;
 
-      if (debug)
-        console.log(
-          'T:' + articles[t].headline + ' created with id ' + threadId
-        );
+      const threadId = kbThreadResponse.data.id;
+
+      debug('T:' + articles[t].headline + ' created with id ' + threadId);
 
       /*
         let suggestions = articles[t].suggestions;

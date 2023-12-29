@@ -11,8 +11,11 @@ import FieldString from './components/formfield-string';
 import FieldSubmit from './components/formfield-submit';
 import LoadingAnimation from './components/loadinganimation';
 import ResultDisplay from './components/resultdisplay';
+import { logger } from './utils/logger';
 
-export default function Review() {
+const debug = logger('faqs');
+
+export default function Faqs() {
   const [faqTopicInput, setFAQTopicInput] = useState('');
   const [siteIdInput, setSiteIdInput] = useState('');
   const [faqNumberInput, setFAQNumberInput] = useState('5');
@@ -26,25 +29,18 @@ export default function Review() {
 
   const [result, setResult] = useState(() => '');
   const [isLoading, setIsLoading] = useState(false);
-  const [debugMode, setDebugMode] = useState(false);
-
-  const onDebugModeChange = (value) => {
-    setDebugMode(value);
-  };
 
   async function onSubmit(event) {
     event.preventDefault();
     setIsLoading(true);
-    if (debugMode) console.log('Posting...');
-    if (debugMode)
-      console.log(
-        `languagesInput ${languagesInput}, manageLanguageInput ${manageLanguageInput}, defaultLaguagesInput ${defaultLanguageInput}`
-      );
+    debug('Posting...');
+    debug(
+      `languagesInput ${languagesInput}, manageLanguageInput ${manageLanguageInput}, defaultLaguagesInput ${defaultLanguageInput}`
+    );
 
     const response = await fetch('/api/faqs', {
       body: JSON.stringify({
         categoryIds: categoryIdsInput,
-        debugMode: debugMode,
         defaultLanguage: defaultLanguageInput,
         faqNumber: faqNumberInput,
         faqTopic: faqTopicInput,
@@ -61,7 +57,7 @@ export default function Review() {
     });
 
     const data = await response.json();
-    if (debugMode) console.log('data', data);
+    debug('data', data);
 
     const hljsResult = hljs.highlightAuto(data.result).value;
     setResult(hljsResult);
@@ -95,20 +91,18 @@ export default function Review() {
 
   return (
     <div>
-      <AppHead title={'FAQ Generator'} />
+      <AppHead title="FAQ Generator" />
 
       <main className="py-20 flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
         <AppHeader
-          desc={
-            'Type your topic in the field below and wait for your FAQs. <br/> Leave the FAQ topic field blank for a random faq topic.'
-          }
-          title={'Liferay FAQ Generator'}
+          desc="Type your topic in the field below and wait for your FAQs. <br/> Leave the FAQ topic field blank for a random faq topic."
+          title="Liferay FAQ Generator"
         />
 
         <div className="fixed top-2 right-5 p-5 text-lg download-options rounded">
-          <TopNavItem label={'FAQ Structure'} onClick={handleStructureClick} />
+          <TopNavItem label="FAQ Structure" onClick={handleStructureClick} />
 
-          <TopNavItem label={'FAQ Fragment'} onClick={handleFragmentClick} />
+          <TopNavItem label="FAQ Fragment" onClick={handleFragmentClick} />
         </div>
 
         <form onSubmit={onSubmit}>
@@ -163,7 +157,6 @@ export default function Review() {
           </div>
 
           <FieldLangauge
-            debug={debugMode}
             defaultLanguageChange={setDefaultLanguage}
             languagesChange={setLanguages}
             manageLanguageChange={setManageLanguage}
@@ -185,7 +178,7 @@ export default function Review() {
         )}
       </main>
 
-      <AppFooter debugModeChange={onDebugModeChange} />
+      <AppFooter />
     </div>
   );
 }

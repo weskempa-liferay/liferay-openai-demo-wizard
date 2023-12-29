@@ -1,14 +1,81 @@
 import { RocketLaunchIcon } from '@heroicons/react/24/solid';
-import { NextPage } from 'next';
-import { useState } from 'react';
 
 import AppFooter from './components/appfooter';
 import AppHead from './components/apphead';
 import NavItem from './components/navitem';
 
-const HomePage: NextPage = () => {
-  const [debugMode, setDebugMode] = useState(false);
+const navItems = [
+  {
+    description: 'Create a list of accounts based on a company type.',
+    path: '/accounts',
+    title: 'Accounts',
+  },
+  {
+    description: 'Create a set of blogs based on a suggested prompt.',
+    path: '/blogs',
+    title: 'Blogs',
+  },
+  {
+    description:
+      'Create a taxonomy and category structure based on a suggested theme.',
+    path: '/categories',
+    title: 'Categories',
+  },
+  {
+    description:
+      'Create a set of multilingual FAQs based on a suggested topic.',
+    path: '/faqs',
+    title: 'FAQs',
+  },
+  {
+    description:
+      'Create a set of knowledge base folders and articles based on a suggested topic.',
+    path: '/knowledgebase',
+    title: 'Knowledge Base',
+  },
+  {
+    description:
+      'In some cases, it is important to generate images with making associated content assets.',
+    path: '/images',
+    title: 'Images Only',
+  },
+  {
+    description:
+      'Create a set of message board sections and threads based on a suggested topic.',
+    path: '/messageboard',
+    title: 'Message Board',
+  },
+  {
+    description:
+      'Create a set of multilingual news articles based on a suggested topic.',
+    path: '/news',
+    title: 'News',
+  },
+  {
+    description:
+      'Populate your custom objects with records based on your prompts.',
+    path: '/objects',
+    title: 'Objects',
+  },
+  {
+    description: 'Create a organizational structure for your company.',
+    path: '/organizations',
+    title: 'Organizations',
+  },
+  {
+    description:
+      'Generate demo products and categories based on your company theme.',
+    path: '/products',
+    title: 'Products',
+  },
+  {
+    description: 'Create example users for your portal instance.',
+    path: '/users',
+    title: 'Users',
+  },
+];
 
+const HomePage = () => {
   return (
     <>
       <AppHead title="" />
@@ -22,70 +89,13 @@ const HomePage: NextPage = () => {
           </h1>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-4 md:gap-8">
-            <NavItem
-              desc="Create a list of accounts based on a company type."
-              path="/accounts"
-              title="Accounts"
-            />
-            <NavItem
-              desc="Create a set of blogs based on a suggested prompt."
-              path="/blogs"
-              title="Blogs"
-            />
-            <NavItem
-              desc="Create a taxonomy and category structure based on a suggested theme."
-              path="/categories"
-              title="Categories"
-            />
-            <NavItem
-              desc="Create a set of multilingual FAQs based on a suggested topic."
-              path="/faqs"
-              title="FAQs"
-            />
-            <NavItem
-              desc="Create a set of knowledge base folders and articles based on a suggested topic."
-              path="/knowledgebase"
-              title="Knowledge Base"
-            />
-            <NavItem
-              desc="In some cases, it is important to generate images with making associated content assets."
-              path="/images"
-              title="Images Only"
-            />
-            <NavItem
-              desc="Create a set of message board sections and threads based on a suggested topic."
-              path="/messageboard"
-              title="Message Board"
-            />
-            <NavItem
-              desc="Create a set of multilingual news articles based on a suggested topic."
-              path="/news"
-              title="News"
-            />
-            <NavItem
-              desc="Populate your custom objects with records based on your prompts."
-              path="/objects"
-              title="Objects"
-            />
-            <NavItem
-              desc="Create a organizational structure for your company."
-              path="/organizations"
-              title="Organizations"
-            />
-            <NavItem
-              desc="Generate demo products and categories based on your company theme."
-              path="/products"
-              title="Products"
-            />
-            <NavItem
-              desc="Create example users for your portal instance."
-              path="/users"
-              title="Users"
-            />
+            {navItems.map((navItem, index) => (
+              <NavItem {...navItem} key={index} />
+            ))}
           </div>
         </div>
 
-        <AppFooter debugModeChange={setDebugMode} />
+        <AppFooter />
       </main>
     </>
   );

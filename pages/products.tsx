@@ -12,8 +12,11 @@ import FieldSubmit from './components/formfield-submit';
 import ImageStyle from './components/imagestyle';
 import LoadingAnimation from './components/loadinganimation';
 import ResultDisplay from './components/resultdisplay';
+import { logger } from './utils/logger';
 
-export default function Review() {
+const debug = logger('Products');
+
+export default function Products() {
   const [companyThemeInput, setCompanyThemeInput] = useState('');
   const [categoryNameInput, setCategoryNameInput] = useState('');
   const [categoryNumberInput, setCategoryNumberInput] = useState('5');
@@ -29,11 +32,6 @@ export default function Review() {
 
   const [result, setResult] = useState(() => '');
   const [isLoading, setIsLoading] = useState(false);
-  const [debugMode, setDebugMode] = useState(false);
-
-  const onDebugModeChange = (value) => {
-    setDebugMode(value);
-  };
 
   const onImageStyleInputChange = (value) => {
     setImageStyleInput(value);
@@ -45,18 +43,18 @@ export default function Review() {
   });
 
   useEffect(() => {
-    if (debugMode) console.log('Load');
+    debug('Load');
 
     const fetchData = async () => {
       const response = await fetch('/api/catalogs');
       const catalogs = await response.json();
 
-      if (debugMode) console.log(catalogs);
+      debug(catalogs);
       setProductCatalogOptions(catalogs);
       setProductCatalogSelect(catalogs[0].id);
     };
 
-    fetchData().catch(console.error);
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -67,7 +65,7 @@ export default function Review() {
     setShowImageStyleInput(false);
     let cost = '';
 
-    if (debugMode) console.log(categoryNumberInput);
+    debug(categoryNumberInput);
     if (
       isNaN(parseInt(categoryNumberInput)) &&
       isNaN(parseInt(productNumberInput))
@@ -97,7 +95,6 @@ export default function Review() {
         catalogId: productCatalogSelect,
         categoryName: categoryNameInput,
         companyTheme: companyThemeInput,
-        debugMode: debugMode,
         gloablSiteId: globalSiteIdInput,
         imageGeneration: imageGenerationType,
         imageStyle: imageStyleInput,
@@ -110,8 +107,7 @@ export default function Review() {
       method: 'POST',
     });
     const data = await response.json();
-    if (debugMode) console.log('data', data);
-    if (debugMode) console.log('data.result', data.result);
+    debug('data', data);
 
     const hljsResult = hljs.highlightAuto(data.result).value;
     setResult(hljsResult);
@@ -195,7 +191,7 @@ export default function Review() {
         )}
       </main>
 
-      <AppFooter debugModeChange={onDebugModeChange} />
+      <AppFooter />
     </div>
   );
 }

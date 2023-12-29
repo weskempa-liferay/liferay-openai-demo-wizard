@@ -5,18 +5,20 @@ import OpenAI from 'openai';
 import request from 'request';
 
 import functions from '../utils/functions';
+import { logger } from '../utils/logger';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+const debug = logger('Blogs - Action');
+
 export default async function Action(req, res) {
   const runCount = req.body.blogNumber;
-  const debug = req.body.debugMode;
   const imageGeneration = req.body.imageGeneration;
 
-  if (debug) console.log('requesting ' + runCount + ' blog(s)');
-  if (debug) console.log('include images: ' + imageGeneration);
+  debug('requesting ' + runCount + ' blog(s)');
+  debug('include images: ' + imageGeneration);
 
   const runCountMax = 10;
 
@@ -78,18 +80,14 @@ export default async function Action(req, res) {
       temperature: 0.8,
     });
 
-    if (debug) console.log(response.choices[0].message.function_call.arguments);
+    debug(response.choices[0].message.function_call.arguments);
     blogJson = JSON.parse(response.choices[0].message.function_call.arguments);
 
     let pictureDescription = blogJson.picture_description;
     delete blogJson.picture_description;
 
     if (req.body.imageStyle) {
-      pictureDescription =
-        'Create an image in the style of ' +
-        req.body.imageStyle +
-        '. ' +
-        pictureDescription;
+      pictureDescription = `Create an image in the style of ${req.body.imageStyle}. ${pictureDescription}`;
     }
 
     blogJson.articleBody = blogJson.articleBody.replace(
@@ -97,7 +95,7 @@ export default async function Action(req, res) {
       '<br>'
     );
 
-    if (debug) console.log('pictureDescription: ' + pictureDescription);
+    debug(`pictureDescription: ${pictureDescription}`);
 
     try {
       if (imageGeneration != 'none') {
@@ -108,31 +106,31 @@ export default async function Action(req, res) {
           size: '1024x1024',
         });
 
-        if (debug) console.log(imageResponse.data[0].url);
+        debug(imageResponse.data[0].url);
 
         const timestamp = new Date().getTime();
         const file = fs.createWriteStream(
           'generatedimages/img' + timestamp + '-' + i + '.jpg'
         );
 
-        console.log('In Exports, getGeneratedImage:' + imageResponse);
+        debug('In Exports, getGeneratedImage:' + imageResponse);
 
         http.get(imageResponse.data[0].url, function (response) {
           response.pipe(file);
 
           file.on('finish', () => {
             file.close();
-            postImageToLiferay(file, req, blogJson, debug);
+            postImageToLiferay(file, req, blogJson);
           });
         });
       } else {
-        postBlogToLiferay(req, blogJson, 0, debug);
+        postBlogToLiferay(req, blogJson, 0);
       }
     } catch (error) {
       if (error.response) {
-        console.log(error.response.status);
+        debug(error.response.status);
       } else {
-        console.log(error.message);
+        debug(error.message);
       }
     }
 
@@ -144,14 +142,14 @@ export default async function Action(req, res) {
   res.status(200).json({ result: JSON.stringify(blogContentSet) });
 }
 
-function postImageToLiferay(file, req, blogJson, debug) {
+function postImageToLiferay(file, req, blogJson) {
   let blogImageApiPath =
     process.env.LIFERAY_PATH +
     '/o/headless-delivery/v1.0/sites/' +
     req.body.siteId +
     '/blog-posting-images';
 
-  if (debug) console.log(blogImageApiPath);
+  debug(blogImageApiPath);
 
   let fileStream = fs.createReadStream(process.cwd() + '/' + file.path);
   const options = functions.getFilePostOptions(
@@ -162,14 +160,14 @@ function postImageToLiferay(file, req, blogJson, debug) {
 
   setTimeout(function () {
     request(options, function (err, res, body) {
-      if (err) console.log(err);
+      if (err) debug(err);
 
-      postBlogToLiferay(req, blogJson, JSON.parse(body).id, debug);
+      postBlogToLiferay(req, blogJson, JSON.parse(body).id);
     });
   }, 100);
 }
 
-async function postBlogToLiferay(req, blogJson, imageId, debug) {
+async function postBlogToLiferay(req, blogJson, imageId) {
   if (imageId) {
     blogJson.image = {
       imageId: imageId,
@@ -187,9 +185,9 @@ async function postBlogToLiferay(req, blogJson, imageId, debug) {
   try {
     const response = await axios.post(apiPath, blogJson, options);
 
-    if (debug) console.log(response.data);
-    if (debug) console.log('Blog Import Process Complete.');
+    debug(response.data);
+    debug('Blog Import Process Complete.');
   } catch (error) {
-    console.log(error);
+    debug(error);
   }
 }

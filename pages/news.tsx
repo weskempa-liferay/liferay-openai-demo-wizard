@@ -6,16 +6,15 @@ import AppHead from './components/apphead';
 import AppHeader from './components/appheader';
 import TopNavItem from './components/apptopnavitem';
 import FieldImageType from './components/formfield-imagetype';
-import FieldLangauge from './components/formfield-language';
+import FieldLanguage from './components/formfield-language';
 import FieldString from './components/formfield-string';
 import FieldSubmit from './components/formfield-submit';
 import ImageStyle from './components/imagestyle';
 import LoadingAnimation from './components/loadinganimation';
 import ResultDisplay from './components/resultdisplay';
 
-export default function Review() {
+export default function News() {
   const [categoryIdsInput, setCategoryIdsInput] = useState('');
-  const [debugMode, setDebugMode] = useState(false);
   const [defaultLanguageInput, setDefaultLanguage] = useState('en-US');
   const [folderIdInput, setFolderIdInput] = useState('');
   const [imageFolderIdInput, setImageFolderIdInput] = useState('0');
@@ -33,10 +32,6 @@ export default function Review() {
   const [siteIdInput, setSiteIdInput] = useState('');
   const [structureIdInput, setStructureIdInput] = useState('');
   const [submitLabel, setSubmitLabel] = useState('');
-
-  const onDebugModeChange = (value) => {
-    setDebugMode(value);
-  };
 
   const onImageStyleInputChange = (value) => {
     setImageStyleInput(value);
@@ -102,7 +97,6 @@ export default function Review() {
     const response = await fetch('/api/news', {
       body: JSON.stringify({
         categoryIds: categoryIdsInput,
-        debugMode: debugMode,
         defaultLanguage: defaultLanguageInput,
         folderId: folderIdInput,
         imageFolderId: imageFolderIdInput,
@@ -122,7 +116,6 @@ export default function Review() {
       method: 'POST',
     });
     const data = await response.json();
-    if (debugMode) console.log('data', data);
 
     const hljsResult = hljs.highlightAuto(data.result).value;
     setResult(hljsResult);
@@ -226,8 +219,7 @@ export default function Review() {
             )}
           </div>
 
-          <FieldLangauge
-            debug={debugMode}
+          <FieldLanguage
             defaultLanguageChange={setDefaultLanguage}
             languagesChange={setLanguages}
             manageLanguageChange={setManageLanguage}
@@ -249,7 +241,7 @@ export default function Review() {
         )}
       </main>
 
-      <AppFooter debugModeChange={onDebugModeChange} />
+      <AppFooter />
     </div>
   );
 }

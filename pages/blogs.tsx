@@ -11,39 +11,32 @@ import FieldSubmit from './components/formfield-submit';
 import ImageStyle from './components/imagestyle';
 import LoadingAnimation from './components/loadinganimation';
 import ResultDisplay from './components/resultdisplay';
+import { logger } from './utils/logger';
+
+const debug = logger('Blogs');
 
 export default function Review() {
-  const [blogTopicInput, setBlogTopicInput] = useState('');
-  const [blogNumberInput, setBlogNumberInput] = useState('3');
   const [blogLengthInput, setBlogLengthInput] = useState('200');
-  const [siteIdInput, setSiteIdInput] = useState('');
+  const [blogNumberInput, setBlogNumberInput] = useState('3');
+  const [blogTopicInput, setBlogTopicInput] = useState('');
   const [imageGenerationType, setImageGenerationType] = useState('none');
-  const [showStyleInput, setShowImageStyleInput] = useState(false);
   const [imageStyleInput, setImageStyleInput] = useState('');
-  const [submitLabel, setSubmitLabel] = useState('');
-
-  const [result, setResult] = useState(() => '');
   const [isLoading, setIsLoading] = useState(false);
-  const [debugMode, setDebugMode] = useState(false);
-
-  const onDebugModeChange = (value) => {
-    setDebugMode(value);
-  };
-
-  const onImageStyleInputChange = (value) => {
-    setImageStyleInput(value);
-  };
-
-  const USDollar = new Intl.NumberFormat('en-US', {
-    currency: 'USD',
-    style: 'currency',
-  });
+  const [result, setResult] = useState('');
+  const [showStyleInput, setShowImageStyleInput] = useState(false);
+  const [siteIdInput, setSiteIdInput] = useState('');
+  const [submitLabel, setSubmitLabel] = useState('');
 
   useEffect(() => {
     updateCost();
   }, [blogNumberInput, imageGenerationType]);
 
   const updateCost = () => {
+    const USDollar = new Intl.NumberFormat('en-US', {
+      currency: 'USD',
+      style: 'currency',
+    });
+
     setShowImageStyleInput(false);
 
     let cost = '';
@@ -71,7 +64,6 @@ export default function Review() {
         blogLength: blogLengthInput,
         blogNumber: blogNumberInput,
         blogTopic: blogTopicInput,
-        debugMode: debugMode,
         imageGeneration: imageGenerationType,
         imageStyle: imageStyleInput,
         siteId: siteIdInput,
@@ -82,7 +74,7 @@ export default function Review() {
       method: 'POST',
     });
     const data = await response.json();
-    if (debugMode) console.log('data', data);
+    debug('data', data);
 
     const hljsResult = hljs.highlightAuto(data.result).value;
     setResult(hljsResult);
@@ -96,9 +88,7 @@ export default function Review() {
 
       <main className="py-20 flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
         <AppHeader
-          desc={
-            'Type your topic in the field below and wait for your blogs. <br/> Leave the field blank for a random blog topic.'
-          }
+          desc="Type your topic in the field below and wait for your blogs. <br/> Leave the field blank for a random blog topic."
           title="Liferay Blog Generator"
         />
 
@@ -139,7 +129,7 @@ export default function Review() {
             <FieldImageType includeNone inputChange={setImageGenerationType} />
 
             {showStyleInput && (
-              <ImageStyle styleInputChange={onImageStyleInputChange} />
+              <ImageStyle styleInputChange={setImageStyleInput} />
             )}
           </div>
 
@@ -153,7 +143,7 @@ export default function Review() {
         )}
       </main>
 
-      <AppFooter debugModeChange={onDebugModeChange} />
+      <AppFooter />
     </div>
   );
 }

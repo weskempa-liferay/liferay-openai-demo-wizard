@@ -10,7 +10,7 @@ import FieldSubmit from './components/formfield-submit';
 import LoadingAnimation from './components/loadinganimation';
 import ResultDisplay from './components/resultdisplay';
 
-export default function Review() {
+export default function MessageBoard() {
   const [mbTopicInput, setMBTopicInput] = useState('');
   const [mbThreadLengthInput, setMBThreadLengthInput] = useState('50');
   const [siteIdInput, setSiteIdInput] = useState('');
@@ -20,11 +20,6 @@ export default function Review() {
 
   const [result, setResult] = useState(() => '');
   const [isLoading, setIsLoading] = useState(false);
-  const [debugMode, setDebugMode] = useState(false);
-
-  const onDebugModeChange = (value) => {
-    setDebugMode(value);
-  };
 
   async function onSubmit(event) {
     event.preventDefault();
@@ -32,7 +27,6 @@ export default function Review() {
 
     const response = await fetch('/api/messageboard', {
       body: JSON.stringify({
-        debugMode: debugMode,
         mbMessageNumber: mbMessageNumberInput,
         mbSectionNumber: mbSectionNumberInput,
         mbThreadLength: mbThreadLengthInput,
@@ -47,7 +41,6 @@ export default function Review() {
     });
 
     const data = await response.json();
-    if (debugMode) console.log('data', data);
 
     const hljsResult = hljs.highlightAuto(data.result).value;
     setResult(hljsResult);
@@ -131,7 +124,7 @@ export default function Review() {
         )}
       </main>
 
-      <AppFooter debugModeChange={onDebugModeChange} />
+      <AppFooter />
     </div>
   );
 }

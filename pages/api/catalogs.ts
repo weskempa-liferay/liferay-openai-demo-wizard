@@ -3,7 +3,8 @@ import axios from 'axios';
 import functions from '../utils/functions';
 
 export default async function Action(req, res) {
-  let response = await getCatalogList();
+  const response = await getCatalogList();
+
   res.status(200).json(response);
 }
 

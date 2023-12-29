@@ -2,15 +2,17 @@ import axios from 'axios';
 import OpenAI from 'openai';
 
 import functions from '../utils/functions';
+import { logger } from '../utils/logger';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-export default async function Action(req, res) {
+const debug = logger('ProductsAction');
+
+export default async function ProductsAction(req, res) {
   let start = new Date().getTime();
 
-  const debug = req.body.debugMode;
   const imageGeneration = req.body.imageGeneration;
   let catalogId = req.body.catalogId;
   let globalSiteId = req.body.gloablSiteId;
@@ -93,7 +95,7 @@ export default async function Action(req, res) {
   let categories = JSON.parse(
     response.choices[0].message.function_call.arguments
   ).categories;
-  if (debug) console.log(JSON.stringify(categories));
+  debug(JSON.stringify(categories));
 
   let productCategories = [];
 
@@ -106,7 +108,7 @@ export default async function Action(req, res) {
     'Category Vocab': req.body.categoryName + ' Type',
   };
 
-  if (debug) console.log(categoryDataStr);
+  debug(categoryDataStr);
 
   /* Setup Vocabulary */
 
@@ -125,7 +127,7 @@ export default async function Action(req, res) {
   try {
     const vocabResponse = await axios.post(apiPath, vocabPostObj, options);
 
-    if (debug) console.log(vocabResponse.data);
+    debug(vocabResponse.data);
     apiRes = vocabResponse.data.id;
   } catch (error) {
     console.log(error);
@@ -134,9 +136,10 @@ export default async function Action(req, res) {
 
   const categMap = new Map();
 
-  if (debug) console.log('returned vocab key is ' + apiRes);
+  debug('returned vocab key is ' + apiRes);
   // create the categories for the vocabulary that was just generated
   let currCategory, currCategoryJson, categResponse;
+
   for (var i = 0; i < productCategories.length; i++) {
     currCategory = productCategories[i];
 
@@ -147,8 +150,8 @@ export default async function Action(req, res) {
       '/o/headless-admin-taxonomy/v1.0/taxonomy-vocabularies/' +
       apiRes +
       '/taxonomy-categories';
-    if (debug) console.log('creating category');
-    if (debug) console.log(currCategoryJson);
+    debug('creating category');
+    debug(currCategoryJson);
 
     try {
       categResponse = await axios.post(apiPath, currCategoryJson, options);
@@ -161,7 +164,7 @@ export default async function Action(req, res) {
       console.log(categError);
     }
 
-    if (debug) console.log(categMap);
+    debug(categMap);
   }
 
   // add the products
@@ -227,22 +230,22 @@ export default async function Action(req, res) {
           process.env.LIFERAY_PATH +
           '/o/headless-commerce-admin-catalog/v1.0/products';
 
-        if (debug) console.log('sending: ' + productName);
-        if (debug) console.log(apiPath);
-        if (debug) console.log(productJson);
-        if (debug) console.log(options);
+        debug('sending: ' + productName);
+        debug(apiPath);
+        debug(productJson);
+        debug(options);
 
         productResponse = await axios.post(apiPath, productJson, options);
 
         productId = productResponse.data.productId;
-        if (debug) console.log(productName + ' created with id ' + productId);
+        debug(productName + ' created with id ' + productId);
         productCategoryJson = {
           id: currCategoryId,
           name: currCategory,
           siteId: process.env.LIFERAY_GLOBAL_SITE_ID,
         };
 
-        if (debug) console.log('includeImages:' + imageGeneration);
+        debug('includeImages:' + imageGeneration);
         if (imageGeneration != 'none') {
           let imagePrompt =
             'Create a commerce catalog image for a ' + productName;
@@ -261,7 +264,7 @@ export default async function Action(req, res) {
             size: '1024x1024',
           });
 
-          if (debug) console.log(imageResponse.data[0].url);
+          debug(imageResponse.data[0].url);
 
           let imgschema = JSON.stringify({
             externalReferenceCode: 'product-' + productResponse.data.productId,
@@ -271,7 +274,7 @@ export default async function Action(req, res) {
             title: { en_US: productName },
           });
 
-          if (debug) console.log(imgschema);
+          debug(imgschema);
 
           let imgApiPath =
             process.env.LIFERAY_PATH +
@@ -285,7 +288,7 @@ export default async function Action(req, res) {
             options
           );
 
-          if (debug) console.log(productImageResponse.data[0]);
+          debug(productImageResponse.data[0]);
         }
       } catch (productError) {
         console.log(
@@ -299,7 +302,7 @@ export default async function Action(req, res) {
 
   if (debug)
     console.log(
-      'Completed in ' + functions.millisToMinutesAndSeconds(end - start)
+      `Completed in ${functions.millisToMinutesAndSeconds(end - start)}`
     );
 
   res.status(200).json({ result: JSON.stringify(categories) });

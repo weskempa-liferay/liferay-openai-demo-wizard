@@ -2,28 +2,20 @@ import axios from 'axios';
 import OpenAI from 'openai';
 
 import functions from '../utils/functions';
+import { logger } from '../utils/logger';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-export default async function Action(req, res) {
+const debug = logger('FaqsAction');
+
+export default async function FaqsAction(req, res) {
   let start = new Date().getTime();
 
-  const debug = req.body.debugMode;
+  debug(req.body);
 
-  if (debug)
-    console.log('req.body.languages.length: ' + req.body.languages.length);
-  if (debug) console.log('req.body.manageLanguage: ' + req.body.manageLanguage);
-  if (debug)
-    console.log('req.body.defaultLanguage: ' + req.body.defaultLanguage);
-  if (debug)
-    console.log(
-      'getLanguageDisplayName ' +
-        functions.getLanguageDisplayName(req.body.language)
-    );
-
-  let storedProperties = {
+  const storedProperties = {
     answer: {
       description:
         'Answer to the frequently asked question. Answers over 30 words are preferred.',
@@ -35,8 +27,8 @@ export default async function Action(req, res) {
     },
   };
 
-  let requiredFields = ['title', 'answer'];
-  let languages = req.body.languages;
+  const requiredFields = ['title', 'answer'];
+  const languages = req.body.languages;
 
   if (req.body.manageLanguage) {
     for (let i = 0; i < languages.length; i++) {
@@ -97,10 +89,11 @@ export default async function Action(req, res) {
   let faqs = JSON.parse(
     response.choices[0].message.function_call.arguments
   ).faqs;
-  if (debug) console.log(JSON.stringify(faqs));
+
+  debug(JSON.stringify(faqs));
 
   for (let i = 0; i < faqs.length; i++) {
-    if (debug) console.log(faqs[i]);
+    debug(faqs[i]);
 
     let postBody = {
       contentStructureId: req.body.structureId,
@@ -129,7 +122,7 @@ export default async function Action(req, res) {
 
         for (const [key, value] of Object.entries(faqs[i])) {
           try {
-            if (debug) console.log(`${l} : ${key}`);
+            debug(`${l} : ${key}`);
 
             if (key.indexOf('_')) {
               let keySplit = key.split('_');
@@ -140,14 +133,13 @@ export default async function Action(req, res) {
                 contentFieldValues[keySplit[1]] = { data: value };
             }
           } catch (error) {
-            if (debug)
-              console.log(
-                'unable to process translation for faq ' +
-                  l +
-                  ' : ' +
-                  languages[l]
-              );
-            if (debug) console.log(error);
+            debug(
+              'unable to process translation for faq ' +
+                l +
+                ' : ' +
+                languages[l]
+            );
+            debug(error);
           }
         }
       }
@@ -158,10 +150,9 @@ export default async function Action(req, res) {
 
     postBody['contentFields'] = setContentFields;
 
-    if (debug) console.log('postBody');
-    if (debug) console.log(JSON.stringify(postBody));
+    debug('postBody', JSON.stringify(postBody));
 
-    let faqApiPath =
+    const faqApiPath =
       process.env.LIFERAY_PATH +
       '/o/headless-delivery/v1.0/sites/' +
       req.body.siteId +
@@ -172,9 +163,9 @@ export default async function Action(req, res) {
     try {
       const response = await axios.post(faqApiPath, postBody, options);
 
-      if (debug) console.log(response.data);
+      debug(response.data);
     } catch (error) {
-      console.log(error);
+      debug(error);
     }
   }
 

@@ -1,3 +1,4 @@
+import axios from 'axios';
 import OpenAI from 'openai';
 
 import functions from '../utils/functions';
@@ -67,8 +68,6 @@ export default async function Action(req, res) {
       name: accounts[i].name,
       type: 2,
     };
-
-    import axios from 'axios';
 
     let faqApiPath =
       process.env.LIFERAY_PATH +

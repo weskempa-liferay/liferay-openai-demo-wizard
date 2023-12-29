@@ -9,26 +9,23 @@ import FieldString from './components/formfield-string';
 import FieldSubmit from './components/formfield-submit';
 import LoadingAnimation from './components/loadinganimation';
 import ResultDisplay from './components/resultdisplay';
+import { logger } from './utils/logger';
 
-export default function Review() {
+const debug = logger('UsersAI');
+
+export default function UsersAI() {
   const [userNumberInput, setUserNumberInput] = useState('5');
   const [emailPrefixInput, setEmailPrefixInput] = useState('liferay.xyz');
   const [passwordInput, setPasswordInput] = useState('password');
 
   const [result, setResult] = useState(() => '');
   const [isLoading, setIsLoading] = useState(false);
-  const [debugMode, setDebugMode] = useState(false);
-
-  const onDebugModeChange = (value) => {
-    setDebugMode(value);
-  };
 
   async function onSubmit(event) {
     event.preventDefault();
     setIsLoading(true);
     const response = await fetch('/api/users-ai', {
       body: JSON.stringify({
-        debugMode: debugMode,
         emailPrefix: emailPrefixInput,
         password: passwordInput,
         userNumber: userNumberInput,
@@ -39,7 +36,7 @@ export default function Review() {
       method: 'POST',
     });
     const data = await response.json();
-    if (debugMode) console.log('data', data);
+    debug('data', data);
 
     const hljsResult = hljs.highlightAuto(data.result).value;
     setResult(hljsResult);
@@ -94,7 +91,7 @@ export default function Review() {
         )}
       </main>
 
-      <AppFooter debugModeChange={onDebugModeChange} />
+      <AppFooter />
     </div>
   );
 }

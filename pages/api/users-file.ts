@@ -3,16 +3,18 @@ import fs from 'fs';
 import request from 'request';
 
 import functions from '../utils/functions';
+import { logger } from '../utils/logger';
 
-export default async function Action(req, res) {
+const debug = logger('UsersFileAction');
+
+export default async function UsersFileAction(req, res) {
   let start = new Date().getTime();
   let successCount = 0;
   let errorCount = 0;
 
-  const debug = req.body.debugMode;
   let userlist = req.body.csvoutput;
 
-  if (debug) console.log(userlist);
+  debug(userlist);
 
   let roleList = await getRoleList();
 
@@ -30,8 +32,7 @@ export default async function Action(req, res) {
         userlist[i].emailAddress + ', userImagePath: ' + userImagePath
       );
 
-    if (debug) console.log('sending:');
-    if (debug) console.log(userlist[i]);
+    debug('sending:', userlist[i]);
 
     try {
       let options = functions.getAPIOptions('POST', 'en-US');
@@ -42,7 +43,7 @@ export default async function Action(req, res) {
         options
       );
 
-      if (debug) console.log('Saved user: ' + response.data.id);
+      debug('Saved user: ' + response.data.id);
 
       let roleBriefs = getRoleBriefs(userlist[i].jobTitle, roleList, debug);
 
@@ -54,7 +55,7 @@ export default async function Action(req, res) {
           '/association/user-account/' +
           response.data.id;
 
-        if (debug) console.log(userRoleApiPath);
+        debug(userRoleApiPath);
 
         const options = functions.getAPIOptions(
           'POST',
@@ -63,7 +64,7 @@ export default async function Action(req, res) {
 
         await axios.post(userRoleApiPath, '', options);
 
-        if (debug) console.log('Role Association Complete');
+        debug('Role Association Complete');
       }
 
       if (userImagePath.length > 0) {
@@ -73,7 +74,7 @@ export default async function Action(req, res) {
           response.data.id +
           '/image';
 
-        if (debug) console.log(userImageApiPath);
+        debug(userImageApiPath);
         if (debug)
           console.log(
             process.cwd() + '/public/users/user-images/' + userImagePath
@@ -91,7 +92,7 @@ export default async function Action(req, res) {
         request(imgoptions, function (err, res, body) {
           if (err) console.log(err);
 
-          if (debug) console.log('Image Upload Complete');
+          debug('Image Upload Complete');
         });
       }
       successCount++;
@@ -127,11 +128,11 @@ async function getRoleList() {
 function getRoleBriefs(roleName, roleList, debug) {
   let roleBriefs = [];
 
-  if (debug) console.log('Checking against ' + roleList.length + ' roles.');
+  debug('Checking against ' + roleList.length + ' roles.');
 
   for (let i = 0; i < roleList.length; i++) {
     if (roleName == roleList[i].name) {
-      if (debug) console.log('Match on role id:' + roleList[i].id);
+      debug('Match on role id:' + roleList[i].id);
 
       let roleBrief = { id: roleList[i].id };
       roleBriefs.push(roleBrief);

@@ -2,6 +2,7 @@ import axios from 'axios';
 import OpenAI from 'openai';
 
 import functions from '../utils/functions';
+import { logger } from '../utils/logger';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -9,20 +10,12 @@ const openai = new OpenAI({
 
 let options = functions.getAPIOptions('POST', 'en-US');
 
-export default async function Action(req, res) {
+const debug = logger('MessageBoardAction');
+
+export default async function MessageBoardAction(req, res) {
   let start = new Date().getTime();
 
-  const debug = req.body.debugMode;
-
-  if (debug)
-    console.log(
-      'mbSectionNumber:' +
-        req.body.mbSectionNumber +
-        ', mbThreadNumber:' +
-        req.body.mbThreadNumber +
-        ', mbMessageNumber:' +
-        req.body.mbMessageNumber
-    );
+  debug(req.body);
 
   const messageBoardSchema = {
     properties: {
@@ -120,10 +113,10 @@ export default async function Action(req, res) {
     temperature: 0.6,
   });
 
-  let categories = JSON.parse(
+  const categories = JSON.parse(
     response.choices[0].message.function_call.arguments
   ).categories;
-  if (debug) console.log(JSON.stringify(categories));
+  debug(JSON.stringify(categories));
 
   for (let i = 0; categories.length > i; i++) {
     let sectionApiPath =
@@ -132,7 +125,7 @@ export default async function Action(req, res) {
       req.body.siteId +
       '/message-board-sections';
 
-    if (debug) console.log(sectionApiPath);
+    debug(sectionApiPath);
 
     let mbSectionJson = {
       title: categories[i].category,
@@ -159,7 +152,7 @@ export default async function Action(req, res) {
         sectionId +
         '/message-board-threads';
 
-      if (debug) console.log(threadApiPath);
+      debug(threadApiPath);
 
       let mbThreadJson = {
         articleBody: threads[t].articleBody,
@@ -186,7 +179,7 @@ export default async function Action(req, res) {
           threadId +
           '/message-board-messages';
 
-        if (debug) console.log(messageApiPath);
+        debug(messageApiPath);
 
         let mbMessageJson = {
           articleBody: messages[m].message,

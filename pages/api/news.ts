@@ -5,21 +5,23 @@ import OpenAI from 'openai';
 import request from 'request';
 
 import functions from '../utils/functions';
+import { logger } from '../utils/logger';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-export default async function Action(req, res) {
+const debug = logger('NewsAction');
+
+export default async function NewsAction(req, res) {
   let start = new Date().getTime();
   let successes = 0;
 
-  const debug = req.body.debugMode;
   const runCount = req.body.newsNumber;
   const imageGeneration = req.body.imageGeneration;
 
-  if (debug) console.log('requesting ' + runCount + ' news articles');
-  if (debug) console.log('include images: ' + imageGeneration);
+  debug('requesting ' + runCount + ' news articles');
+  debug('include images: ' + imageGeneration);
 
   const runCountMax = 10;
 
@@ -149,7 +151,7 @@ export default async function Action(req, res) {
       '<br>'
     );
 
-    if (debug) console.log('pictureDescription: ' + pictureDescription);
+    debug('pictureDescription: ' + pictureDescription);
 
     try {
       if (imageGeneration != 'none') {
@@ -160,7 +162,7 @@ export default async function Action(req, res) {
           size: '1024x1024',
         });
 
-        if (debug) console.log(imageResponse.data[0].url);
+        debug(imageResponse.data[0].url);
 
         const timestamp = new Date().getTime();
         const file = fs.createWriteStream(
@@ -174,11 +176,11 @@ export default async function Action(req, res) {
 
           file.on('finish', () => {
             file.close();
-            postImageToLiferay(file, req, newsJson, debug);
+            postImageToLiferay(file, req, newsJson);
           });
         });
       } else {
-        postNewsToLiferay(req, newsJson, null, debug);
+        postNewsToLiferay(req, newsJson, null);
       }
     } catch (error) {
       if (error.response) {
@@ -208,7 +210,7 @@ export default async function Action(req, res) {
   });
 }
 
-function postImageToLiferay(file, req, newsJson, debug) {
+function postImageToLiferay(file, req, newsJson) {
   const imageFolderId = parseInt(req.body.imageFolderId);
 
   let newsImageApiPath =
@@ -225,7 +227,7 @@ function postImageToLiferay(file, req, newsJson, debug) {
       '/documents';
   }
 
-  if (debug) console.log(newsImageApiPath);
+  debug(newsImageApiPath);
 
   let fileStream = fs.createReadStream(process.cwd() + '/' + file.path);
   const options = functions.getFilePostOptions(
@@ -238,12 +240,12 @@ function postImageToLiferay(file, req, newsJson, debug) {
     request(options, function (err, res, body) {
       if (err) console.log(err);
 
-      postNewsToLiferay(req, newsJson, JSON.parse(body).id, debug);
+      postNewsToLiferay(req, newsJson, JSON.parse(body).id);
     });
   }, 100);
 }
 
-async function postNewsToLiferay(req, newsJson, imageId, debug) {
+async function postNewsToLiferay(req, newsJson, imageId) {
   let newsFields;
 
   newsFields = [
@@ -318,7 +320,7 @@ async function postNewsToLiferay(req, newsJson, imageId, debug) {
               ' : ' +
               req.body.languages[l]
           );
-          if (debug) console.log(error);
+          debug(error);
         }
       }
     }
@@ -337,7 +339,7 @@ async function postNewsToLiferay(req, newsJson, imageId, debug) {
     title_i18n: titleValues,
   };
 
-  let apiPath =
+  const apiPath =
     process.env.LIFERAY_PATH +
     '/o/headless-delivery/v1.0/sites/' +
     req.body.siteId +
@@ -345,11 +347,7 @@ async function postNewsToLiferay(req, newsJson, imageId, debug) {
 
   const options = functions.getAPIOptions('POST', req.body.defaultLanguage);
 
-  const response = await axios.post(
-    apiPath,
-    JSON.stringify(newsSchema),
-    options
-  );
+  await axios.post(apiPath, JSON.stringify(newsSchema), options);
 
-  if (debug) console.log('News import process complete.');
+  debug('News import process complete.');
 }

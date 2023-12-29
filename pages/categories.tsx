@@ -9,8 +9,11 @@ import FieldString from './components/formfield-string';
 import FieldSubmit from './components/formfield-submit';
 import LoadingAnimation from './components/loadinganimation';
 import ResultDisplay from './components/resultdisplay';
+import { logger } from './utils/logger';
 
-export default function Review() {
+const debug = logger('Categories');
+
+export default function Categories() {
   const [siteIdInput, setSiteIdInput] = useState('');
   const [vocabularyNameInput, setVocabularyNameInput] =
     useState('Types of books');
@@ -20,21 +23,16 @@ export default function Review() {
 
   const [result, setResult] = useState(() => '');
   const [isLoading, setIsLoading] = useState(false);
-  const [debugMode, setDebugMode] = useState(false);
-
-  const onDebugModeChange = (value) => {
-    setDebugMode(value);
-  };
 
   async function onSubmit(event) {
     event.preventDefault();
     setIsLoading(true);
-    if (debugMode) console.log('Posting!');
+    debug('Posting!');
+
     const response = await fetch('/api/categories', {
       body: JSON.stringify({
         categorytNumber: categorytNumberInput,
         childCategorytNumber: childCategorytNumberInput,
-        debugMode: debugMode,
         siteId: siteIdInput,
         vocabularyName: vocabularyNameInput,
       }),
@@ -43,12 +41,14 @@ export default function Review() {
       },
       method: 'POST',
     });
+
     const data = await response.json();
-    if (debugMode) console.log('data', data);
+
+    debug('data', data);
 
     const hljsResult = hljs.highlightAuto(data.result).value;
-    setResult(hljsResult);
 
+    setResult(hljsResult);
     setIsLoading(false);
   }
 
@@ -109,7 +109,7 @@ export default function Review() {
         )}
       </main>
 
-      <AppFooter debugModeChange={onDebugModeChange} />
+      <AppFooter />
     </div>
   );
 }

@@ -2,23 +2,18 @@ import axios from 'axios';
 import OpenAI from 'openai';
 
 import functions from '../utils/functions';
+import { logger } from '../utils/logger';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-export default async function Action(req, res) {
-  let start = new Date().getTime();
+const debug = logger('OrganizationsAction');
 
-  const debug = req.body.debugMode;
+export default async function OrganizationsAction(req, res) {
+  const start = new Date().getTime();
 
-  if (debug)
-    console.log(
-      'childOrganizationtNumber: ' +
-        req.body.childOrganizationtNumber +
-        ', departmentNumber: ' +
-        req.body.departmentNumber
-    );
+  debug(req.body);
 
   const organizationsSchema = {
     properties: {
@@ -99,34 +94,26 @@ export default async function Action(req, res) {
   let organizations = JSON.parse(
     response.choices[0].message.function_call.arguments
   ).organizations;
-  if (debug) console.log(JSON.stringify(organizations));
+  debug(JSON.stringify(organizations));
 
   for (let i = 0; i < organizations.length; i++) {
-    if (debug) console.log(organizations[i]);
+    debug(organizations[i]);
 
-    let orgId = await createOrganization(organizations[i], false, debug);
-    let childbusinesses = organizations[i].childbusinesses;
+    const orgId = await createOrganization(organizations[i], false);
+    const childbusinesses = organizations[i].childbusinesses;
 
-    if (debug)
-      console.log(
-        orgId + ' has ' + childbusinesses.length + ' child businesses.'
-      );
+    debug(orgId + ' has ' + childbusinesses.length + ' child businesses.');
 
     for (let j = 0; j < childbusinesses.length; j++) {
-      let childOrgId = await createOrganization(
-        childbusinesses[j],
-        orgId,
-        debug
-      );
+      let childOrgId = await createOrganization(childbusinesses[j], orgId);
       let departments = childbusinesses[j].departments;
 
-      if (debug)
-        console.log(
-          childOrgId + ' has ' + departments.length + ' related departments.'
-        );
+      debug(
+        childOrgId + ' has ' + departments.length + ' related departments.'
+      );
 
       for (let k = 0; k < departments.length; k++) {
-        createOrganization(departments[k], childOrgId, debug);
+        createOrganization(departments[k], childOrgId);
       }
     }
   }
@@ -138,30 +125,20 @@ export default async function Action(req, res) {
   });
 }
 
-async function createOrganization(organization, parentOrgId, debug) {
-  if (debug)
-    console.log(
-      'Creating ' + organization.name + ' with parent ' + parentOrgId
-    );
+async function createOrganization(organization, parentOrgId) {
+  debug('Creating ' + organization.name + ' with parent ' + parentOrgId);
 
-  let postBody;
-
-  if (parentOrgId > 0) {
-    postBody = {
-      name: organization.name,
+  const postBody = {
+    name: organization.name,
+    ...(parentOrgId > 0 && {
       parentOrganization: {
         id: parentOrgId,
       },
-    };
-  } else {
-    postBody = {
-      name: organization.name,
-    };
-  }
+    }),
+  };
 
-  let orgApiPath =
+  const orgApiPath =
     process.env.LIFERAY_PATH + '/o/headless-admin-user/v1.0/organizations';
-
   const options = functions.getAPIOptions('POST', 'en-US');
 
   let returnid = 0;
@@ -171,7 +148,7 @@ async function createOrganization(organization, parentOrgId, debug) {
 
     returnid = response.data.id;
 
-    if (debug) console.log('returned id:' + returnid);
+    debug('returned id:' + returnid);
   } catch (error) {
     console.log(error);
   }

@@ -4,24 +4,24 @@ import OpenAI from 'openai';
 import request from 'request';
 
 import functions from '../utils/functions';
+import { logger } from '../utils/logger';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-export default async function Action(req, res) {
+const debug = logger('ImagesAction');
+const runCountMax = 10;
+
+export default async function ImagesAction(req, res) {
   let start = new Date().getTime();
 
-  const debug = req.body.debugMode;
   const runCount = req.body.imageNumber;
   const imageDescription = req.body.imageDescription;
   const imageGeneration = req.body.imageGeneration;
 
-  if (debug) console.log('requesting ' + runCount + ' images');
-  if (debug)
-    console.log('include images: ' + imageGeneration + ' ' + imageDescription);
-
-  const runCountMax = 10;
+  debug('requesting ' + runCount + ' images');
+  debug(`include images: ${imageGeneration} ${imageDescription}`);
 
   let pictureDescription = imageDescription;
 
@@ -34,7 +34,7 @@ export default async function Action(req, res) {
         imageDescription;
     }
 
-    if (debug) console.log('pictureDescription: ' + pictureDescription);
+    debug('pictureDescription: ' + pictureDescription);
 
     try {
       const imageResponse = await openai.images.generate({
@@ -44,21 +44,21 @@ export default async function Action(req, res) {
         size: '1024x1024',
       });
 
-      if (debug) console.log(imageResponse.data[0].url);
+      debug(imageResponse.data[0].url);
 
       const timestamp = new Date().getTime();
       const file = fs.createWriteStream(
         'generatedimages/img' + timestamp + '-' + i + '.jpg'
       );
 
-      console.log('In Exports, getGeneratedImage:' + imageResponse);
+      debug('In Exports, getGeneratedImage:' + imageResponse);
 
       http.get(imageResponse.data[0].url, function (response) {
         response.pipe(file);
 
         file.on('finish', () => {
           file.close();
-          postImageToLiferay(file, req, debug);
+          postImageToLiferay(file, req);
         });
       });
     } catch (error) {
@@ -74,14 +74,14 @@ export default async function Action(req, res) {
 
   let end = new Date().getTime();
 
-  if (debug) console.log('Completed in ' + (end - start) + ' milliseconds');
+  debug('Completed in ' + (end - start) + ' milliseconds');
 
   res.status(200).json({
     result: 'Completed in ' + functions.millisToMinutesAndSeconds(end - start),
   });
 }
 
-function postImageToLiferay(file, req, debug) {
+function postImageToLiferay(file, req) {
   const imageFolderId = parseInt(req.body.imageFolderId);
 
   let imageApiPath =
@@ -90,7 +90,7 @@ function postImageToLiferay(file, req, debug) {
     imageFolderId +
     '/documents';
 
-  if (debug) console.log(imageApiPath);
+  debug(imageApiPath);
 
   let fileStream = fs.createReadStream(process.cwd() + '/' + file.path);
   const options = functions.getFilePostOptions(
@@ -103,7 +103,7 @@ function postImageToLiferay(file, req, debug) {
     request(options, function (err, res, body) {
       if (err) console.log(err);
 
-      if (debug) console.log(res);
+      debug(res);
     });
   }, 100);
 }

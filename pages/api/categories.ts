@@ -73,9 +73,8 @@ export default async function Action(req, res) {
       },
       {
         content:
-          'Create a list of expected categories, and child categories for a company that provides ' +
-          req.body.vocabularyName +
-          '. ' +
+          'I need ' + req.body.vocabularyDescription + '. ' +
+          'Create the expected number of categories, and child categories related to this topic. ' +
           'Do not include double quotes in the response.',
         role: 'user',
       },

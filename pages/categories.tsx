@@ -15,8 +15,10 @@ const debug = logger('Categories');
 
 export default function Categories() {
   const [siteIdInput, setSiteIdInput] = useState('');
+  const [vocabularyDescriptionInput, setVocabularyDescriptionInput] =
+    useState('Various categories of books');
   const [vocabularyNameInput, setVocabularyNameInput] =
-    useState('Types of books');
+    useState('Books types');
   const [categorytNumberInput, setCategorytNumberInput] = useState('5');
   const [childCategorytNumberInput, setChildCategorytNumberInput] =
     useState('3');
@@ -35,6 +37,7 @@ export default function Categories() {
         childCategorytNumber: childCategorytNumberInput,
         siteId: siteIdInput,
         vocabularyName: vocabularyNameInput,
+        vocabularyDescription: vocabularyDescriptionInput
       }),
       headers: {
         'Content-Type': 'application/json',
@@ -66,20 +69,29 @@ export default function Categories() {
 
         <form onSubmit={onSubmit}>
           <div className="w-700 grid grid-cols-2 gap-2 sm:grid-cols-2 md:gap-4 mb-5">
+
+          <FieldString
+              defaultValue="Various categories of books"
+              inputChange={setVocabularyDescriptionInput}
+              label="Vocabulary Theme"
+              name="vocabularyDescription"
+              placeholder="Enter a vocabulary description"
+            />
+
+            <FieldString
+              defaultValue="Book types"
+              inputChange={setVocabularyNameInput}
+              label="Vocabulary Name"
+              name="vocabulary"
+              placeholder="Enter a vocabulary name"
+            />
+
             <FieldString
               defaultValue=""
               inputChange={setSiteIdInput}
               label="Site ID or Asset Library Group ID"
               name="siteId"
               placeholder="Enter a site ID or asset library group ID"
-            />
-
-            <FieldString
-              defaultValue="Types of books"
-              inputChange={setVocabularyNameInput}
-              label="Vocabulary Name"
-              name="vocabulary"
-              placeholder="Enter a vocabulary name"
             />
 
             <FieldString

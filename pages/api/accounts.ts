@@ -2,15 +2,16 @@ import axios from 'axios';
 import OpenAI from 'openai';
 
 import functions from '../utils/functions';
+import { logger } from '../utils/logger';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+const debug = logger('Accounts - Action');
+
 export default async function Action(req, res) {
   let start = new Date().getTime();
-
-  const debug = req.body.debugMode;
 
   const accountSchema = {
     properties: {
@@ -56,10 +57,11 @@ export default async function Action(req, res) {
   let accounts = JSON.parse(
     response.choices[0].message.function_call.arguments
   ).accounts;
-  if (debug) console.log(JSON.stringify(accounts));
+
+  debug(JSON.stringify(accounts));
 
   for (let i = 0; i < accounts.length; i++) {
-    if (debug) console.log(accounts[i]);
+    debug(JSON.stringify(accounts[i]));
 
     let postBody = {
       externalReferenceCode: accounts[i].name
@@ -78,7 +80,7 @@ export default async function Action(req, res) {
     try {
       const response = await axios.post(faqApiPath, postBody, options);
 
-      if (debug) console.log(response.data);
+      debug(JSON.stringify(response.data));
     } catch (error) {
       console.log(error);
     }

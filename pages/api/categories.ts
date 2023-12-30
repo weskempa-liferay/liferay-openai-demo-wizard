@@ -2,18 +2,18 @@ import axios from 'axios';
 import OpenAI from 'openai';
 
 import functions from '../utils/functions';
+import { logger } from '../utils/logger';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+const debug = logger('Categories - Action');
+
 export default async function Action(req, res) {
   let start = new Date().getTime();
 
-  const debug = req.body.debugMode;
-
-  if (debug)
-    console.log(
+  debug(
       'vocabularyName: ' +
         req.body.vocabularyName +
         ', categorytNumber: ' +
@@ -87,7 +87,7 @@ export default async function Action(req, res) {
   let categories = JSON.parse(
     response.choices[0].message.function_call.arguments
   ).categories;
-  if (debug) console.log(JSON.stringify(categories));
+  debug(JSON.stringify(categories));
 
   let vocabularyId = await createVocabulary(
     req.body.vocabularyName,
@@ -96,7 +96,7 @@ export default async function Action(req, res) {
   );
 
   for (let i = 0; i < categories.length; i++) {
-    if (debug) console.log(categories[i]);
+    debug(categories[i]);
 
     let categoryId = await createCategory(
       categories[i].name,
@@ -105,10 +105,9 @@ export default async function Action(req, res) {
     );
     let childcategories = categories[i].childcategories;
 
-    if (debug)
-      console.log(
-        categoryId + ' has ' + childcategories.length + ' child category.'
-      );
+    debug(
+      categoryId + ' has ' + childcategories.length + ' child category.'
+    );
 
     for (let j = 0; j < childcategories.length; j++) {
       let childOrgId = await createChildCategory(
@@ -144,7 +143,7 @@ async function createVocabulary(vocabularyName, siteId, debug) {
 
     vocabularyId = vocabResponse.data.id;
 
-    if (debug) console.log('vocabularyId is ' + vocabResponse.data);
+    debug('vocabularyId is ' + vocabResponse.data);
   } catch (error) {
     console.log(error);
     vocabularyId = error;
@@ -171,7 +170,7 @@ async function createCategory(category, parentVocabId, debug) {
 
     returnid = response.data.id;
 
-    if (debug) console.log('returned id:' + returnid);
+    debug('returned id:' + returnid);
   } catch (error) {
     console.log(error);
   }
@@ -200,7 +199,7 @@ async function createChildCategory(category, parentCategoryId, debug) {
 
     returnid = response.data.id;
 
-    if (debug) console.log('returned id:' + returnid);
+    debug('returned id:' + returnid);
   } catch (error) {
     console.log(error);
   }

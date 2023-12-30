@@ -149,7 +149,7 @@ export default async function KnowledgeBaseAction(req, res) {
 
       debug('T:' + articles[t].headline + ' created with id ' + threadId);
 
-      /*
+      /* Liferay's Headless APIs do not allow for Suggestions yet
         let suggestions = articles[t].suggestions;
         for(let m=0; m<suggestions.length; m++){
 

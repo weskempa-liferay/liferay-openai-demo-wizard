@@ -10,7 +10,7 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-const debug = logger('UsersAIAction');
+const debug = logger('Users AI - Action');
 
 export default async function UsersAIAction(req, res) {
   let start = new Date().getTime();
@@ -94,7 +94,7 @@ export default async function UsersAIAction(req, res) {
   };
 
   for (let i = 0; i < userlist.length; i++) {
-    console.log(userlist[i].gender);
+    debug(userlist[i].gender);
 
     let gender = userlist[i].gender;
     genderCount[gender] = genderCount[gender] + 1;

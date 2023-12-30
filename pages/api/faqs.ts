@@ -50,6 +50,10 @@ export default async function FaqsAction(req, res) {
     }
   }
 
+
+  debug("storedProperties");
+  debug(storedProperties);
+
   const faqSchema = {
     properties: {
       faqs: {

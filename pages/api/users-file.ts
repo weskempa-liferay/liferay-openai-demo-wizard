@@ -5,7 +5,7 @@ import request from 'request';
 import functions from '../utils/functions';
 import { logger } from '../utils/logger';
 
-const debug = logger('UsersFileAction');
+const debug = logger('Users File - Action');
 
 export default async function UsersFileAction(req, res) {
   let start = new Date().getTime();

@@ -29,12 +29,6 @@ export default function AppFooter() {
 
           <i dangerouslySetInnerHTML={{ __html: envMsg }}></i>
         </label>
-
-        <label className="imgtoggle elative inline-flex items-center cursor-pointer right-0 absolute">
-          <span className="text-xs font-medium text-gray-900 dark:text-gray-300">
-            Debug - Open console
-          </span>
-        </label>
       </div>
     </div>
   );

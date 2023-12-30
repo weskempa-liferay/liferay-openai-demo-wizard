@@ -27,7 +27,7 @@ export default function Review() {
     const response = await fetch('/api/accounts', {
       body: JSON.stringify({
         accountNumber: accountNumberInput,
-        accountTopic: accountTopicInput,
+        accountTopic: accountTopicInput
       }),
       headers: {
         'Content-Type': 'application/json',

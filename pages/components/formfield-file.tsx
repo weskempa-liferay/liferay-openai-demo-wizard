@@ -7,7 +7,7 @@ export default function FieldFile({ inputChange, label, name }) {
       {label}
       <input
         accept={'.csv'}
-        className="block w-full text-sm text-gray-900 border border-gray-300 p-4 rounded-lg cursor-pointer bg-gray-90 dark:text-gray-900 focus:outline-nonedark:bg-gray-200 dark:border-gray-600 dark:placeholder-gray-400"
+        className="block w-full text-sm text-gray-900 border border-gray-300 p-4 rounded-lg cursor-pointer bg-white dark:text-gray-900 focus:outline-nonedark:bg-gray-200 dark:border-gray-600 dark:placeholder-gray-400"
         id={name}
         name={name}
         onChange={inputChange}

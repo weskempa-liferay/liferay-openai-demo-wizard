@@ -20,7 +20,7 @@ export default async function NewsAction(req, res) {
   const runCount = req.body.newsNumber;
   const imageGeneration = req.body.imageGeneration;
 
-  debug('requesting ' + runCount + ' news articles');
+  debug('requesting ' + runCount + ' new(s) articles');
   debug('include images: ' + imageGeneration);
 
   const runCountMax = 10;

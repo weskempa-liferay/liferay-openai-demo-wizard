@@ -41,18 +41,19 @@ const functions = {
   },
   getAvailableLanguages,
   getBase64data,
-  getFilePostOptions: (apiPath, fileStream) => {
-    return {
-      formData: {
-        file: fileStream,
-      },
-      headers: {
-        Authorization: 'Basic ' + getBase64data(),
-        'Content-Type': 'multipart/form-data',
-      },
-      method: 'POST',
-      url: apiPath,
-    };
+  getFilePostOptions: (apiPath, fileStream, fileKey) => {
+    let options = {
+        formData: {},
+        headers: {
+          Authorization: 'Basic ' + getBase64data(),
+          'Content-Type': 'multipart/form-data',
+        },
+        method: 'POST',
+        url: apiPath,
+      };
+    
+    options.formData[fileKey] = fileStream;
+    return options;
   },
   getLanguageDisplayName: (value) => {
     let languages = getAvailableLanguages();

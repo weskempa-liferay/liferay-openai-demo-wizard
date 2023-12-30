@@ -174,21 +174,4 @@ async function getImagePath(gender, index) {
   let res = await axios.post('http://localhost:3000/api/userimages', options);
 
   return res.data.result;
-
-  /*
-    const folder = process.cwd()+"/public/users/user-images/";
-
-    let styleList = [];
-
-    fs.readdir(folder, (err, files) => {
-        files.forEach(file => {
-            if(file.startsWith(gender))
-                styleList.push(file);
-        });
-
-        console.log(index+":"+styleList.length);
-        
-        return styleList[index];
-    });
-    */
 }

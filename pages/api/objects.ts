@@ -1,76 +1,73 @@
-import OpenAI  from "openai";
+import axios from 'axios';
+import OpenAI from 'openai';
 
-var functions = require('../utils/functions');
+import functions from '../utils/functions';
+import { logger } from '../utils/logger';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-export default async function (req, res) {
+const debug = logger('ObjectsAction');
 
-    let start = new Date().getTime();
+export default async function ObjectsAction(req, res) {
+  let start = new Date().getTime();
 
-    const debug = req.body.debugMode;
-    let aiRole = req.body.aiRole;
-    let aiRequest = req.body.aiRequest;
-    let aiEndpoint = req.body.aiEndpoint;
-    let objectFields = req.body.objectFields;
+  const { aiEndpoint, aiRequest, aiRole, objectFields } = req.body;
 
-    let requiredList = [];
-    for(let i = 0; i < objectFields.length; i++){
-      requiredList.push(objectFields[i].fieldName);
-    }
+  let requiredList = [];
+  for (let i = 0; i < objectFields.length; i++) {
+    requiredList.push(objectFields[i].fieldName);
+  }
 
-    const objectSchema = {
-        type: "object",
-        properties: {
-          resultlist: {
-            type: "array",
-            description: aiRequest,
-            items:{
-              type:"object",
-              properties:objectFields,
-              required: requiredList
-            },
-            required: ["list"]
-          }
-        }
-      }
+  const objectSchema = {
+    properties: {
+      resultlist: {
+        description: aiRequest,
+        items: {
+          properties: objectFields,
+          required: requiredList,
+          type: 'object',
+        },
+        required: ['list'],
+        type: 'array',
+      },
+    },
+    type: 'object',
+  };
 
-    if(debug) console.log(objectSchema);
+  debug(objectSchema);
 
-    const response = await openai.chat.completions.create({
-        model: "gpt-3.5-turbo",
-        messages: [
-            {"role": "system", "content": aiRole},
-            {"role": "user", "content": aiRequest}
-        ],
-        functions: [
-        {name: "get_objects", "parameters": objectSchema}
-        ],
-        temperature: 0.6,
-    });
+  const response = await openai.chat.completions.create({
+    functions: [{ name: 'get_objects', parameters: objectSchema }],
+    messages: [
+      { content: aiRole, role: 'system' },
+      { content: aiRequest, role: 'user' },
+    ],
+    model: 'gpt-3.5-turbo',
+    temperature: 0.6,
+  });
 
-    let resultlist = JSON.parse(response.choices[0].message.function_call.arguments).resultlist;
-    if(debug) console.log(JSON.stringify(resultlist));
+  let resultlist = JSON.parse(
+    response.choices[0].message.function_call.arguments
+  ).resultlist;
+  debug(JSON.stringify(resultlist));
 
-    const axios = require("axios");
+  let objectApiPath = process.env.LIFERAY_PATH + aiEndpoint;
 
-    let objectApiPath = process.env.LIFERAY_PATH + aiEndpoint;
+  const options = functions.getAPIOptions('POST', 'en-US');
 
-    const options = functions.getAPIOptions("POST","en-US");
+  try {
+    const response = await axios.post(objectApiPath, resultlist, options);
 
-    try {
-        const response = await axios.post(objectApiPath, resultlist, options);
+    debug(response.data);
+  } catch (error) {
+    console.log(error);
+  }
 
-        if(debug) console.log(response.data);
-    }
-    catch (error) {
-        console.log(error);
-    }
+  const end = new Date().getTime();
 
-    let end = new Date().getTime();
-
-    res.status(200).json({ result: "Completed in " +
-      functions.millisToMinutesAndSeconds(end - start)});
+  res.status(200).json({
+    result: 'Completed in ' + functions.millisToMinutesAndSeconds(end - start),
+  });
 }

@@ -1,17 +1,15 @@
-export default async function (req, res) {
+import fs from 'fs';
 
-    const folder = process.cwd()+"/public/users/user-images/";
-    const fs = require('fs');
+export default async function UserImagesAction(req, res) {
+  const folder = process.cwd() + '/public/users/user-images/';
 
-    let styleList = [];
-  
-    fs.readdir(folder, (err, files) => {
-        files.forEach(file => {
-            if(file.startsWith(req.body.gender))
-                styleList.push(file);
-        });
-        
-        res.status(200).json({ result: styleList[ req.body.index % 6 ] });
+  let styleList = [];
+
+  fs.readdir(folder, (err, files) => {
+    files.forEach((file) => {
+      if (file.startsWith(req.body.gender)) styleList.push(file);
     });
 
+    res.status(200).json({ result: styleList[req.body.index % 6] });
+  });
 }

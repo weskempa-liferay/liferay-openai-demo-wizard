@@ -1,89 +1,80 @@
-import { useState, useEffect } from "react";
-import React from "react";
-import AppHead from "./components/apphead";
-import AppHeader from "./components/appheader";
-import AppFooter from "./components/appfooter";
-import LoadingAnimation from "./components/loadinganimation";
-import ResultDisplay from "./components/resultdisplay";
-import ImageStyle from "./components/imagestyle";
-import FieldString from "./components/formfield-string";
-import FieldImageType from "./components/formfield-imagetype";
-import FieldSubmit from "./components/formfield-submit";
+import hljs from 'highlight.js';
+import { useEffect, useState } from 'react';
+import React from 'react';
 
-import hljs from "highlight.js";
+import AppFooter from './components/appfooter';
+import AppHead from './components/apphead';
+import AppHeader from './components/appheader';
+import FieldImageType from './components/formfield-imagetype';
+import FieldString from './components/formfield-string';
+import FieldSubmit from './components/formfield-submit';
+import ImageStyle from './components/imagestyle';
+import LoadingAnimation from './components/loadinganimation';
+import ResultDisplay from './components/resultdisplay';
+import { logger } from './utils/logger';
+
+const debug = logger('Blogs');
 
 export default function Review() {
-
-  const [blogTopicInput, setBlogTopicInput] = useState("");
-  const [blogNumberInput, setBlogNumberInput] = useState("3");
-  const [blogLengthInput, setBlogLengthInput] = useState("200");
-  const [siteIdInput, setSiteIdInput] = useState("");
-  const [imageGenerationType, setImageGenerationType] = useState("none");
-  const [showStyleInput, setShowImageStyleInput] = useState(false);
-  const [imageStyleInput, setImageStyleInput] = useState("");
-  const [submitLabel, setSubmitLabel] = useState("");
-  
-  const [result, setResult] = useState(() => "");
+  const [blogLengthInput, setBlogLengthInput] = useState('200');
+  const [blogNumberInput, setBlogNumberInput] = useState('3');
+  const [blogTopicInput, setBlogTopicInput] = useState('');
+  const [imageGenerationType, setImageGenerationType] = useState('none');
+  const [imageStyleInput, setImageStyleInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [debugMode, setDebugMode] = useState(false);
-
-  const onDebugModeChange = (value) => {
-    setDebugMode(value);
-  };
-
-  const onImageStyleInputChange = (value) => {
-    setImageStyleInput(value);
-  };
-
-  let USDollar = new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-  });
+  const [result, setResult] = useState('');
+  const [showStyleInput, setShowImageStyleInput] = useState(false);
+  const [siteIdInput, setSiteIdInput] = useState('');
+  const [submitLabel, setSubmitLabel] = useState('');
 
   useEffect(() => {
     updateCost();
-  }, [blogNumberInput,imageGenerationType]);
+  }, [blogNumberInput, imageGenerationType]);
 
   const updateCost = () => {
-    setShowImageStyleInput(false);
-    
-    let cost = "";
+    const USDollar = new Intl.NumberFormat('en-US', {
+      currency: 'USD',
+      style: 'currency',
+    });
 
-    if(isNaN(parseInt(blogNumberInput))){
-      cost = "$0.00";
-    }else if(imageGenerationType=="dall-e-3"){
+    setShowImageStyleInput(false);
+
+    let cost = '';
+
+    if (isNaN(parseInt(blogNumberInput))) {
+      cost = '$0.00';
+    } else if (imageGenerationType == 'dall-e-3') {
       setShowImageStyleInput(true);
       cost = USDollar.format(parseInt(blogNumberInput) * 0.04);
-    }else if(imageGenerationType=="dall-e-2"){
+    } else if (imageGenerationType == 'dall-e-2') {
       cost = USDollar.format(parseInt(blogNumberInput) * 0.02);
-    }else{
-      cost = "<$0.01";
+    } else {
+      cost = '<$0.01';
     }
-    
-    setSubmitLabel("Generate Blogs - Estimated cost: " + cost);
-  }
+
+    setSubmitLabel('Generate Blogs - Estimated cost: ' + cost);
+  };
 
   async function onSubmit(event) {
     event.preventDefault();
     setIsLoading(true);
 
-    const response = await fetch("/api/blogs", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+    const response = await fetch('/api/blogs', {
       body: JSON.stringify({
-        blogTopic: blogTopicInput,
         blogLength: blogLengthInput,
-        siteId: siteIdInput,
-        blogNumber: blogNumberInput, 
+        blogNumber: blogNumberInput,
+        blogTopic: blogTopicInput,
         imageGeneration: imageGenerationType,
         imageStyle: imageStyleInput,
-        debugMode: debugMode
+        siteId: siteIdInput,
       }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      method: 'POST',
     });
     const data = await response.json();
-    if(debugMode) console.log("data", data);
+    debug('data', data);
 
     const hljsResult = hljs.highlightAuto(data.result).value;
     setResult(hljsResult);
@@ -93,74 +84,66 @@ export default function Review() {
 
   return (
     <div>
-      <AppHead title={"Blog Generator"}/>
+      <AppHead title="Blog Generator" />
 
       <main className="py-20 flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
-      
-        <AppHeader title={"Liferay Blog Generator"} 
-                   desc={"Type your topic in the field below and wait for your blogs. <br/> Leave the field blank for a random blog topic."} />
-        
+        <AppHeader
+          desc="Type your topic in the field below and wait for your blogs. <br/> Leave the field blank for a random blog topic."
+          title="Liferay Blog Generator"
+        />
+
         <form onSubmit={onSubmit}>
-          
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 md:gap-4 mb-5">
+            <FieldString
+              defaultValue=""
+              inputChange={setBlogTopicInput}
+              label="Blog Topic"
+              name="topic"
+              placeholder="Enter a blog topic"
+            />
 
-            <FieldString 
-                name={"topic"}
-                label={"Blog Topic"} 
-                placeholder={"Enter a blog topic"}
-                inputChange={setBlogTopicInput}
-                defaultValue={""}
-              />
+            <FieldString
+              defaultValue="3"
+              inputChange={setBlogNumberInput}
+              label="Number of Posts to Create (Max 10)"
+              name="blogNumber"
+              placeholder="Number of blog posts"
+            />
 
-            <FieldString 
-                name={"blogNumber"}
-                label={"Number of Posts to Create (Max 10)"} 
-                placeholder={"Number of blog posts"}
-                inputChange={setBlogNumberInput}
-                defaultValue={"3"} 
-              />
+            <FieldString
+              defaultValue="200"
+              inputChange={setBlogLengthInput}
+              label="Expected Blog Post Length (in # of words)"
+              name="blogLength"
+              placeholder="Enter a the expected blog length"
+            />
 
-            <FieldString 
-                name={"blogLength"}
-                label={"Expected Blog Post Length (in # of words)"} 
-                placeholder={"Enter a the expected blog length"}
-                inputChange={setBlogLengthInput}
-                defaultValue={"200"}
-              />
-            
-            <FieldString 
-                name={"siteId"}
-                label={"Site ID or Asset Library Group ID"} 
-                placeholder={"Enter a site ID or asset library group ID"}
-                inputChange={setSiteIdInput}
-                defaultValue={""}
-              />
-            
-            <FieldImageType
-                includeNone={true}
-                inputChange={setImageGenerationType}
-              />
-      
-            {showStyleInput ? (
-              <ImageStyle styleInputChange={onImageStyleInputChange}/>
-            ) : null}
+            <FieldString
+              defaultValue=""
+              inputChange={setSiteIdInput}
+              label="Site ID or Asset Library Group ID"
+              name="siteId"
+              placeholder="Enter a site ID or asset library group ID"
+            />
 
+            <FieldImageType includeNone inputChange={setImageGenerationType} />
+
+            {showStyleInput && (
+              <ImageStyle styleInputChange={setImageStyleInput} />
+            )}
           </div>
-          
-          <FieldSubmit label={submitLabel} disabled={isLoading} />
 
+          <FieldSubmit disabled={isLoading} label={submitLabel} />
         </form>
-        
+
         {isLoading ? (
-          <LoadingAnimation/>
-        ) : result ? (
-          <ResultDisplay result={result} />
-        ) : null}
-
+          <LoadingAnimation />
+        ) : (
+          result && <ResultDisplay result={result} />
+        )}
       </main>
-      
-      <AppFooter debugModeChange={onDebugModeChange} />
 
+      <AppFooter />
     </div>
   );
 }

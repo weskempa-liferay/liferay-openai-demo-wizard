@@ -1,114 +1,155 @@
-import OpenAI  from "openai";
+import axios from 'axios';
+import OpenAI from 'openai';
 
-var functions = require('../utils/functions');
+import functions from '../utils/functions';
+import { logger } from '../utils/logger';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-const axios = require("axios");
+let options = functions.getAPIOptions('POST', 'en-US');
 
-let options = functions.getAPIOptions("POST","en-US");
+const debug = logger('KnowledgeBaseAction');
 
-export default async function (req, res) {
-
+export default async function KnowledgeBaseAction(req, res) {
   let start = new Date().getTime();
 
-  const debug = req.body.debugMode;
+  debug(req.body);
 
-  if(debug) console.log("kbFolderNumber:"+req.body.kbFolderNumber + ", kbArticleNumber:"+req.body.kbArticleNumber);
   //TODO Liferay's API does not yet support Suggestions. Once that is available development can continue.
 
   const knowledgeBaseSchema = {
-    type: "object",
     properties: {
       categories: {
-        type: "array",
-        description: "An array of "+req.body.kbFolderNumber+" or more knowledge base categories related to the given topic",
-        items:{
-          type:"object",
-          properties:{
-            category:{
-              type: "string",
-              description: "Name of the knowledge base category"
-            },
+        description:
+          'An array of ' +
+          req.body.kbFolderNumber +
+          ' or more knowledge base categories related to the given topic',
+        items: {
+          properties: {
             articles: {
-              type:"array",
-              description: "An array of "+req.body.kbArticleNumber+" knowledge base articles within the category",
-              items:{
-                type:"object",
-                properties:{
-                  headline: {
-                    type: "string",
-                    description: "The title of the knowledge base article"
-                  },
+              description:
+                'An array of ' +
+                req.body.kbArticleNumber +
+                ' knowledge base articles within the category',
+              items: {
+                properties: {
                   articleBody: {
-                    type: "string",
-                    description: "The full message as seen in the knowledge base article body. The knowledge base article should be "+req.body.kbArticleLength+" words or more."
-                  }
-                }
+                    description:
+                      'The full message as seen in the knowledge base article body. The knowledge base article should be ' +
+                      req.body.kbArticleLength +
+                      ' words or more.',
+                    type: 'string',
+                  },
+                  headline: {
+                    description: 'The title of the knowledge base article',
+                    type: 'string',
+                  },
+                },
+                type: 'object',
               },
-              required: ["headline","articleBody","articles"]
-            }
-          }
+              required: ['headline', 'articleBody', 'articles'],
+              type: 'array',
+            },
+            category: {
+              description: 'Name of the knowledge base category',
+              type: 'string',
+            },
+          },
+          type: 'object',
         },
-        required: ["categories"]
-      }
-    }
-  }
+        required: ['categories'],
+        type: 'array',
+      },
+    },
+    type: 'object',
+  };
 
   const response = await openai.chat.completions.create({
-    model: "gpt-3.5-turbo",
-    messages: [
-      {"role": "system", "content": "You are a knowledge base administrator responsible for managing the knowledge base for your company."},
-      {"role": "user", "content": "Create a list of knowledge base categories and articles on the subject of '" + 
-        req.body.kbTopic + "'. It is important to include " + req.body.kbFolderNumber + " knowledge base categories and " +
-        req.body.kbArticleNumber + " knowledge base articles in each category. " +
-        "Each knowledge base article should be " + req.body.kbArticleLength + " words or more." }
-    ],
     functions: [
-      {name: "get_knowledge_base_content", "parameters": knowledgeBaseSchema}
+      { name: 'get_knowledge_base_content', parameters: knowledgeBaseSchema },
     ],
+    messages: [
+      {
+        content:
+          'You are a knowledge base administrator responsible for managing the knowledge base for your company.',
+        role: 'system',
+      },
+      {
+        content:
+          "Create a list of knowledge base categories and articles on the subject of '" +
+          req.body.kbTopic +
+          "'. It is important to include " +
+          req.body.kbFolderNumber +
+          ' knowledge base categories and ' +
+          req.body.kbArticleNumber +
+          ' knowledge base articles in each category. ' +
+          'Each knowledge base article should be ' +
+          req.body.kbArticleLength +
+          ' words or more.',
+        role: 'user',
+      },
+    ],
+    model: 'gpt-3.5-turbo',
     temperature: 0.6,
   });
 
-  let categories = JSON.parse(response.choices[0].message.function_call.arguments).categories;
-  if(debug) console.log(JSON.stringify(categories));
-  
-  for(let i = 0; categories.length>i; i++){  
+  const categories = JSON.parse(
+    response.choices[0].message.function_call.arguments
+  ).categories;
 
-    let sectionApiPath = process.env.LIFERAY_PATH + "/o/headless-delivery/v1.0/sites/"+req.body.siteId+"/knowledge-base-folders";
+  debug(JSON.stringify(categories));
 
-    if(debug) console.log(sectionApiPath);
+  for (let i = 0; categories.length > i; i++) {
+    let sectionApiPath =
+      process.env.LIFERAY_PATH +
+      '/o/headless-delivery/v1.0/sites/' +
+      req.body.siteId +
+      '/knowledge-base-folders';
+
+    debug(sectionApiPath);
 
     let kbSectionJson = {
-        "name": categories[i].category
-    }
+      name: categories[i].category,
+    };
 
-    let kbSectionResponse = await axios.post(sectionApiPath, kbSectionJson, options);
+    let kbSectionResponse = await axios.post(
+      sectionApiPath,
+      kbSectionJson,
+      options
+    );
     let sectionId = kbSectionResponse.data.id;
 
-    if(debug) console.log("C:" + categories[i].category + " created with id " + sectionId);
+    debug('C:' + categories[i].category + ' created with id ' + sectionId);
 
     let articles = categories[i].articles;
 
-    for(let t=0; t<articles.length; t++){
+    for (let t = 0; t < articles.length; t++) {
+      let threadApiPath =
+        process.env.LIFERAY_PATH +
+        '/o/headless-delivery/v1.0/knowledge-base-folders/' +
+        sectionId +
+        '/knowledge-base-articles';
 
-        let threadApiPath = process.env.LIFERAY_PATH + "/o/headless-delivery/v1.0/knowledge-base-folders/" + sectionId + "/knowledge-base-articles";
+      debug(threadApiPath);
 
-        if(debug) console.log(threadApiPath);
+      let kbThreadJson = {
+        articleBody: articles[t].articleBody,
+        title: articles[t].headline,
+      };
 
-        let kbThreadJson = {
-            "title": articles[t].headline, 
-            "articleBody": articles[t].articleBody
-        }
+      let kbThreadResponse = await axios.post(
+        threadApiPath,
+        kbThreadJson,
+        options
+      );
 
-        let kbThreadResponse = await axios.post(threadApiPath, kbThreadJson, options);
-        let threadId = kbThreadResponse.data.id;
+      const threadId = kbThreadResponse.data.id;
 
-        if(debug) console.log("T:" + articles[t].headline + " created with id " + threadId);
+      debug('T:' + articles[t].headline + ' created with id ' + threadId);
 
-        /*
+      /* Liferay's Headless APIs do not allow for Suggestions yet
         let suggestions = articles[t].suggestions;
         for(let m=0; m<suggestions.length; m++){
 
@@ -128,8 +169,9 @@ export default async function (req, res) {
         */
     }
   }
-  
+
   let end = new Date().getTime();
-  res.status(200).json({result:"Completed in " +
-    functions.millisToMinutesAndSeconds(end - start)});
+  res.status(200).json({
+    result: 'Completed in ' + functions.millisToMinutesAndSeconds(end - start),
+  });
 }

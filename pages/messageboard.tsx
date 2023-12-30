@@ -1,52 +1,46 @@
-import { useState } from "react";
-import React from "react";
-import AppHead from "./components/apphead";
-import AppHeader from "./components/appheader";
-import AppFooter from "./components/appfooter";
-import LoadingAnimation from "./components/loadinganimation";
-import ResultDisplay from "./components/resultdisplay";
-import FieldString from "./components/formfield-string";
-import FieldSubmit from "./components/formfield-submit";
+import hljs from 'highlight.js';
+import { useState } from 'react';
+import React from 'react';
 
-import hljs from "highlight.js";
+import AppFooter from './components/appfooter';
+import AppHead from './components/apphead';
+import AppHeader from './components/appheader';
+import FieldString from './components/formfield-string';
+import FieldSubmit from './components/formfield-submit';
+import LoadingAnimation from './components/loadinganimation';
+import ResultDisplay from './components/resultdisplay';
 
-export default function Review() {
+export default function MessageBoard() {
+  const [mbTopicInput, setMBTopicInput] = useState('');
+  const [mbThreadLengthInput, setMBThreadLengthInput] = useState('50');
+  const [siteIdInput, setSiteIdInput] = useState('');
+  const [mbSectionNumberInput, setMBSectionNumberInput] = useState('3');
+  const [mbThreadNumberInput, setMBThreadNumberInput] = useState('3');
+  const [mbMessageNumberInput, setMBMessageNumberInput] = useState('2');
 
-  const [mbTopicInput, setMBTopicInput] = useState("");
-  const [mbThreadLengthInput, setMBThreadLengthInput] = useState("50");
-  const [siteIdInput, setSiteIdInput] = useState("");
-  const [mbSectionNumberInput, setMBSectionNumberInput] = useState("3");
-  const [mbThreadNumberInput, setMBThreadNumberInput] = useState("3");
-  const [mbMessageNumberInput, setMBMessageNumberInput] = useState("2");
-  
-  const [result, setResult] = useState(() => "");
+  const [result, setResult] = useState(() => '');
   const [isLoading, setIsLoading] = useState(false);
-  const [debugMode, setDebugMode] = useState(false);
-
-  const onDebugModeChange = (value) => {
-    setDebugMode(value);
-  };
 
   async function onSubmit(event) {
     event.preventDefault();
     setIsLoading(true);
-    const response = await fetch("/api/messageboard", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+
+    const response = await fetch('/api/messageboard', {
       body: JSON.stringify({
+        mbMessageNumber: mbMessageNumberInput,
+        mbSectionNumber: mbSectionNumberInput,
+        mbThreadLength: mbThreadLengthInput,
+        mbThreadNumber: mbThreadNumberInput,
         mbTopic: mbTopicInput,
         siteId: siteIdInput,
-        mbSectionNumber: mbSectionNumberInput, 
-        mbThreadNumber: mbThreadNumberInput, 
-        mbMessageNumber: mbMessageNumberInput, 
-        mbThreadLength: mbThreadLengthInput,
-        debugMode: debugMode
       }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      method: 'POST',
     });
+
     const data = await response.json();
-    if(debugMode) console.log("data", data);
 
     const hljsResult = hljs.highlightAuto(data.result).value;
     setResult(hljsResult);
@@ -56,82 +50,81 @@ export default function Review() {
 
   return (
     <div>
-      <AppHead title={"Mesage Board Content Generator"}/>
+      <AppHead title="Mesage Board Content Generator" />
 
       <main className="py-20 flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
-        
-        <AppHeader 
-            title={"Liferay Message Board Content Generator"}
-            desc={"Type your topic in the field below and wait for your Message Board Threads. <br/> Leave the field blank for a random Message Board topic."} />
-        
+        <AppHeader
+          desc={
+            'Type your topic in the field below and wait for your Message Board Threads. <br/> Leave the field blank for a random Message Board topic.'
+          }
+          title={'Liferay Message Board Content Generator'}
+        />
+
         <form onSubmit={onSubmit}>
-          
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 md:gap-4 mb-5">
+            <FieldString
+              defaultValue=""
+              inputChange={setMBTopicInput}
+              label="Message Board Topic"
+              name="topic"
+              placeholder="Enter a message board topic"
+            />
 
-            <FieldString 
-                    name={"topic"}
-                    label={"Message Board Topic"} 
-                    placeholder={"Enter a message board topic"}
-                    inputChange={setMBTopicInput}
-                    defaultValue={""}
-                  />
+            <FieldString
+              defaultValue=""
+              inputChange={setSiteIdInput}
+              label="Site ID or Asset Library Group ID"
+              name="siteId"
+              placeholder="Enter a site ID or asset library group ID"
+            />
 
-            <FieldString 
-                    name={"siteId"}
-                    label={"Site ID or Asset Library Group ID"} 
-                    placeholder={"Enter a site ID or asset library group ID"}
-                    inputChange={setSiteIdInput}
-                    defaultValue={""}
-                  />
-            
-            <FieldString 
-                    name={"threadLength"}
-                    label={"Expected Thread Length (in # of words)"} 
-                    placeholder={"Enter a message board thread length"}
-                    inputChange={setMBThreadLengthInput}
-                    defaultValue={"50"}
-                  />
-            
-            <FieldString 
-                    name={"mbNumber"}
-                    label={"Number of Sections to Create"} 
-                    placeholder={"Number of message board sections"}
-                    inputChange={setMBSectionNumberInput}
-                    defaultValue={"3"}
-                  />
-            
-            <FieldString 
-                    name={"mbThreadNumber"}
-                    label={"Number of Threads to Create per Section"} 
-                    placeholder={"Message board threads per section"}
-                    inputChange={setMBThreadNumberInput}
-                    defaultValue={"3"}
-                  />
+            <FieldString
+              defaultValue="50"
+              inputChange={setMBThreadLengthInput}
+              label="Expected Thread Length (in # of words)"
+              name="threadLength"
+              placeholder="Enter a message board thread length"
+            />
 
-            <FieldString 
-                    name={"mbMessagesNumber"}
-                    label={" Number of Messages to Create per Thread"} 
-                    placeholder={"Message board messages per thread"}
-                    inputChange={setMBMessageNumberInput}
-                    defaultValue={"2"}
-                  />
+            <FieldString
+              defaultValue="3"
+              inputChange={setMBSectionNumberInput}
+              label="Number of Sections to Create"
+              name="mbNumber"
+              placeholder="Number of message board sections"
+            />
 
+            <FieldString
+              defaultValue="3"
+              inputChange={setMBThreadNumberInput}
+              label="Number of Threads to Create per Section"
+              name="mbThreadNumber"
+              placeholder="Message board threads per section"
+            />
+
+            <FieldString
+              defaultValue="2"
+              inputChange={setMBMessageNumberInput}
+              label="Number of Messages to Create per Thread"
+              name="mbMessagesNumber"
+              placeholder="Message board messages per thread"
+            />
           </div>
-          
-          <FieldSubmit label={"Generate Message Board Threads"} disabled={isLoading} />
 
+          <FieldSubmit
+            disabled={isLoading}
+            label={'Generate Message Board Threads'}
+          />
         </form>
-        
-        {isLoading ? (
-          <LoadingAnimation/>
-        ) : result ? (
-          <ResultDisplay result={result} />
-        ) : null}
 
+        {isLoading ? (
+          <LoadingAnimation />
+        ) : (
+          result && <ResultDisplay result={result} />
+        )}
       </main>
-      
-      <AppFooter debugModeChange={onDebugModeChange} />
-      
+
+      <AppFooter />
     </div>
   );
 }

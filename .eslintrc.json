@@ -1,0 +1,16 @@
+{
+  "extends": [
+    "next/core-web-vitals",
+    "plugin:perfectionist/recommended-natural"
+  ],
+  "plugins": ["perfectionist"],
+  "rules": {
+    "perfectionist/sort-objects": [
+      "error",
+      {
+        "type": "natural",
+        "order": "asc"
+      }
+    ]
+  }
+}

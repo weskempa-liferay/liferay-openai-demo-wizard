@@ -1,17 +1,19 @@
-var functions = require('../utils/functions');
+import axios from 'axios';
 
-export default async function (req, res) {
-    let response = await getCatalogList();
-    res.status(200).json(response);
+import functions from '../utils/functions';
+
+export default async function Action(req, res) {
+  const response = await getCatalogList();
+
+  res.status(200).json(response);
 }
 
-async function getCatalogList(){
+async function getCatalogList() {
+  const catalogApiPath =
+    process.env.LIFERAY_PATH +
+    '/o/headless-commerce-admin-catalog/v1.0/catalogs';
 
-  const axios = require("axios");
-
-  let catalogApiPath = process.env.LIFERAY_PATH + "/o/headless-commerce-admin-catalog/v1.0/catalogs";
-
-  let options = functions.getAPIOptions("GET","en-US");
+  let options = functions.getAPIOptions('GET', 'en-US');
 
   const response = await axios.get(catalogApiPath, options);
 

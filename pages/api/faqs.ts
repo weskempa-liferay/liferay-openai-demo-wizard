@@ -105,6 +105,7 @@ export default async function FaqsAction(req, res) {
       structuredContentFolderId: req.body.folderId,
       taxonomyCategoryIds: functions.returnArraySet(req.body.categoryIds),
       title: faqs[i].title,
+      viewableBy: "Anyone"
     };
 
     let setContentFields = [

@@ -9,9 +9,11 @@ import FieldImageType from './components/formfield-imagetype';
 import FieldLanguage from './components/formfield-language';
 import FieldString from './components/formfield-string';
 import FieldSubmit from './components/formfield-submit';
+import FieldSelect from './components/formfield-select';
 import ImageStyle from './components/imagestyle';
 import LoadingAnimation from './components/loadinganimation';
 import ResultDisplay from './components/resultdisplay';
+import functions from './utils/functions';
 
 export default function News() {
   const [categoryIdsInput, setCategoryIdsInput] = useState('');
@@ -22,6 +24,8 @@ export default function News() {
   const [imageStyleInput, setImageStyleInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [languagesInput, setLanguages] = useState([]);
+  const [viewOptionsInput, setViewOptionsSelect] = useState('');
+  const viewOptions = functions.getViewOptions();
   const [manageLanguageInput, setManageLanguage] = useState(false);
   const [newsLengthInput, setNewsLengthInput] = useState('75');
   const [newsNumberInput, setNewsNumberInput] = useState('3');
@@ -103,6 +107,7 @@ export default function News() {
         imageGeneration: imageGenerationType,
         imageStyle: imageStyleInput,
         languages: languagesInput,
+        viewOptions: viewOptionsInput,
         manageLanguage: manageLanguageInput,
         newsLength: newsLengthInput,
         newsNumber: newsNumberInput,
@@ -197,6 +202,13 @@ export default function News() {
               label="Comma-Delimited Category IDs (Optional)"
               name="categoryIds"
               placeholder="List of Comma-Delimited Category IDs"
+            />
+
+            <FieldSelect
+              inputChange={setViewOptionsSelect}
+              label="View Options"
+              name="viewOption"
+              optionMap={viewOptions}
             />
 
             <FieldImageType

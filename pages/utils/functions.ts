@@ -39,6 +39,13 @@ const functions = {
       port: 8080,
     };
   },
+  getViewOptions: () => {
+    return [
+      { id: 'Anyone', name: 'Anyone' },
+      { id: 'Members', name: 'Members' },
+      { id: 'Owner', name: 'Owner' }
+    ];
+  },
   getAvailableLanguages,
   getBase64data,
   getFilePostOptions: (apiPath, fileStream, fileKey) => {

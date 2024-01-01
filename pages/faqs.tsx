@@ -9,9 +9,11 @@ import TopNavItem from './components/apptopnavitem';
 import FieldLangauge from './components/formfield-language';
 import FieldString from './components/formfield-string';
 import FieldSubmit from './components/formfield-submit';
+import FieldSelect from './components/formfield-select';
 import LoadingAnimation from './components/loadinganimation';
 import ResultDisplay from './components/resultdisplay';
 import { logger } from './utils/logger';
+import functions from './utils/functions';
 
 const debug = logger('faqs');
 
@@ -22,6 +24,9 @@ export default function Faqs() {
   const [faqFolderIdInput, setFAQFolderIdInput] = useState('0');
   const [faqStructureIdInput, setFAQStructureIdInput] = useState('');
   const [categoryIdsInput, setCategoryIdsInput] = useState('');
+
+  const [viewOptionsInput, setViewOptionsSelect] = useState('');
+  const viewOptions = functions.getViewOptions();
 
   const [languagesInput, setLanguages] = useState([]);
   const [manageLanguageInput, setManageLanguage] = useState(false);
@@ -46,6 +51,7 @@ export default function Faqs() {
         faqTopic: faqTopicInput,
         folderId: faqFolderIdInput,
         languages: languagesInput,
+        viewOptions: viewOptionsInput,
         manageLanguage: manageLanguageInput,
         siteId: siteIdInput,
         structureId: faqStructureIdInput,
@@ -145,6 +151,13 @@ export default function Faqs() {
               label="Web Content Folder ID (0 for Root)"
               name="folderId"
               placeholder="Enter a folder ID"
+            />
+
+            <FieldSelect
+              inputChange={setViewOptionsSelect}
+              label="View Options"
+              name="viewOption"
+              optionMap={viewOptions}
             />
 
             <FieldString

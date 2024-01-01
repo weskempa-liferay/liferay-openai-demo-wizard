@@ -337,7 +337,7 @@ async function postNewsToLiferay(req, newsJson, imageId) {
     taxonomyCategoryIds: functions.returnArraySet(req.body.categoryIds),
     title: newsJson.headline,
     title_i18n: titleValues,
-    viewableBy: "Anyone"
+    viewableBy: req.body.viewOptions
   };
 
   const apiPath =

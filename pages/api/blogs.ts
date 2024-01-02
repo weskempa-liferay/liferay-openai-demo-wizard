@@ -21,67 +21,78 @@ export default async function Action(req, res) {
   debug('include images: ' + imageGeneration);
 
   const runCountMax = 10;
-
-  let blogJson, response;
   const blogContentSet = [];
 
   const schema = {
     properties: {
-      alternativeHeadline: {
-        description: 'A headline that is a summary of the blog article',
-        type: 'string',
-      },
-      articleBody: {
+      articles: {
         description:
-          'The content of the blog article needs to be ' +
-          req.body.blogLength +
-          ' words or more. Remove any double quotes',
-        type: 'string',
-      },
-      headline: {
-        description: 'The title of the blog artcile.',
-        type: 'string',
-      },
-      picture_description: {
-        description:
-          'A description of an appropriate image for this blog in three sentences.',
-        type: 'string',
-      },
-    },
-    required: [
-      'headline',
-      'alternativeHeadline',
-      'articleBody',
-      'picture_description',
-    ],
-    type: 'object',
-  };
-
-  for (let i = 0; i < runCount; i++) {
-    response = await openai.chat.completions.create({
-      frequency_penalty: 0.6,
-      function_call: { name: 'get_blog_content' },
-      functions: [{ name: 'get_blog_content', parameters: schema }],
-      max_tokens: 1000,
-      messages: [
-        { content: 'You are a blog author.', role: 'system' },
-        {
-          content:
-            'Write blogs on the subject of: ' +
-            req.body.blogTopic +
-            ". It is important that each blog article's content is " +
-            req.body.blogLength +
-            ' words or more.',
-          role: 'user',
+          'An array of ' + req.body.blogNumber + ' blog articles',
+        items: {
+          properties: {
+            headline: {
+              description: 'The title of the blog artcile.',
+              type: 'string',
+            },
+            alternativeHeadline: {
+              description: 'A headline that is a summary of the blog article',
+              type: 'string',
+            },
+            articleBody: {
+              description:
+                'The content of the blog article needs to be ' + req.body.blogLength +
+                ' words or more. Remove any double quotes',
+              type: 'string',
+            },
+            picture_description: {
+              description:
+                'A description of an appropriate image for this blog in three sentences.',
+              type: 'string',
+            },
+          },
+          required: [
+            'headline',
+            'alternativeHeadline',
+            'articleBody',
+            'picture_description',
+          ],
+          type: 'object',
         },
-      ],
-      model: 'gpt-3.5-turbo',
-      presence_penalty: 0,
-      temperature: 0.8,
-    });
+        required: ['articles'],
+        type: 'array'
+      }
+    },
+    type: 'object'
+  }
 
-    debug(response.choices[0].message.function_call.arguments);
-    blogJson = JSON.parse(response.choices[0].message.function_call.arguments);
+  let response = await openai.chat.completions.create({
+    frequency_penalty: 0.6,
+    function_call: { name: 'get_blog_content' },
+    functions: [{ name: 'get_blog_content', parameters: schema }],
+    max_tokens: 1000,
+    messages: [
+      { content: 'You are a blog author.', role: 'system' },
+      {
+        content:
+          'Write blogs on the subject of: ' +
+          req.body.blogTopic +
+          ". It is important that each blog article's content is " +
+          req.body.blogLength +
+          ' words or more. Blog titles hould be unique',
+        role: 'user',
+      },
+    ],
+    model: 'gpt-3.5-turbo',
+    presence_penalty: 0,
+    temperature: 0.8,
+  });
+
+  debug(response.choices[0].message.function_call.arguments);
+  let blogJsonArticles = JSON.parse(response.choices[0].message.function_call.arguments).articles;
+
+  for (let i = 0; i < blogJsonArticles.length; i++) {
+
+    let blogJson = blogJsonArticles[i];
 
     let pictureDescription = blogJson.picture_description;
     delete blogJson.picture_description;

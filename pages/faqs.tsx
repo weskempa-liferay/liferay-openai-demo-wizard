@@ -25,7 +25,7 @@ export default function Faqs() {
   const [faqStructureIdInput, setFAQStructureIdInput] = useState('');
   const [categoryIdsInput, setCategoryIdsInput] = useState('');
 
-  const [viewOptionsInput, setViewOptionsSelect] = useState('');
+  const [viewOptionsInput, setViewOptionsSelect] = useState('Anyone');
   const viewOptions = functions.getViewOptions();
 
   const [languagesInput, setLanguages] = useState([]);

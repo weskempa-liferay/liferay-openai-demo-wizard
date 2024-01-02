@@ -24,7 +24,7 @@ export default function News() {
   const [imageStyleInput, setImageStyleInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [languagesInput, setLanguages] = useState([]);
-  const [viewOptionsInput, setViewOptionsSelect] = useState('');
+  const [viewOptionsInput, setViewOptionsSelect] = useState('Anyone');
   const viewOptions = functions.getViewOptions();
   const [manageLanguageInput, setManageLanguage] = useState(false);
   const [newsLengthInput, setNewsLengthInput] = useState('75');

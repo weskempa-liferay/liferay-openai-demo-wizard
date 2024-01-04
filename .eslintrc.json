@@ -9,7 +9,6 @@
       "error",
       {
         "type": "natural",
-        "order": "asc"
       }
     ]
   }

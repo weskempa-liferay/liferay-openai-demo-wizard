@@ -2,11 +2,13 @@ import hljs from 'highlight.js';
 import { useEffect, useState } from 'react';
 import React from 'react';
 
+import functions from './utils/functions';
 import AppFooter from './components/appfooter';
 import AppHead from './components/apphead';
 import AppHeader from './components/appheader';
 import FieldImageType from './components/formfield-imagetype';
 import FieldString from './components/formfield-string';
+import FieldSelect from './components/formfield-select';
 import FieldSubmit from './components/formfield-submit';
 import ImageStyle from './components/imagestyle';
 import LoadingAnimation from './components/loadinganimation';
@@ -19,6 +21,7 @@ export default function Review() {
   const [blogLengthInput, setBlogLengthInput] = useState('200');
   const [blogNumberInput, setBlogNumberInput] = useState('3');
   const [blogTopicInput, setBlogTopicInput] = useState('');
+  const [blogLanguageInput, setBlogLanguageInput] = useState('en-US');
   const [imageGenerationType, setImageGenerationType] = useState('none');
   const [imageStyleInput, setImageStyleInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -26,6 +29,8 @@ export default function Review() {
   const [showStyleInput, setShowImageStyleInput] = useState(false);
   const [siteIdInput, setSiteIdInput] = useState('');
   const [submitLabel, setSubmitLabel] = useState('');
+
+  const languageOptions = functions.getAvailableLanguages();
 
   useEffect(() => {
     updateCost();
@@ -63,6 +68,7 @@ export default function Review() {
       body: JSON.stringify({
         blogLength: blogLengthInput,
         blogNumber: blogNumberInput,
+        blogLanguage: blogLanguageInput,
         blogTopic: blogTopicInput,
         imageGeneration: imageGenerationType,
         imageStyle: imageStyleInput,
@@ -124,6 +130,13 @@ export default function Review() {
               label="Site ID or Asset Library Group ID"
               name="siteId"
               placeholder="Enter a site ID or asset library group ID"
+            />
+            
+            <FieldSelect
+              inputChange={setBlogLanguageInput}
+              label="Blog Language"
+              name="blogLanguage"
+              optionMap={languageOptions}
             />
 
             <FieldImageType includeNone inputChange={setImageGenerationType} />

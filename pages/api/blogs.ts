@@ -19,6 +19,7 @@ export default async function Action(req, res) {
 
   debug('requesting ' + runCount + ' blog(s)');
   debug('include images: ' + imageGeneration);
+  debug('blog language: ' + req.body.blogLanguage);
 
   const runCountMax = 10;
   const blogContentSet = [];
@@ -31,17 +32,20 @@ export default async function Action(req, res) {
         items: {
           properties: {
             headline: {
-              description: 'The title of the blog artcile.',
+              description: 'The title of the blog artcile translated into ' +
+              functions.getLanguageDisplayName(req.body.blogLanguage),
               type: 'string',
             },
             alternativeHeadline: {
-              description: 'A headline that is a summary of the blog article',
+              description: 'A headline that is a summary of the blog article translated into ' +
+              functions.getLanguageDisplayName(req.body.blogLanguage),
               type: 'string',
             },
             articleBody: {
               description:
                 'The content of the blog article needs to be ' + req.body.blogLength +
-                ' words or more. Remove any double quotes',
+                ' words or more. Remove any double quotes and translate the article into ' +
+                functions.getLanguageDisplayName(req.body.blogLanguage),
               type: 'string',
             },
             picture_description: {
@@ -78,7 +82,8 @@ export default async function Action(req, res) {
           req.body.blogTopic +
           ". It is important that each blog article's content is " +
           req.body.blogLength +
-          ' words or more. Blog titles hould be unique',
+          ' words or more and translated into ' +
+          functions.getLanguageDisplayName(req.body.blogLanguage),
         role: 'user',
       },
     ],

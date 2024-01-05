@@ -129,6 +129,7 @@ export default async function MessageBoardAction(req, res) {
 
     let mbSectionJson = {
       title: categories[i].category,
+      viewableBy: req.body.viewOptions
     };
 
     let mbSectionResponse = await axios.post(
@@ -157,6 +158,7 @@ export default async function MessageBoardAction(req, res) {
       let mbThreadJson = {
         articleBody: threads[t].articleBody,
         headline: threads[t].headline,
+        viewableBy: req.body.viewOptions
       };
 
       let mbThreadResponse = await axios.post(
@@ -183,6 +185,7 @@ export default async function MessageBoardAction(req, res) {
 
         let mbMessageJson = {
           articleBody: messages[m].message,
+          viewableBy: req.body.viewOptions
         };
 
         let mbMessageThreadResponse = await axios.post(

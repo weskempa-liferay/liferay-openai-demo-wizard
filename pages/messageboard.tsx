@@ -2,11 +2,13 @@ import hljs from 'highlight.js';
 import { useState } from 'react';
 import React from 'react';
 
+import functions from './utils/functions';
 import AppFooter from './components/appfooter';
 import AppHead from './components/apphead';
 import AppHeader from './components/appheader';
 import FieldString from './components/formfield-string';
 import FieldSubmit from './components/formfield-submit';
+import FieldSelect from './components/formfield-select';
 import LoadingAnimation from './components/loadinganimation';
 import ResultDisplay from './components/resultdisplay';
 
@@ -17,6 +19,9 @@ export default function MessageBoard() {
   const [mbSectionNumberInput, setMBSectionNumberInput] = useState('3');
   const [mbThreadNumberInput, setMBThreadNumberInput] = useState('3');
   const [mbMessageNumberInput, setMBMessageNumberInput] = useState('2');
+
+  const [viewOptionsInput, setViewOptionsSelect] = useState('Anyone');
+  const viewOptions = functions.getViewOptions();
 
   const [result, setResult] = useState(() => '');
   const [isLoading, setIsLoading] = useState(false);
@@ -33,6 +38,7 @@ export default function MessageBoard() {
         mbThreadNumber: mbThreadNumberInput,
         mbTopic: mbTopicInput,
         siteId: siteIdInput,
+        viewOptions: viewOptionsInput
       }),
       headers: {
         'Content-Type': 'application/json',
@@ -108,6 +114,13 @@ export default function MessageBoard() {
               label="Number of Messages to Create per Thread"
               name="mbMessagesNumber"
               placeholder="Message board messages per thread"
+            />
+
+            <FieldSelect
+              inputChange={setViewOptionsSelect}
+              label="View Options"
+              name="viewOption"
+              optionMap={viewOptions}
             />
           </div>
 

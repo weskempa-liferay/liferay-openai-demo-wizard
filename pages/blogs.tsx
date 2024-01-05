@@ -30,6 +30,9 @@ export default function Review() {
   const [siteIdInput, setSiteIdInput] = useState('');
   const [submitLabel, setSubmitLabel] = useState('');
 
+  const [viewOptionsInput, setViewOptionsSelect] = useState('Anyone');
+  const viewOptions = functions.getViewOptions();
+
   const languageOptions = functions.getAvailableLanguages();
 
   useEffect(() => {
@@ -70,6 +73,7 @@ export default function Review() {
         blogNumber: blogNumberInput,
         blogLanguage: blogLanguageInput,
         blogTopic: blogTopicInput,
+        viewOptions: viewOptionsInput,
         imageGeneration: imageGenerationType,
         imageStyle: imageStyleInput,
         siteId: siteIdInput,
@@ -137,6 +141,13 @@ export default function Review() {
               label="Blog Language"
               name="blogLanguage"
               optionMap={languageOptions}
+            />
+
+            <FieldSelect
+              inputChange={setViewOptionsSelect}
+              label="View Options"
+              name="viewOption"
+              optionMap={viewOptions}
             />
 
             <FieldImageType includeNone inputChange={setImageGenerationType} />

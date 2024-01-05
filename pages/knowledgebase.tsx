@@ -2,11 +2,13 @@ import hljs from 'highlight.js';
 import { useState } from 'react';
 import React from 'react';
 
+import functions from './utils/functions';
 import AppFooter from './components/appfooter';
 import AppHead from './components/apphead';
 import AppHeader from './components/appheader';
 import FieldString from './components/formfield-string';
 import FieldSubmit from './components/formfield-submit';
+import FieldSelect from './components/formfield-select';
 import LoadingAnimation from './components/loadinganimation';
 import ResultDisplay from './components/resultdisplay';
 
@@ -19,6 +21,9 @@ export default function Review() {
   const [result, setResult] = useState(() => '');
   const [siteIdInput, setSiteIdInput] = useState('');
 
+  const [viewOptionsInput, setViewOptionsSelect] = useState('Anyone');
+  const viewOptions = functions.getViewOptions();
+
   async function onSubmit(event) {
     event.preventDefault();
     setIsLoading(true);
@@ -30,6 +35,7 @@ export default function Review() {
         kbFolderNumber: kbFolderNumberInput,
         kbTopic: kbTopicInput,
         siteId: siteIdInput,
+        viewOptions: viewOptionsInput
       }),
       headers: {
         'Content-Type': 'application/json',
@@ -96,6 +102,13 @@ export default function Review() {
               label="Number of Articles to Create per Section"
               name="kbSectionNumber"
               placeholder="Number of of knowledge base sections"
+            />
+
+            <FieldSelect
+              inputChange={setViewOptionsSelect}
+              label="View Options"
+              name="viewOption"
+              optionMap={viewOptions}
             />
           </div>
 

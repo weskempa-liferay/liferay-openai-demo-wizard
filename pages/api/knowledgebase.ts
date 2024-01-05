@@ -112,6 +112,7 @@ export default async function KnowledgeBaseAction(req, res) {
 
     let kbSectionJson = {
       name: categories[i].category,
+      viewableBy: req.body.viewOptions
     };
 
     let kbSectionResponse = await axios.post(
@@ -137,6 +138,7 @@ export default async function KnowledgeBaseAction(req, res) {
       let kbThreadJson = {
         articleBody: articles[t].articleBody,
         title: articles[t].headline,
+        viewableBy: req.body.viewOptions
       };
 
       let kbThreadResponse = await axios.post(

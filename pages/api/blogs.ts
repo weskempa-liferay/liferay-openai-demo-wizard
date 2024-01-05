@@ -190,6 +190,8 @@ async function postBlogToLiferay(req, blogJson, imageId) {
     };
   }
 
+  blogJson.viewableBy = req.body.viewOptions
+
   let apiPath =
     process.env.LIFERAY_PATH +
     '/o/headless-delivery/v1.0/sites/' +

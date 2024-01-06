@@ -39,11 +39,15 @@ export default async function KnowledgeBaseAction(req, res) {
                     description:
                       'The full message as seen in the knowledge base article body. The knowledge base article should be ' +
                       req.body.kbArticleLength +
-                      ' words or more.',
+                      ' words or more.' +
+                      ' Translate the knowledge base article into ' +
+                      functions.getLanguageDisplayName(req.body.kbLanguage),
                     type: 'string',
                   },
                   headline: {
-                    description: 'The title of the knowledge base article',
+                    description: 'The title of the knowledge base article. ' +
+                    ' Translate the title of the knowledge base title into ' +
+                    functions.getLanguageDisplayName(req.body.kbLanguage),
                     type: 'string',
                   },
                 },
@@ -53,7 +57,9 @@ export default async function KnowledgeBaseAction(req, res) {
               type: 'array',
             },
             category: {
-              description: 'Name of the knowledge base category',
+              description: 'Name of the knowledge base category.' +
+              ' Translate this category name into ' +
+              functions.getLanguageDisplayName(req.body.kbLanguage),
               type: 'string',
             },
           },
@@ -87,7 +93,8 @@ export default async function KnowledgeBaseAction(req, res) {
           ' knowledge base articles in each category. ' +
           'Each knowledge base article should be ' +
           req.body.kbArticleLength +
-          ' words or more.',
+          ' words or more. Translate the titles and articles into ' +
+          functions.getLanguageDisplayName(req.body.kbLanguage),
         role: 'user',
       },
     ],

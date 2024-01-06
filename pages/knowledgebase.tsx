@@ -17,9 +17,12 @@ export default function Review() {
   const [kbArticleLengthInput, setKBArticleLengthInput] = useState('100');
   const [kbArticleNumberInput, setKBArticleNumberInput] = useState('4');
   const [kbFolderNumberInput, setKBFolderNumberInput] = useState('3');
+  const [kbLanguageInput, setKBLanguageInput] = useState('en-US');
   const [kbTopicInput, setKBTopicInput] = useState('');
   const [result, setResult] = useState(() => '');
   const [siteIdInput, setSiteIdInput] = useState('');
+
+  const languageOptions = functions.getAvailableLanguages();
 
   const [viewOptionsInput, setViewOptionsSelect] = useState('Anyone');
   const viewOptions = functions.getViewOptions();
@@ -35,6 +38,7 @@ export default function Review() {
         kbFolderNumber: kbFolderNumberInput,
         kbTopic: kbTopicInput,
         siteId: siteIdInput,
+        kbLanguage:kbLanguageInput,
         viewOptions: viewOptionsInput
       }),
       headers: {
@@ -102,6 +106,13 @@ export default function Review() {
               label="Number of Articles to Create per Section"
               name="kbSectionNumber"
               placeholder="Number of of knowledge base sections"
+            />
+            
+            <FieldSelect
+              inputChange={setKBLanguageInput}
+              label="Blog Language"
+              name="blogLanguage"
+              optionMap={languageOptions}
             />
 
             <FieldSelect

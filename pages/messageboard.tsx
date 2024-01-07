@@ -19,12 +19,15 @@ export default function MessageBoard() {
   const [mbSectionNumberInput, setMBSectionNumberInput] = useState('3');
   const [mbThreadNumberInput, setMBThreadNumberInput] = useState('3');
   const [mbMessageNumberInput, setMBMessageNumberInput] = useState('2');
+  const [mbLanguageInput, setMBLanguageInput] = useState('en-US');
 
   const [viewOptionsInput, setViewOptionsSelect] = useState('Anyone');
   const viewOptions = functions.getViewOptions();
 
   const [result, setResult] = useState(() => '');
   const [isLoading, setIsLoading] = useState(false);
+
+  const languageOptions = functions.getAvailableLanguages();
 
   async function onSubmit(event) {
     event.preventDefault();
@@ -36,6 +39,7 @@ export default function MessageBoard() {
         mbSectionNumber: mbSectionNumberInput,
         mbThreadLength: mbThreadLengthInput,
         mbThreadNumber: mbThreadNumberInput,
+        mbLanguage: mbLanguageInput,
         mbTopic: mbTopicInput,
         siteId: siteIdInput,
         viewOptions: viewOptionsInput
@@ -115,6 +119,13 @@ export default function MessageBoard() {
               name="mbMessagesNumber"
               placeholder="Message board messages per thread"
             />
+            
+            <FieldSelect
+              inputChange={setMBLanguageInput}
+              label="Blog Language"
+              name="blogLanguage"
+              optionMap={languageOptions}
+            />
 
             <FieldSelect
               inputChange={setViewOptionsSelect}
@@ -122,6 +133,7 @@ export default function MessageBoard() {
               name="viewOption"
               optionMap={viewOptions}
             />
+
           </div>
 
           <FieldSubmit

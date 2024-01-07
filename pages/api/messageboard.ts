@@ -27,37 +27,43 @@ export default async function MessageBoardAction(req, res) {
         items: {
           properties: {
             category: {
-              description: 'Name of the message board category',
+              description: 'Name of the message board category translated into ' +
+                            functions.getLanguageDisplayName(req.body.mbLanguage),
               type: 'string',
             },
             threads: {
               description:
                 'An array of ' +
                 req.body.mbThreadNumber +
-                ' message board threads within the category',
+                ' message board threads within the category translated into ' +
+                            functions.getLanguageDisplayName(req.body.mbLanguage),
               items: {
                 properties: {
                   articleBody: {
                     description:
                       'The full message as seen in the message board thread body. Use ' +
                       req.body.mbThreadLength +
-                      ' words or more.',
+                      ' words or more and translated into ' +
+                      functions.getLanguageDisplayName(req.body.mbLanguage),
                     type: 'string',
                   },
                   headline: {
-                    description: 'The title of the message board thread',
+                    description: 'The title of the message board thread translated into ' +
+                    functions.getLanguageDisplayName(req.body.mbLanguage),
                     type: 'string',
                   },
                   messages: {
                     description:
                       'An array of ' +
                       req.body.mbMessageNumber +
-                      ' message board messages within the category',
+                      ' message board messages within the category translated into ' +
+                      functions.getLanguageDisplayName(req.body.mbLanguage),
                     items: {
                       properties: {
                         message: {
                           description:
-                            'The message that relates to the message board threads',
+                            'The message that relates to the message board threads translated into ' +
+                            functions.getLanguageDisplayName(req.body.mbLanguage),
                           type: 'string',
                         },
                       },
@@ -105,7 +111,8 @@ export default async function MessageBoardAction(req, res) {
           ' message board threads in each thread. ' +
           'Each message board thread should be ' +
           req.body.mbThreadLength +
-          ' words or more.',
+          ' words or more and translated into ' +
+          functions.getLanguageDisplayName(req.body.mbLanguage),
         role: 'user',
       },
     ],

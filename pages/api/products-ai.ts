@@ -117,7 +117,7 @@ export default async function ProductsAction(req, res) {
     '/o/headless-admin-taxonomy/v1.0/sites/' +
     globalSiteId +
     '/taxonomy-vocabularies';
-  let vocabPostObj = { name: req.body.categoryName + ' Categories' };
+  let vocabPostObj = { name: req.body.categoryName };
 
   let options = functions.getAPIOptions('POST', 'en-US');
 
@@ -288,7 +288,6 @@ export default async function ProductsAction(req, res) {
             options
           );
 
-          debug(productImageResponse.data[0]);
         }
       } catch (productError) {
         console.log(

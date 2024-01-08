@@ -4,7 +4,7 @@ With this application, creating content for Liferay demo purposes is a breeze!
 
 Consider this scenario: You can create 15 products across 5 categories in just 35 seconds with a single prompt from you. The magic happens through the integration of OpenAI's API for content creation and Liferay's APIs for seamless storage based on your prompts.
 
-Utilizing this OpenAI Wizard doesn't just speed up content creation, which many of us are already doing with AI. It goes the extra mile by seamlessly loading it into the demo instance through our Liferay APIs. Big kudos to **Steven Lu**, who, alongside contributing significantly to Commerce and its related APIs, identified the potential to optimize the time spent on setting up commerce products, categories, and SKUs.
+Utilizing this OpenAI Wizard doesn't just speed up content creation, which many of us are already doing with AI. It goes the extra mile by seamlessly loading it into the demo instance through our Liferay APIs. Big kudos to **Steven Lu**, who helped identify the potential to optimize the time spent on setting up commerce products, categories, and SKUs which then led to the original idea for this integration.
   
 ![AIWizard-Screenshot](https://github.com/weskempa-liferay/liferay-openai-demo-wizard/assets/68334638/eafd4327-492c-4fcf-81e8-2d3abfa9f8f7)
 
@@ -13,7 +13,7 @@ Utilizing this OpenAI Wizard doesn't just speed up content creation, which many 
 - **Accounts**
 - **Blogs with Images**
 - **Taxonomy with Category Structure**
-- **Commerce Categories and Products with Images**
+- **Commerce Categories and Products with Images (CSV and OpenAI)**
 - **Custom Liferay Objects Schemas**
 - **Multilingual FAQs**
 - **Images Only**

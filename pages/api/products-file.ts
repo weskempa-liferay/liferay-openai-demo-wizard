@@ -48,7 +48,7 @@ export default async function UsersFileAction(req, res) {
     '/o/headless-admin-taxonomy/v1.0/sites/' +
     globalSiteId +
     '/taxonomy-vocabularies';
-  let vocabPostObj = { name: req.body.categoryName + ' Categories' };
+  let vocabPostObj = { name: req.body.categoryName };
 
   let options = functions.getAPIOptions('POST', 'en-US');
 
@@ -200,10 +200,6 @@ export default async function UsersFileAction(req, res) {
         imgschema,
         options
       );
-
-      debug("productImageResponse.data[0]");
-      debug(productImageResponse.data[0]);
-
 
     } catch (productError) {
       console.log(

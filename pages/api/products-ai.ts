@@ -105,7 +105,7 @@ export default async function ProductsAction(req, res) {
 
   let categoryDataStr = {
     'Category Names': productCategories,
-    'Category Vocab': req.body.categoryName + ' Type',
+    'Category Vocab': req.body.categoryName,
   };
 
   debug(categoryDataStr);

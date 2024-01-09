@@ -120,7 +120,11 @@ export default async function UsersFileAction(req, res) {
     shortDescription = productslist[i].shortDescription;
     productPrice = productslist[i].price;
     inventoryCount = productslist[i].stock;
-    productSku = productName.toLowerCase().replaceAll(' ', '-');
+    if(!productslist[i].sku || productslist[i].sku=="" || productslist[i].sku=="?"){
+      productSku = productName.toLowerCase().replaceAll(' ', '-');
+    } else {
+      productSku = productslist[i].sku;
+    }
 
     productJson = {
       active: true,
@@ -157,13 +161,6 @@ export default async function UsersFileAction(req, res) {
       apiPath =
         process.env.LIFERAY_PATH +
         '/o/headless-commerce-admin-catalog/v1.0/products';
-
-      /*
-      debug('sending: ' + productName);
-      debug(apiPath);
-      debug(productJson);
-      debug(options);
-      */
 
       productResponse = await axios.post(apiPath, productJson, options);
 

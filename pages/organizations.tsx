@@ -53,7 +53,7 @@ export default function Review() {
 
   return (
     <div>
-      <AppHead title="Account Generator" />
+      <AppHead title="Organization Generator" />
 
       <main className="py-20 flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
         <AppHeader
@@ -67,7 +67,7 @@ export default function Review() {
               defaultValue="National Internet, Phone, and Cable"
               inputChange={setOrganizationTopicInput}
               label="Business Description"
-              name="topic"
+              name="orgtopic"
               placeholder="Enter a business description"
             />
 

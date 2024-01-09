@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
 
+import Cookies from 'universal-cookie';
+const cookies = new Cookies();
+
 export default function FieldString({
   defaultValue,
   inputChange,
@@ -12,10 +15,19 @@ export default function FieldString({
   const handleInputChange = (value) => {
     setInput(value);
     inputChange(value);
+
+    cookies.set(name, value, { path: '/' });
   };
 
   useEffect(() => {
     setInput(defaultValue);
+    if(!cookies.get(name)){
+      cookies.set(name, false, { path: '/' });
+    } else {
+      setInput(cookies.get(name));
+      inputChange(cookies.get(name));
+    }
+    
   }, []);
 
   return (

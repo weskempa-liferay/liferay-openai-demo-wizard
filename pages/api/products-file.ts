@@ -38,46 +38,52 @@ export default async function UsersFileAction(req, res) {
 
   debug(categoryDataStr);
 
+  // check if vocabulary exists
+
+  let vocabId = await getExistingVocabID(req.body.categoryName, globalSiteId);
   
+  debug("existingVocabId:"+vocabId);
+
   // Setup Vocabulary 
 
-  let apiPath =
-    process.env.LIFERAY_PATH +
-    '/o/headless-admin-taxonomy/v1.0/sites/' +
-    globalSiteId +
-    '/taxonomy-vocabularies';
-  let vocabPostObj = { name: req.body.categoryName };
-
   let options = functions.getAPIOptions('POST', 'en-US');
+  let apiPath = "";
+  
+  if(vocabId<0){
+    let apiPath =
+      process.env.LIFERAY_PATH +
+      '/o/headless-admin-taxonomy/v1.0/sites/' +
+      globalSiteId +
+      '/taxonomy-vocabularies';
+    let vocabPostObj = { name: req.body.categoryName };
 
-  let apiRes = '';
+    // wait for the vocab to complete before adding categories
+    try {
+      const vocabResponse = await axios.post(apiPath, vocabPostObj, options);
 
-  // wait for the vocab to complete before adding categories
-  try {
-    const vocabResponse = await axios.post(apiPath, vocabPostObj, options);
-
-    debug(vocabResponse.data);
-    apiRes = vocabResponse.data.id;
-  } catch (error) {
-    console.log(error);
-    apiRes = error;
+      debug(vocabResponse.data);
+      vocabId = vocabResponse.data.id;
+    } catch (error) {
+      console.log(error);
+      vocabId = error;
+    }
   }
 
   const categMap = new Map();
 
-  debug('returned vocab key is ' + apiRes);
+  debug('returned vocab key is ' + vocabId);
   // create the categories for the vocabulary that was just generated
   let currCategory, currCategoryJson, categResponse;
 
   for (var i = 0; i < productCategories.length; i++) {
     currCategory = productCategories[i];
 
-    currCategoryJson = { name: currCategory, taxonomyVocabularyId: apiRes };
+    currCategoryJson = { name: currCategory, taxonomyVocabularyId: vocabId };
 
     apiPath =
       process.env.LIFERAY_PATH +
       '/o/headless-admin-taxonomy/v1.0/taxonomy-vocabularies/' +
-      apiRes +
+      vocabId +
       '/taxonomy-categories';
     debug('creating category');
     debug(currCategoryJson);
@@ -213,4 +219,29 @@ export default async function UsersFileAction(req, res) {
       ' errors in ' +
       functions.millisToMinutesAndSeconds(end - start),
   });
+}
+
+async function getExistingVocabID(name, globalSiteId) {
+  
+  let apiPath =
+    process.env.LIFERAY_PATH +
+    '/o/headless-admin-taxonomy/v1.0/sites/' +
+    globalSiteId +
+    '/taxonomy-vocabularies?filter=name%20eq%20%27'+name+'%27&pageSize=999';
+
+  let options = functions.getAPIOptions('GET', 'en-US');
+
+  try {
+    const vocabResponse = await axios.get(apiPath, options);
+
+    if(vocabResponse.data.items.length>0){
+      return vocabResponse.data.items[0].id;
+    } else {
+      return -1;
+    }
+    
+  } catch (error) {
+    console.log(error);
+  }
+
 }

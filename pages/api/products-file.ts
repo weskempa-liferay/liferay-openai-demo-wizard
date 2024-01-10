@@ -1,6 +1,4 @@
 import axios from 'axios';
-import fs from 'fs';
-import request from 'request';
 
 import functions from '../utils/functions';
 import { logger } from '../utils/logger';
@@ -210,7 +208,7 @@ export default async function UsersFileAction(req, res) {
   res.status(200).json({
     result:
       successCount +
-      ' users added, ' +
+      ' products added, ' +
       errorCount +
       ' errors in ' +
       functions.millisToMinutesAndSeconds(end - start),

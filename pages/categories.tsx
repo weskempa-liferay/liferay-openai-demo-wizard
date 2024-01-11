@@ -98,7 +98,7 @@ export default function Categories() {
               defaultValue="5"
               inputChange={setCategorytNumberInput}
               label="Number of Categories"
-              name="topic"
+              name="numberOfCategories"
               placeholder="Enter a the number of categories to generate"
             />
 

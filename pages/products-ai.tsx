@@ -18,7 +18,7 @@ const debug = logger('Products');
 
 export default function Products() {
   const [companyThemeInput, setCompanyThemeInput] = useState('');
-  const [categoryNameInput, setCategoryNameInput] = useState('');
+  const [vocabularyNameInput, setVocabularyNameInput] = useState('');
   const [categoryNumberInput, setCategoryNumberInput] = useState('5');
   const [productNumberInput, setProductNumberInput] = useState('3');
   const [imageGenerationType, setImageGenerationType] = useState('none');
@@ -93,7 +93,7 @@ export default function Products() {
     const response = await fetch('/api/products-ai', {
       body: JSON.stringify({
         catalogId: productCatalogSelect,
-        categoryName: categoryNameInput,
+        categoryName: vocabularyNameInput,
         companyTheme: companyThemeInput,
         gloablSiteId: globalSiteIdInput,
         imageGeneration: imageGenerationType,
@@ -138,10 +138,10 @@ export default function Products() {
 
             <FieldString
               defaultValue=""
-              inputChange={setCategoryNameInput}
-              label="Category Name"
-              name="categoryName"
-              placeholder="Enter a category name"
+              inputChange={setVocabularyNameInput}
+              label="Vocabulary Name"
+              name="vocabularyName"
+              placeholder="Enter a vocabulary name"
             />
 
             <FieldString

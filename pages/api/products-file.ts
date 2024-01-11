@@ -23,8 +23,6 @@ export default async function UsersFileAction(req, res) {
     categoryMap[productslist[i].category] = true;
   }
 
-  debug(categoryMap);
-
   let productCategories = [];
 
   for (const [key, value] of Object.entries(categoryMap)) {
@@ -33,29 +31,29 @@ export default async function UsersFileAction(req, res) {
 
   let categoryDataStr = {
     'Category Names': productCategories,
-    'Category Vocab': req.body.categoryName,
+    'Category Vocab': req.body.vocabularyName,
   };
 
   debug(categoryDataStr);
 
   // check if vocabulary exists
 
-  let vocabId = await getExistingVocabID(req.body.categoryName, globalSiteId);
+  let vocabId = await getExistingVocabID(req.body.vocabularyName, globalSiteId);
   
-  debug("existingVocabId:"+vocabId);
-
   // Setup Vocabulary 
 
-  let options = functions.getAPIOptions('POST', 'en-US');
+  let options = await functions.getAPIOptions('POST', 'en-US');
   let apiPath = "";
-  
-  if(vocabId<0){
+
+  if(vocabId>0){
+    debug("Using existing vocabId: "+vocabId);
+  } else {
     let apiPath =
       process.env.LIFERAY_PATH +
       '/o/headless-admin-taxonomy/v1.0/sites/' +
       globalSiteId +
       '/taxonomy-vocabularies';
-    let vocabPostObj = { name: req.body.categoryName };
+    let vocabPostObj = { name: req.body.vocabularyName };
 
     // wait for the vocab to complete before adding categories
     try {
@@ -64,44 +62,56 @@ export default async function UsersFileAction(req, res) {
       debug(vocabResponse.data);
       vocabId = vocabResponse.data.id;
     } catch (error) {
-      console.log(error);
-      vocabId = error;
+      debug(error.response.data.status+":"+error.response.data.title);
+      errorCount ++;
     }
   }
 
   const categMap = new Map();
 
-  debug('returned vocab key is ' + vocabId);
-  // create the categories for the vocabulary that was just generated
+  debug('Returned vocab id is ' + vocabId);
+
   let currCategory, currCategoryJson, categResponse;
 
   for (var i = 0; i < productCategories.length; i++) {
+
     currCategory = productCategories[i];
 
-    currCategoryJson = { name: currCategory, taxonomyVocabularyId: vocabId };
+    // check if category exists
 
-    apiPath =
-      process.env.LIFERAY_PATH +
-      '/o/headless-admin-taxonomy/v1.0/taxonomy-vocabularies/' +
-      vocabId +
-      '/taxonomy-categories';
-    debug('creating category');
-    debug(currCategoryJson);
+    let categoryId = await getExistingCategoryID(currCategory, vocabId);
 
-    try {
-      categResponse = await axios.post(apiPath, currCategoryJson, options);
+    // create the categories for the vocabulary that was just generated
 
-      if (debug)
-        console.log(categResponse.data.id + ' is the id for ' + currCategory);
+    if(categoryId>0){
+      debug("Using existing categoryId: "+categoryId);
+      categMap.set(currCategory, categoryId);
+    } else {
 
-      categMap.set(currCategory, categResponse.data.id);
-    } catch (categError) {
-      console.log(categError);
+      currCategoryJson = { name: currCategory, taxonomyVocabularyId: vocabId };
+
+      apiPath =
+        process.env.LIFERAY_PATH +
+        '/o/headless-admin-taxonomy/v1.0/taxonomy-vocabularies/' +
+        vocabId +
+        '/taxonomy-categories';
+      debug('creating category');
+      debug(currCategoryJson);
+
+      try {
+        categResponse = await axios.post(apiPath, currCategoryJson, options);
+
+        debug(categResponse.data.id + ' is the id for ' + currCategory);
+
+        categMap.set(currCategory, categResponse.data.id);
+      } catch (error) {
+        debug(error.response.data.status+":"+error.response.data.title);
+        errorCount ++;
+      }
+
+      debug(categMap);
     }
-
-    debug(categMap);
   }
-
 
   // add the products
   let shortDescription,
@@ -203,9 +213,10 @@ export default async function UsersFileAction(req, res) {
       );
 
     } catch (productError) {
-      console.log(
+      debug(
         'error creating product ' + productName + ' -- ' + productError
       );
+      errorCount ++;
     }
   }
 
@@ -223,11 +234,14 @@ export default async function UsersFileAction(req, res) {
 
 async function getExistingVocabID(name, globalSiteId) {
   
+  name = name.replaceAll("'","''");
+  let filter = "name eq '"+name+"'";
+
   let apiPath =
     process.env.LIFERAY_PATH +
     '/o/headless-admin-taxonomy/v1.0/sites/' +
     globalSiteId +
-    '/taxonomy-vocabularies?filter=name%20eq%20%27'+name+'%27&pageSize=999';
+    '/taxonomy-vocabularies?filter='+encodeURI(filter);
 
   let options = functions.getAPIOptions('GET', 'en-US');
 
@@ -241,7 +255,33 @@ async function getExistingVocabID(name, globalSiteId) {
     }
     
   } catch (error) {
-    console.log(error);
+    debug(error);
   }
+}
 
+async function getExistingCategoryID(name, vocabId) {
+  
+  name = name.replaceAll("'","''");
+  let filter = "name eq '"+name+"'";
+
+  let apiPath =
+    process.env.LIFERAY_PATH +
+    '/o/headless-admin-taxonomy/v1.0/taxonomy-vocabularies/' +
+    vocabId +
+    '/taxonomy-categories?filter='+encodeURI(filter);
+
+  let options = functions.getAPIOptions('GET', 'en-US');
+
+  try {
+    const categoryResponse = await axios.get(apiPath, options);
+
+    if(categoryResponse.data.items.length>0){
+      return categoryResponse.data.items[0].id;
+    } else {
+      return -1;
+    }
+    
+  } catch (error) {
+    debug(error);
+  }
 }

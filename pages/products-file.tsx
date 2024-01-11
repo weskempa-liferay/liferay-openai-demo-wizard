@@ -20,7 +20,7 @@ export default function ProductsFile() {
   const [file, setFile] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [globalSiteIdInput, setGlobalSiteIdInput] = useState('');
-  const [categoryNameInput,setCategoryNameInput] = useState("Furniture");
+  const [vocabularyNameInput,setVocabularyNameInput] = useState("Furniture");
   const [productCatalogSelect, setProductCatalogSelect] = useState('');
   const [productCatalogOptions, setProductCatalogOptions] = useState([]);
   const [result, setResult] = useState(() => '');
@@ -90,7 +90,7 @@ export default function ProductsFile() {
         csvoutput: csvOutput,
         catalogId: productCatalogSelect,
         gloablSiteId: globalSiteIdInput,
-        categoryName: categoryNameInput
+        vocabularyName: vocabularyNameInput
       }),
       headers: {
         'Content-Type': 'application/json',
@@ -128,10 +128,10 @@ export default function ProductsFile() {
 
             <FieldString
               defaultValue="Furniture"
-              inputChange={setCategoryNameInput}
-              label="Name of Product Category"
-              name="nameOfProductCategory"
-              placeholder="Name of the Product Category"
+              inputChange={setVocabularyNameInput}
+              label="Name of Product Vocabulary"
+              name="nameOfProductVocabulary"
+              placeholder="Name of the product vocabulary"
             />
 
             <FieldString

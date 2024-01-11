@@ -105,63 +105,84 @@ export default async function ProductsAction(req, res) {
 
   let categoryDataStr = {
     'Category Names': productCategories,
-    'Category Vocab': req.body.categoryName,
+    'Category Vocab': req.body.vocabularyName,
   };
+
 
   debug(categoryDataStr);
 
+  // check if vocabulary exists
+
+  let vocabId = await getExistingVocabID(req.body.vocabularyName, globalSiteId);
+
   /* Setup Vocabulary */
 
-  let apiPath =
-    process.env.LIFERAY_PATH +
-    '/o/headless-admin-taxonomy/v1.0/sites/' +
-    globalSiteId +
-    '/taxonomy-vocabularies';
-  let vocabPostObj = { name: req.body.categoryName };
+  let options = await functions.getAPIOptions('POST', 'en-US');
+  let apiPath = '';
 
-  let options = functions.getAPIOptions('POST', 'en-US');
+  if(vocabId>0){
+    debug("Using existing vocabId: "+vocabId);
+  } else {
+    apiPath =
+      process.env.LIFERAY_PATH +
+      '/o/headless-admin-taxonomy/v1.0/sites/' +
+      globalSiteId +
+      '/taxonomy-vocabularies';
+    let vocabPostObj = { name: req.body.vocabularyName };
 
-  let apiRes = '';
+    let options = functions.getAPIOptions('POST', 'en-US');
 
-  // wait for the vocab to complete before adding categories
-  try {
-    const vocabResponse = await axios.post(apiPath, vocabPostObj, options);
+    // wait for the vocab to complete before adding categories
+    try {
+      const vocabResponse = await axios.post(apiPath, vocabPostObj, options);
 
-    debug(vocabResponse.data);
-    apiRes = vocabResponse.data.id;
-  } catch (error) {
-    console.log(error);
-    apiRes = error;
+      debug(vocabResponse.data);
+      vocabId = vocabResponse.data.id;
+    } catch (error) {
+      debug(error.response.data.status+":"+error.response.data.title);
+    }
   }
 
   const categMap = new Map();
 
-  debug('returned vocab key is ' + apiRes);
-  // create the categories for the vocabulary that was just generated
+  debug('returned vocab key is ' + vocabId);
   let currCategory, currCategoryJson, categResponse;
 
   for (var i = 0; i < productCategories.length; i++) {
+
     currCategory = productCategories[i];
 
-    currCategoryJson = { name: currCategory, taxonomyVocabularyId: apiRes };
+    // check if category exists
 
-    apiPath =
-      process.env.LIFERAY_PATH +
-      '/o/headless-admin-taxonomy/v1.0/taxonomy-vocabularies/' +
-      apiRes +
-      '/taxonomy-categories';
-    debug('creating category');
-    debug(currCategoryJson);
+    let categoryId = await getExistingCategoryID(currCategory, vocabId);
 
-    try {
-      categResponse = await axios.post(apiPath, currCategoryJson, options);
+    // create the categories for the vocabulary that was just generated
 
-      if (debug)
-        console.log(categResponse.data.id + ' is the id for ' + currCategory);
+    if(categoryId>0){
+      debug("Using existing categoryId: "+categoryId);
+      categMap.set(currCategory, categoryId);
+    } else {
 
-      categMap.set(currCategory, categResponse.data.id);
-    } catch (categError) {
-      console.log(categError);
+      currCategoryJson = { name: currCategory, taxonomyVocabularyId: vocabId };
+
+      apiPath =
+        process.env.LIFERAY_PATH +
+        '/o/headless-admin-taxonomy/v1.0/taxonomy-vocabularies/' +
+        vocabId +
+        '/taxonomy-categories';
+      debug('creating category');
+      debug(currCategoryJson);
+
+      try {
+        categResponse = await axios.post(apiPath, currCategoryJson, options);
+
+        debug(categResponse.data.id + ' is the id for ' + currCategory);
+
+        categMap.set(currCategory, categResponse.data.id);
+      } catch (error) {
+        debug(error);
+        debug(error.response.data.status+":"+error.response.data.title);
+      }
     }
 
     debug(categMap);
@@ -182,8 +203,7 @@ export default async function ProductsAction(req, res) {
   for (i = 0; categories.length > i; i++) {
     currCategory = categories[i].category;
     currCategoryId = categMap.get(currCategory);
-    if (debug)
-      console.log('category -- ' + currCategory + ':' + currCategoryId);
+    debug('category -- ' + currCategory + ':' + currCategoryId);
 
     productDataList = categories[i].products;
 
@@ -233,7 +253,6 @@ export default async function ProductsAction(req, res) {
         debug('sending: ' + productName);
         debug(apiPath);
         debug(productJson);
-        debug(options);
 
         productResponse = await axios.post(apiPath, productJson, options);
 
@@ -290,7 +309,7 @@ export default async function ProductsAction(req, res) {
 
         }
       } catch (productError) {
-        console.log(
+        debug(
           'error creating product ' + productName + ' -- ' + productError
         );
       }
@@ -299,10 +318,59 @@ export default async function ProductsAction(req, res) {
 
   let end = new Date().getTime();
 
-  if (debug)
-    console.log(
-      `Completed in ${functions.millisToMinutesAndSeconds(end - start)}`
-    );
+  res.status(200).json({ result: `Completed in ${functions.millisToMinutesAndSeconds(end - start)}` });
+}
 
-  res.status(200).json({ result: JSON.stringify(categories) });
+async function getExistingVocabID(name, globalSiteId) {
+  
+  name = name.replaceAll("'","''");
+  let filter = "name eq '"+name+"'";
+
+  let apiPath =
+    process.env.LIFERAY_PATH +
+    '/o/headless-admin-taxonomy/v1.0/sites/' +
+    globalSiteId +
+    '/taxonomy-vocabularies?filter='+encodeURI(filter);
+
+  let options = functions.getAPIOptions('GET', 'en-US');
+
+  try {
+    const vocabResponse = await axios.get(apiPath, options);
+
+    if(vocabResponse.data.items.length>0){
+      return vocabResponse.data.items[0].id;
+    } else {
+      return -1;
+    }
+    
+  } catch (error) {
+    debug(error);
+  }
+}
+
+async function getExistingCategoryID(name, vocabId) {
+  
+  name = name.replaceAll("'","''");
+  let filter = "name eq '"+name+"'";
+
+  let apiPath =
+    process.env.LIFERAY_PATH +
+    '/o/headless-admin-taxonomy/v1.0/taxonomy-vocabularies/' +
+    vocabId +
+    '/taxonomy-categories?filter='+encodeURI(filter);
+
+  let options = functions.getAPIOptions('GET', 'en-US');
+
+  try {
+    const categoryResponse = await axios.get(apiPath, options);
+
+    if(categoryResponse.data.items.length>0){
+      return categoryResponse.data.items[0].id;
+    } else {
+      return -1;
+    }
+    
+  } catch (error) {
+    debug(error);
+  }
 }

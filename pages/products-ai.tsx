@@ -93,7 +93,7 @@ export default function Products() {
     const response = await fetch('/api/products-ai', {
       body: JSON.stringify({
         catalogId: productCatalogSelect,
-        categoryName: vocabularyNameInput,
+        vocabularyName: vocabularyNameInput,
         companyTheme: companyThemeInput,
         gloablSiteId: globalSiteIdInput,
         imageGeneration: imageGenerationType,
@@ -145,6 +145,14 @@ export default function Products() {
             />
 
             <FieldString
+              defaultValue=""
+              inputChange={setGlobalSiteIdInput}
+              label="Global Site ID for Taxonomy"
+              name="globalSiteId"
+              placeholder="Enter the global site ID"
+            />
+
+            <FieldString
               defaultValue="5"
               inputChange={setCategoryNumberInput}
               label="Number of Categories"
@@ -158,14 +166,6 @@ export default function Products() {
               label="Number of Products per Category"
               name="numberOfProducts"
               placeholder="Enter the number of products per category"
-            />
-
-            <FieldString
-              defaultValue=""
-              inputChange={setGlobalSiteIdInput}
-              label="Global Site ID for Taxonomy Assignment"
-              name="globalSiteId"
-              placeholder="Enter the global site ID"
             />
 
             <FieldSelect

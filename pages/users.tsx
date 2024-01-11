@@ -16,15 +16,15 @@ export default function Users() {
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
           <NavItem
-            description="Upload a list of specific users from a CSV file."
-            path="/users-file"
-            title="CSV Upload"
-          />
-
-          <NavItem
             description="Use OpenAI to generate a list of random demo users."
             path="/users-ai"
             title="AI Generation"
+          />
+
+          <NavItem
+            description="Upload a list of specific users from a CSV file."
+            path="/users-file"
+            title="CSV Upload"
           />
         </div>
       </main>

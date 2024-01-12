@@ -86,6 +86,8 @@ LIFERAY_ADMIN_EMAIL_ADDRESS=
 LIFERAY_ADMIN_PASSWORD=
 ```
 
-## Note: Recent package updates require re-running npm install
+## Frequent updates are expected so it is recommended that you update often. 
+
+## Your feedback and suggestions are useful to us. Please share your ideas for improvements. 
 
 # Lets build great things!

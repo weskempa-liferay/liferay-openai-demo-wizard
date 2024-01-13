@@ -88,20 +88,40 @@ export default async function Action(req, res) {
   ).categories;
   debug(JSON.stringify(categories));
 
-  let vocabularyId = await createVocabulary(
-    req.body.vocabularyName,
-    req.body.siteId,
-    debug
-  );
+  // check if vocabulary exists
+
+  let vocabularyId = await getExistingVocabID(req.body.vocabularyName, req.body.siteId);
+
+  if(vocabularyId>0){
+    debug("Using existing vocabularyId: "+vocabularyId);
+  } else {
+
+    vocabularyId = await createVocabulary(
+      req.body.vocabularyName,
+      req.body.siteId,
+      debug
+    );
+  
+  }
 
   for (let i = 0; i < categories.length; i++) {
     debug(categories[i]);
+    // check if category exists
 
-    let categoryId = await createCategory(
-      categories[i].name,
-      vocabularyId,
-      debug
-    );
+    let categoryId = await getExistingCategoryID(categories[i].name, vocabularyId);
+
+    if(categoryId>0){
+      debug("Using existing categoryId: "+categoryId);
+    } else {
+
+      categoryId = await createCategory(
+        categories[i].name,
+        vocabularyId,
+        debug
+      );
+
+    }
+
     let childcategories = categories[i].childcategories;
 
     debug(
@@ -204,4 +224,58 @@ async function createChildCategory(category, parentCategoryId, debug) {
   }
 
   return returnid;
+}
+
+async function getExistingVocabID(name, globalSiteId) {
+  
+  name = name.replaceAll("'","''");
+  let filter = "name eq '"+name+"'";
+
+  let apiPath =
+    process.env.LIFERAY_PATH +
+    '/o/headless-admin-taxonomy/v1.0/sites/' +
+    globalSiteId +
+    '/taxonomy-vocabularies?filter='+encodeURI(filter);
+
+  let options = functions.getAPIOptions('GET', 'en-US');
+
+  try {
+    const vocabResponse = await axios.get(apiPath, options);
+
+    if(vocabResponse.data.items.length>0){
+      return vocabResponse.data.items[0].id;
+    } else {
+      return -1;
+    }
+    
+  } catch (error) {
+    debug(error);
+  }
+}
+
+async function getExistingCategoryID(name, vocabId) {
+  
+  name = name.replaceAll("'","''");
+  let filter = "name eq '"+name+"'";
+
+  let apiPath =
+    process.env.LIFERAY_PATH +
+    '/o/headless-admin-taxonomy/v1.0/taxonomy-vocabularies/' +
+    vocabId +
+    '/taxonomy-categories?filter='+encodeURI(filter);
+
+  let options = functions.getAPIOptions('GET', 'en-US');
+
+  try {
+    const categoryResponse = await axios.get(apiPath, options);
+
+    if(categoryResponse.data.items.length>0){
+      return categoryResponse.data.items[0].id;
+    } else {
+      return -1;
+    }
+    
+  } catch (error) {
+    debug(error);
+  }
 }

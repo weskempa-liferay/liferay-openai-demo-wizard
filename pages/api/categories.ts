@@ -24,6 +24,8 @@ export default async function Action(req, res) {
         req.body.siteId
     );
 
+    let languages = req.body.languages;
+
   const categoriesSchema = {
     properties: {
       categories: {
@@ -39,13 +41,13 @@ export default async function Action(req, res) {
               items: {
                 properties: {
                   name: {
-                    description: 'The name of the category.',
+                    description: 'The name of the child category.',
                     type: 'string',
                   },
                 },
                 type: 'object',
+                required: ['name'],
               },
-              required: ['name'],
               type: 'array',
             },
             name: {
@@ -63,6 +65,26 @@ export default async function Action(req, res) {
     type: 'object',
   };
 
+  if (req.body.manageLanguage) {
+    for (let i = 0; i < languages.length; i++) {
+      categoriesSchema.properties.categories.items.properties['name_' + languages[i]] = {
+        description:
+          'The name of the category translated into ' +
+          functions.getLanguageDisplayName(languages[i]),
+        type: 'string',
+      };
+      categoriesSchema.properties.categories.items.required.push('name_' + languages[i]);
+
+      categoriesSchema.properties.categories.items.properties.childcategories.items.properties['name_' + languages[i]] = {
+        description:
+          'The name of the child category translated into ' +
+          functions.getLanguageDisplayName(languages[i]),
+        type: 'string',
+      };
+      categoriesSchema.properties.categories.items.properties.childcategories.items.required.push('name_' + languages[i]);
+    }
+  }
+
   const response = await openai.chat.completions.create({
     functions: [{ name: 'get_categories', parameters: categoriesSchema }],
     messages: [
@@ -74,7 +96,8 @@ export default async function Action(req, res) {
       {
         content:
           'I need ' + req.body.vocabularyDescription + '. ' +
-          'Create the expected number of categories, and child categories related to this topic. ' +
+          'Create '+ req.body.categorytNumber  + ' categories and ' +
+           req.body.childCategorytNumber +' child categories related to this topic. ' +
           'Do not include double quotes in the response.',
         role: 'user',
       },
@@ -115,8 +138,9 @@ export default async function Action(req, res) {
     } else {
 
       categoryId = await createCategory(
-        categories[i].name,
+        categories[i],
         vocabularyId,
+        req.body.manageLanguage,
         debug
       );
 
@@ -130,8 +154,9 @@ export default async function Action(req, res) {
 
     for (let j = 0; j < childcategories.length; j++) {
       let childOrgId = await createChildCategory(
-        childcategories[j].name,
+        childcategories[j],
         categoryId,
+        req.body.manageLanguage,
         debug
       );
     }
@@ -164,15 +189,32 @@ async function createVocabulary(vocabularyName, siteId, debug) {
 
     debug('vocabularyId is ' + vocabResponse.data);
   } catch (error) {
-    console.log(error);
-    vocabularyId = error;
+    debug(error);
   }
 
   return vocabularyId;
 }
 
-async function createCategory(category, parentVocabId, debug) {
-  let categoryJson = { name: category, taxonomyVocabularyId: parentVocabId };
+async function createCategory(category, parentVocabId, manageLanguage, debug) {
+  let categoryJson = { name: category.name, taxonomyVocabularyId: parentVocabId };
+
+  if(manageLanguage){
+    let nameValues = {};
+    for (const key in category) {
+
+      if(key.indexOf("name_")>=0){
+        let keySplit = key.split('_');
+        if(keySplit[0]=="name"){
+          nameValues[keySplit[1]] = category[key];
+        }
+      }
+    }
+
+    categoryJson["name_i18n"] = nameValues;
+  }
+
+  debug("categoryJson");
+  debug(categoryJson);
 
   let categoriesApiPath =
     process.env.LIFERAY_PATH +
@@ -191,17 +233,35 @@ async function createCategory(category, parentVocabId, debug) {
 
     debug('returned id:' + returnid);
   } catch (error) {
-    console.log(error);
+    debug(error.response.data.status+":"+error.response.data.title);
   }
 
   return returnid;
 }
 
-async function createChildCategory(category, parentCategoryId, debug) {
+async function createChildCategory(category, parentCategoryId, manageLanguage, debug) {
   let categoryJson = {
-    name: category,
+    name: category.name,
     parentTaxonomyCategory: { id: parentCategoryId },
   };
+
+  if(manageLanguage){
+    let nameValues = {};
+    for (const key in category) {
+
+      if(key.indexOf("name_")>=0){
+        let keySplit = key.split('_');
+        if(keySplit[0]=="name"){
+          nameValues[keySplit[1]] = category[key];
+        }
+      }
+    }
+
+    categoryJson["name_i18n"] = nameValues;
+  }
+
+  debug("categoryJson");
+  debug(categoryJson);
 
   let categoriesApiPath =
     process.env.LIFERAY_PATH +
@@ -220,7 +280,7 @@ async function createChildCategory(category, parentCategoryId, debug) {
 
     debug('returned id:' + returnid);
   } catch (error) {
-    console.log(error);
+    debug(error.response.data.status+":"+error.response.data.title);
   }
 
   return returnid;
@@ -249,7 +309,7 @@ async function getExistingVocabID(name, globalSiteId) {
     }
     
   } catch (error) {
-    debug(error);
+    debug(error.response.data.status+":"+error.response.data.title);
   }
 }
 

@@ -5,6 +5,7 @@ import React from 'react';
 import AppFooter from './components/appfooter';
 import AppHead from './components/apphead';
 import AppHeader from './components/appheader';
+import FieldLanguage from './components/formfield-language';
 import FieldString from './components/formfield-string';
 import FieldSubmit from './components/formfield-submit';
 import LoadingAnimation from './components/loadinganimation';
@@ -22,6 +23,9 @@ export default function Categories() {
   const [categorytNumberInput, setCategorytNumberInput] = useState('5');
   const [childCategorytNumberInput, setChildCategorytNumberInput] =
     useState('3');
+  const [languagesInput, setLanguages] = useState([]);
+  const [manageLanguageInput, setManageLanguage] = useState(false);
+  const [defaultLanguageInput, setDefaultLanguage] = useState('en-US');
 
   const [result, setResult] = useState(() => '');
   const [isLoading, setIsLoading] = useState(false);
@@ -35,7 +39,10 @@ export default function Categories() {
       body: JSON.stringify({
         categorytNumber: categorytNumberInput,
         childCategorytNumber: childCategorytNumberInput,
+        defaultLanguage: defaultLanguageInput,
         siteId: siteIdInput,
+        languages: languagesInput,
+        manageLanguage: manageLanguageInput,
         vocabularyName: vocabularyNameInput,
         vocabularyDescription: vocabularyDescriptionInput
       }),
@@ -68,7 +75,7 @@ export default function Categories() {
         />
 
         <form onSubmit={onSubmit}>
-          <div className="w-700 grid grid-cols-2 gap-2 sm:grid-cols-2 md:gap-4 mb-5">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 md:gap-4 mb-5">
 
           <FieldString
               defaultValue="Various categories of books"
@@ -110,6 +117,12 @@ export default function Categories() {
               placeholder="Enter a the number of child categories to generate"
             />
           </div>
+
+          <FieldLanguage
+            defaultLanguageChange={setDefaultLanguage}
+            languagesChange={setLanguages}
+            manageLanguageChange={setManageLanguage}
+          />
 
           <FieldSubmit disabled={isLoading} label={'Generate Categories'} />
         </form>

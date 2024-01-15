@@ -35,8 +35,7 @@ const functions = {
         'Content-Type': 'application/json',
         ...(defaultLanguage && { 'Accept-Language': defaultLanguage }),
       },
-      method: method,
-      port: 8080,
+      method: method
     };
   },
   getViewOptions: () => {

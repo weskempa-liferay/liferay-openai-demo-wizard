@@ -110,8 +110,8 @@ export default function Review() {
             
             <FieldSelect
               inputChange={setKBLanguageInput}
-              label="Blog Language"
-              name="blogLanguage"
+              label="Knowledge Base Language"
+              name="kbLanguage"
               optionMap={languageOptions}
             />
 

@@ -122,8 +122,8 @@ export default function MessageBoard() {
             
             <FieldSelect
               inputChange={setMBLanguageInput}
-              label="Blog Language"
-              name="blogLanguage"
+              label="Message Board Language"
+              name="mbLanguage"
               optionMap={languageOptions}
             />
 

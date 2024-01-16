@@ -97,8 +97,6 @@ export default async function FaqsAction(req, res) {
   debug(JSON.stringify(faqs));
 
   for (let i = 0; i < faqs.length; i++) {
-    debug(faqs[i]);
-
     let postBody = {
       contentStructureId: req.body.structureId,
       siteId: req.body.siteId,
@@ -127,8 +125,6 @@ export default async function FaqsAction(req, res) {
 
         for (const [key, value] of Object.entries(faqs[i])) {
           try {
-            debug(`${l} : ${key}`);
-
             if (key.indexOf('_')) {
               let keySplit = key.split('_');
 

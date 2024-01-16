@@ -1,6 +1,9 @@
 import axios from 'axios';
 
 import functions from '../utils/functions';
+import { logger } from '../utils/logger';
+
+const debug = logger('Environment - Action');
 
 const STATE_OK = 'OK';
 const STATE_NOT_ADMIN = 'NOT ADMIN';
@@ -74,6 +77,7 @@ async function isConnected() {
 
     return STATE_NOT_ADMIN;
   } catch (error) {
+    debug(error);
     return STATE_CANNOT_CONNECT;
   }
 }

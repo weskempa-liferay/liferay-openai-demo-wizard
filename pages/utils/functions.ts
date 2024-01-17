@@ -1,18 +1,18 @@
 const getAvailableLanguages = () => {
   return [
     { id: 'en-US', name: 'English (United States)' },
-    { id: 'ar-SA', name: 'العربية (المملكة العربية السعودية)' },
-    { id: 'ca-ES', name: 'català (Espanya)' },
-    { id: 'zh-CN', name: '中文 (中国)' },
-    { id: 'nl-NL', name: 'Nederlands (Nederland)' },
-    { id: 'fi-FI', name: 'suomi (Suomi)' },
-    { id: 'fr-FR', name: 'français (France)' },
-    { id: 'de-DE', name: 'Deutsch (Deutschland)' },
-    { id: 'hu-HU', name: 'magyar (Magyarország)' },
-    { id: 'ja-JP', name: '日本語 (日本)' },
-    { id: 'pt-BR', name: 'português (Brasil)' },
-    { id: 'es-ES', name: 'español (España)' },
-    { id: 'sv-SE', name: 'svenska (Sverige)' },
+    { id: 'ar-SA', name: 'Arabic (Saudi Arabia)' },
+    { id: 'ca-ES', name: 'Catalan (Spain)' },
+    { id: 'zh-CN', name: 'Chinese (China)' },
+    { id: 'nl-NL', name: 'Dutch (Netherlands)' },
+    { id: 'fi-FI', name: 'Finnish (Finland)' },
+    { id: 'fr-FR', name: 'French (France)' },
+    { id: 'de-DE', name: 'German (Germany)' },
+    { id: 'hu-HU', name: 'Hungarian (Hungary)' },
+    { id: 'ja-JP', name: 'Japanese (Japan)' },
+    { id: 'pt-BR', name: 'Portuguese (Brazil)' },
+    { id: 'es-ES', name: 'Spanish (Spain)' },
+    { id: 'sv-SE', name: 'Swedish (Sweden)' },
   ];
 };
 

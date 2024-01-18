@@ -35,7 +35,7 @@ const navItems = [
   },
   {
     description:
-      'In some cases, it is important to generate images with making associated content assets.',
+      'Generate images into a document library folder based on a prompt.',
     path: '/images',
     title: 'Images Only',
   },

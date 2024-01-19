@@ -73,6 +73,11 @@ const navItems = [
     path: '/users',
     title: 'Users',
   },
+  {
+    description: 'Create a set of warehouses in a given region.',
+    path: '/warehouses',
+    title: 'Warehouses',
+  }
 ];
 
 const HomePage = () => {

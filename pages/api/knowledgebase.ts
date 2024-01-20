@@ -37,32 +37,34 @@ export default async function KnowledgeBaseAction(req, res) {
                 properties: {
                   articleBody: {
                     description:
-                      'The full message as seen in the knowledge base article body. The knowledge base article should be ' +
+                      'The knowledge base article. The knowledge base article should be ' +
                       req.body.kbArticleLength +
                       ' words or more.' +
-                      ' Translate the knowledge base article into ' +
+                      ' Translate this into ' +
                       functions.getLanguageDisplayName(req.body.kbLanguage),
                     type: 'string',
                   },
                   headline: {
-                    description: 'The title of the knowledge base article. ' +
-                    ' Translate the title of the knowledge base title into ' +
+                    description: 'The headline of the knowledge base article. ' +
+                    ' Translate this into ' +
                     functions.getLanguageDisplayName(req.body.kbLanguage),
                     type: 'string',
                   },
                 },
+                required: ['headline', 'articleBody'],
                 type: 'object',
               },
-              required: ['headline', 'articleBody', 'articles'],
+              required: ['articles'],
               type: 'array',
             },
             category: {
               description: 'Name of the knowledge base category.' +
-              ' Translate this category name into ' +
+              ' Translate this into ' +
               functions.getLanguageDisplayName(req.body.kbLanguage),
               type: 'string',
             },
           },
+          required: ['category'],
           type: 'object',
         },
         required: ['categories'],
@@ -93,7 +95,7 @@ export default async function KnowledgeBaseAction(req, res) {
           ' knowledge base articles in each category. ' +
           'Each knowledge base article should be ' +
           req.body.kbArticleLength +
-          ' words or more. Translate the titles and articles into ' +
+          ' words or more. Translate all responses into ' +
           functions.getLanguageDisplayName(req.body.kbLanguage),
         role: 'user',
       },

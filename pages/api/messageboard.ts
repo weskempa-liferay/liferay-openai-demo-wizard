@@ -43,12 +43,12 @@ export default async function MessageBoardAction(req, res) {
                     description:
                       'The full message as seen in the message board thread body. Use ' +
                       req.body.mbThreadLength +
-                      ' words or more and translated into ' +
+                      ' words or more. Translated the response into ' +
                       functions.getLanguageDisplayName(req.body.mbLanguage),
                     type: 'string',
                   },
                   headline: {
-                    description: 'The title of the message board thread translated into ' +
+                    description: 'The title of the message board thread. Translated this response into ' +
                     functions.getLanguageDisplayName(req.body.mbLanguage),
                     type: 'string',
                   },
@@ -56,13 +56,13 @@ export default async function MessageBoardAction(req, res) {
                     description:
                       'An array of ' +
                       req.body.mbMessageNumber +
-                      ' message board messages within the category translated into ' +
+                      ' message board messages within the category. Translated this response into ' +
                       functions.getLanguageDisplayName(req.body.mbLanguage),
                     items: {
                       properties: {
                         message: {
                           description:
-                            'The message that relates to the message board threads translated into ' +
+                            'The user message that relates to the message board threads. Translated this response into ' +
                             functions.getLanguageDisplayName(req.body.mbLanguage),
                           type: 'string',
                         },
@@ -111,7 +111,7 @@ export default async function MessageBoardAction(req, res) {
           ' message board threads in each thread. ' +
           'Each message board thread should be ' +
           req.body.mbThreadLength +
-          ' words or more and translated into ' +
+          ' words or more. Translate all responses into ' +
           functions.getLanguageDisplayName(req.body.mbLanguage),
         role: 'user',
       },

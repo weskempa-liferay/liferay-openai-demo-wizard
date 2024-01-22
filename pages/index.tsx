@@ -74,6 +74,11 @@ const navItems = [
     title: 'Users',
   },
   {
+    description: 'Create example user groups for your portal instance.',
+    path: '/usergroups',
+    title: 'User Groups',
+  },
+  {
     description: 'Create a set of warehouses in a given region.',
     path: '/warehouses',
     title: 'Warehouses',

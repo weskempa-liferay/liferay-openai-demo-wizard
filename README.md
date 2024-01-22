@@ -22,6 +22,7 @@ Utilizing this OpenAI Wizard doesn't just speed up content creation, which many 
 - **Message Board Sections, Threads, and Messages**
 - **Organization Structures**
 - **Users (CSV and OpenAI)**
+- **Warehouses with Lat/Long**
 
 As we move forward, expect more options for different content types. A big shoutout to Steven Lu for the inspiration and knowledge that brought this functionality to life! Cheers!
 

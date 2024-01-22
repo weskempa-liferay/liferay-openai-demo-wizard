@@ -20,20 +20,14 @@ export default function Review() {
 
   const [result, setResult] = useState(() => '');
   const [isLoading, setIsLoading] = useState(false);
-  const [debugMode, setDebugMode] = useState(false);
-
-  const onDebugModeChange = (value) => {
-    setDebugMode(value);
-  };
 
   async function onSubmit(event) {
     event.preventDefault();
     setIsLoading(true);
-    if (debugMode) console.log('Posting!');
+    
     const response = await fetch('/api/organizations', {
       body: JSON.stringify({
         childOrganizationtNumber: childOrganizationtNumberInput,
-        debugMode: debugMode,
         departmentNumber: departmentNumberInput,
         organizationTopic: organizationTopicInput,
       }),
@@ -43,7 +37,7 @@ export default function Review() {
       method: 'POST',
     });
     const data = await response.json();
-    if (debugMode) console.log('data', data);
+    console.log('data', data);
 
     const hljsResult = hljs.highlightAuto(data.result).value;
     setResult(hljsResult);

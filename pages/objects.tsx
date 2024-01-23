@@ -118,7 +118,7 @@ export default function Objects() {
               defaultValue="Provide a list of 10 countries in Europe"
               inputChange={setAiRequestInput}
               label="Specific request to OpenAI"
-              name="topic"
+              name="openAIRequest"
               placeholder="Enter your specific request to OpenAI"
             />
 

@@ -21,6 +21,7 @@ Utilizing this OpenAI Wizard doesn't just speed up content creation, which many 
 - **Knowledge Base Folders and Articles**
 - **Message Board Sections, Threads, and Messages**
 - **Organization Structures**
+- **Page Hierarchies**
 - **Users (CSV and OpenAI)**
 - **User Groups**
 - **Warehouses with Lat/Long**

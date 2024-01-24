@@ -64,6 +64,12 @@ const navItems = [
   },
   {
     description:
+      'Generate a page hierarchy based on a description of the goal of your site.',
+    path: '/pages',
+    title: 'Page Hierarchies',
+  },
+  {
+    description:
       'Generate demo products and categories based on your company theme.',
     path: '/products',
     title: 'Products',

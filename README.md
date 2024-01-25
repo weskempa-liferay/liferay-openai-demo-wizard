@@ -29,7 +29,7 @@ Utilizing this OpenAI Wizard doesn't just speed up content creation, which many 
 
 As we move forward, expect more options for different content types. A big shoutout to Steven Lu for the inspiration and knowledge that brought this functionality to life! Cheers!
 
-<img width="1430" alt="AIWizard-Index" src="https://github.com/weskempa-liferay/liferay-openai-demo-wizard/assets/68334638/7b127f61-a191-4fca-8ec9-035860f751fb">
+![Wizard Dashboard](https://github.com/weskempa-liferay/liferay-openai-demo-wizard/assets/68334638/5f4f6f98-24c5-4785-8ac8-da12b75661da)
 
 ![287095500-3d733f48-a6cc-48e6-af4c-b0578542befa](https://github.com/weskempa-liferay/liferay-openai-demo-wizard/assets/68334638/de136608-8e95-4a74-bc16-08506570d7b9)
 

@@ -19,7 +19,7 @@ export default async function SitesAction(req, res) {
     properties: {
       pages: {
         description: 'An array of ' +
-        req.body.childPageNumber +
+        req.body.pageNumber +
         ' pages',
         items: {
           properties: {
@@ -131,14 +131,6 @@ async function createSitePage(groupId, page, parentPath) {
 
   return returnPath;
 }
-
-function preparePath(path){
-  let tempPath = process.env.LIFERAY_PATH.split("//");
-  return tempPath[0] + "//" +
-    process.env.LIFERAY_ADMIN_EMAIL_ADDRESS + ":" +
-    process.env.LIFERAY_ADMIN_PASSWORD + "@" + tempPath[1];
-
-};
 
 function getPageSchema(name, parentPath){
 

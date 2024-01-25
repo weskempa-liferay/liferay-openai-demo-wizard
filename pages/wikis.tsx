@@ -14,15 +14,13 @@ import ResultDisplay from './components/resultdisplay';
 
 export default function Review() {
   const [isLoading, setIsLoading] = useState(false);
-  const [kbArticleLengthInput, setKBArticleLengthInput] = useState('100');
-  const [kbArticleNumberInput, setKBArticleNumberInput] = useState('4');
-  const [kbFolderNumberInput, setKBFolderNumberInput] = useState('3');
-  const [kbLanguageInput, setKBLanguageInput] = useState('en-US');
-  const [kbTopicInput, setKBTopicInput] = useState('');
+  const [wikiArticleLengthInput, setWikiPageLengthInput] = useState('60');
+  const [wikiChildPageNumberInput, setWikiChildPageNumberInput] = useState('3');
+  const [wikiPageNumberInput, setWikiPageNumberInput] = useState('3');
+  const [wikiNodeNameInput, setWikiNodeNameInput] = useState('Healthy Living');
+  const [wikiTopicInput, setWikiTopicInput] = useState('Healthy Living Advice and Tips');
   const [result, setResult] = useState(() => '');
   const [siteIdInput, setSiteIdInput] = useState('');
-
-  const languageOptions = functions.getAvailableLanguages();
 
   const [viewOptionsInput, setViewOptionsSelect] = useState('Anyone');
   const viewOptions = functions.getViewOptions();
@@ -31,14 +29,14 @@ export default function Review() {
     event.preventDefault();
     setIsLoading(true);
 
-    const response = await fetch('/api/knowledgebase', {
+    const response = await fetch('/api/wikis', {
       body: JSON.stringify({
-        kbArticleLength: kbArticleLengthInput,
-        kbArticleNumber: kbArticleNumberInput,
-        kbFolderNumber: kbFolderNumberInput,
-        kbTopic: kbTopicInput,
+        wikiArticleLength: wikiArticleLengthInput,
+        wikiPageNumber: wikiPageNumberInput,
+        wikiChildPageNumber: wikiChildPageNumberInput,
+        wikiTopic: wikiTopicInput,
         siteId: siteIdInput,
-        kbLanguage:kbLanguageInput,
+        wikiNodeName: wikiNodeNameInput,
         viewOptions: viewOptionsInput
       }),
       headers: {
@@ -56,24 +54,32 @@ export default function Review() {
 
   return (
     <div>
-      <AppHead title={'Knowledge Base Content Generator'} />
+      <AppHead title={'Wiki Content Generator'} />
 
       <main className="py-20 flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
         <AppHeader
           desc={
-            'Type your topic in the field below and wait for your Knowledge Base Threads. <br/> Leave the field blank for a random Knowledge Base topic.'
+            'Type your topic in the field below and wait for your wiki pages.'
           }
-          title={'Liferay Knowledge Base Content Generator'}
+          title={'Liferay Wiki Content Generator'}
         />
 
         <form onSubmit={onSubmit}>
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 md:gap-4 mb-5">
             <FieldString
-              defaultValue=""
-              inputChange={setKBTopicInput}
-              label="Knowledge Base Topic"
-              name="topic"
-              placeholder="Enter a knowledge base topic"
+              defaultValue="Healthy Living Advice and Tips"
+              inputChange={setWikiTopicInput}
+              label="Wiki Topic"
+              name="wikiTopic"
+              placeholder="Enter a wiki topic"
+            />
+
+            <FieldString
+              defaultValue="Healthy Living"
+              inputChange={setWikiNodeNameInput}
+              label="Wiki Node Name"
+              name="wikiNodeName"
+              placeholder="Enter a wiki node name"
             />
 
             <FieldString
@@ -85,34 +91,27 @@ export default function Review() {
             />
 
             <FieldString
-              defaultValue="100"
-              inputChange={setKBArticleLengthInput}
-              label="Expected Article Length (in # of words)"
+              defaultValue="60"
+              inputChange={setWikiPageLengthInput}
+              label="Expected Page Length (in # of words)"
               name="articleLength"
-              placeholder="Enter a knowledge base article length"
+              placeholder="Enter a wiki article length"
             />
 
             <FieldString
               defaultValue="3"
-              inputChange={setKBFolderNumberInput}
-              label="Number of Folders to Create"
-              name="kbNumber"
-              placeholder="Number of of knowledge base sections"
+              inputChange={setWikiPageNumberInput}
+              label="Number of Pages to Create"
+              name="wikiPageNumber"
+              placeholder="Number of of wiki sections"
             />
 
             <FieldString
-              defaultValue="4"
-              inputChange={setKBArticleNumberInput}
-              label="Number of Articles to Create per Section"
-              name="kbSectionNumber"
-              placeholder="Number of of knowledge base sections"
-            />
-            
-            <FieldSelect
-              inputChange={setKBLanguageInput}
-              label="Knowledge Base Language"
-              name="kbLanguage"
-              optionMap={languageOptions}
+              defaultValue="3"
+              inputChange={setWikiChildPageNumberInput}
+              label="Number of Child Pages per Page"
+              name="wikiChildPageNumber"
+              placeholder="Number of of wiki child pages"
             />
 
             <FieldSelect
@@ -125,7 +124,7 @@ export default function Review() {
 
           <FieldSubmit
             disabled={isLoading}
-            label="Generate Knowledge Base Articles"
+            label="Generate Wiki Node and Pages"
           />
         </form>
 

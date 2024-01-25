@@ -14,9 +14,9 @@ export default function Review() {
   const [pageTopicInput, setPageTopicInput] = useState(
     'Company Intranet Portal'
   );
-  const [childPagetNumberInput, setChildPagetNumberInput] =
+  const [childPageNumberInput, setChildPageNumberInput] =
     useState('3');
-  const [departmentNumberInput, setPageNumberInput] = useState('3');
+  const [pageNumberInput, setPageNumberInput] = useState('8');
   const [siteIdInput, setSiteIdInput] = useState('3');
 
   const [result, setResult] = useState(() => '');
@@ -30,8 +30,8 @@ export default function Review() {
       body: JSON.stringify({
         pageTopic: pageTopicInput,
         siteId:siteIdInput,
-        childPagetNumber: childPagetNumberInput,
-        departmentNumber: departmentNumberInput,
+        pageNumber: pageNumberInput,
+        childPageNumber: childPageNumberInput
       }),
       headers: {
         'Content-Type': 'application/json',
@@ -70,13 +70,13 @@ export default function Review() {
             <FieldString
               defaultValue=""
               inputChange={setSiteIdInput}
-              label="Site Id"
+              label="Site ID"
               name="siteId"
               placeholder="Enter id of the site that you would like to add pages to"
             />
 
             <FieldString
-              defaultValue="3"
+              defaultValue="8"
               inputChange={setPageNumberInput}
               label="Maximum Number of Pages"
               name="numberOfPages"
@@ -85,7 +85,7 @@ export default function Review() {
 
             <FieldString
               defaultValue="3"
-              inputChange={setChildPagetNumberInput}
+              inputChange={setChildPageNumberInput}
               label="Maximum Number of Child Pages"
               name="numberOfChildPages"
               placeholder="Enter a the max number of child pages to generate"

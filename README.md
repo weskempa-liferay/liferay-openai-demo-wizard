@@ -24,7 +24,8 @@ Utilizing this OpenAI Wizard doesn't just speed up content creation, which many 
 - **Page Hierarchies**
 - **Users (CSV and OpenAI)**
 - **User Groups**
-- **Warehouses with Lat/Long**
+- **Warehouses with with Latitude and Longitude**
+- **Wiki Nodes and Pages**
 
 As we move forward, expect more options for different content types. A big shoutout to Steven Lu for the inspiration and knowledge that brought this functionality to life! Cheers!
 

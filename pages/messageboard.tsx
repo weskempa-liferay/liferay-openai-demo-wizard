@@ -83,9 +83,9 @@ export default function MessageBoard() {
             <FieldString
               defaultValue=""
               inputChange={setSiteIdInput}
-              label="Site ID or Asset Library Group ID"
+              label="Site ID"
               name="siteId"
-              placeholder="Enter a site ID or asset library group ID"
+              placeholder="Enter a site ID"
             />
 
             <FieldString

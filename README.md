@@ -27,7 +27,7 @@ Utilizing this OpenAI Wizard doesn't just speed up content creation, which many 
 - **Warehouses with with Latitude and Longitude**
 - **Wiki Nodes and Pages**
 
-As we move forward, expect more options for different content types. A big shoutout to Steven Lu for the inspiration and knowledge that brought this functionality to life! Cheers!
+As we move forward, expect more options and deeper integrations for content types. 
 
 ![Wizard Dashboard](https://github.com/weskempa-liferay/liferay-openai-demo-wizard/assets/68334638/5f4f6f98-24c5-4785-8ac8-da12b75661da)
 

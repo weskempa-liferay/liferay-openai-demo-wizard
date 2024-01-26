@@ -69,7 +69,7 @@ export default function Categories() {
       <main className="py-20 flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
         <AppHeader
           desc={
-            'Type your business description in the field below and wait for your categories.'
+            'Type your business description in the field below and wait for your categories. Examples of vocabulary themes are "various categories of books", "types of healthcare services", or "options for home furniture".'
           }
           title="Liferay Category Generator"
         />
@@ -112,7 +112,7 @@ export default function Categories() {
             <FieldString
               defaultValue="3"
               inputChange={setChildCategorytNumberInput}
-              label="Prefered Number of Child Categories"
+              label="Number of Child Categories"
               name="numberOfChildCategories"
               placeholder="Enter a the number of child categories to generate"
             />

@@ -59,7 +59,7 @@ export default function Review() {
       <main className="py-20 flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
         <AppHeader
           desc={
-            'Type your topic in the field below and wait for your wiki pages.'
+            'Type your topic in the field below and wait for your wiki pages. Examples of wiki topics are "company policies and procedures", "environmental issues and sustainability", or "economics and business".'
           }
           title={'Liferay Wiki Content Generator'}
         />
@@ -94,7 +94,7 @@ export default function Review() {
               defaultValue="60"
               inputChange={setWikiPageLengthInput}
               label="Expected Page Length (in # of words)"
-              name="articleLength"
+              name="wikiArticleLength"
               placeholder="Enter a wiki article length"
             />
 

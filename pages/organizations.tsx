@@ -51,8 +51,8 @@ export default function Review() {
 
       <main className="py-20 flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
         <AppHeader
-          desc="Type your business description in the field below and wait for your organizations."
-          title="Liferay Organization Generator"
+          desc='Type your business description in the field below and wait for your organization. Examples of business descriptions are "automotive supplies", "medical equipment", or "government services".'
+          title='Liferay Organization Generator'
         />
 
         <form onSubmit={onSubmit}>
@@ -61,14 +61,14 @@ export default function Review() {
               defaultValue="National Internet, Phone, and Cable"
               inputChange={setOrganizationTopicInput}
               label="Business Description"
-              name="orgtopic"
+              name="businessDescription"
               placeholder="Enter a business description"
             />
 
             <FieldString
               defaultValue="3"
               inputChange={setChildOrganizationtNumberInput}
-              label="Prefered Number of Child Organizations"
+              label="Number of Child Organizations"
               name="numberOfChildOrganizations"
               placeholder="Enter a the number of child organizations to generate"
             />
@@ -76,13 +76,13 @@ export default function Review() {
             <FieldString
               defaultValue="3"
               inputChange={setDepartmentNumberInput}
-              label="Prefered Number of Departments"
+              label="Number of Departments"
               name="numberOfDepartments"
               placeholder="Enter a the number of departments to generate"
             />
           </div>
 
-          <FieldSubmit disabled={isLoading} label="Generate Organizations" />
+          <FieldSubmit disabled={isLoading} label="Generate Organization" />
         </form>
 
         {isLoading ? (

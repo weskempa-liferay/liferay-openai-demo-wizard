@@ -29,21 +29,21 @@ const navItems = [
   },
   {
     description:
+      'Generate images into a document library folder based on a prompt.',
+    path: '/images',
+    title: 'Images',
+  },
+  {
+    description:
       'Create knowledge base folders and articles based on a topic.',
     path: '/knowledgebase',
     title: 'Knowledge Base',
   },
   {
     description:
-      'Generate images into a document library folder based on a prompt.',
-    path: '/images',
-    title: 'Images Only',
-  },
-  {
-    description:
       'Choose a topic to create message board sections and threads.',
     path: '/messageboard',
-    title: 'Message Board',
+    title: 'Message Boards',
   },
   {
     description:
@@ -53,12 +53,12 @@ const navItems = [
   },
   {
     description:
-      'Populate a custom objects with records based on a prompt.',
+      'Populate a custom object with records based on a prompt.',
     path: '/objects',
     title: 'Objects',
   },
   {
-    description: 'Create a organizational structure for a company.',
+    description: 'Create an organizational structure for a company.',
     path: '/organizations',
     title: 'Organizations',
   },

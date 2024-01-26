@@ -48,8 +48,8 @@ export default function Review() {
 
       <main className="py-20 flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
         <AppHeader
-          desc="Type your business description in the field below and wait for your user groups to be generated."
-          title="Liferay User Group Generator"
+          desc='Type your business description in the field below and wait for your user groups to be generated. Examples of business descriptions are "higher education", "automotive manufacturing and engineering", or "healthcare specialists and patients".'
+          title='Liferay User Group Generator'
         />
 
         <form onSubmit={onSubmit}>
@@ -58,14 +58,14 @@ export default function Review() {
               defaultValue="Job Placement Services and Training"
               inputChange={setOrganizationTopicInput}
               label="Business Description"
-              name="companytopic"
+              name="companyTopic"
               placeholder="Enter a business description"
             />
 
             <FieldString
               defaultValue="10"
               inputChange={setUserGroupNumberInput}
-              label="Prefered Number of User Groups"
+              label="Number of User Groups"
               name="numberOfUserGroups"
               placeholder="Enter a the number of user groups to generate"
             />

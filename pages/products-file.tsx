@@ -155,7 +155,7 @@ export default function ProductsFile() {
 
             <FieldFile
               inputChange={handleOnChange}
-              label="File that contains products"
+              label="Products CSV File"
               name="fileUpload"
             />
 

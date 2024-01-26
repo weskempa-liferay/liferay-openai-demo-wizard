@@ -16,7 +16,7 @@ Utilizing this OpenAI Wizard doesn't just speed up content creation, which many 
 - **Commerce Categories and Products with Images (CSV and OpenAI)**
 - **Custom Liferay Objects Schemas**
 - **Multilingual FAQs**
-- **Images Only**
+- **Generation of Images within the Document and Media**
 - **Multilingual News Articles with Images**
 - **Knowledge Base Folders and Articles**
 - **Message Board Sections, Threads, and Messages**
@@ -27,7 +27,10 @@ Utilizing this OpenAI Wizard doesn't just speed up content creation, which many 
 - **Warehouses with with Latitude and Longitude**
 - **Wiki Nodes and Pages**
 
-As we move forward, expect more options and deeper integrations for content types. 
+As we move forward, expect more options and deeper integrations for content types.
+
+> [!TIP]
+> Frequent updates are expected so it is recommended that you update often. 
 
 ![Wizard Dashboard](https://github.com/weskempa-liferay/liferay-openai-demo-wizard/assets/68334638/5f4f6f98-24c5-4785-8ac8-da12b75661da)
 
@@ -81,7 +84,7 @@ You should now be able to access the app at [http://localhost:3000](http://local
 
 ## Deployment
 
-Once you have this up and running locally, make sure to fill in the required Environment Details. These might become UI-based configurations, but for now it is required to configure these settings in your environment variables. 
+Once you have this up and running locally, fill in the required Environment Details. I am considering UI-based configurations, but for now, it is required to configure these settings in your environment variables. 
 
 ```bash
 OPENAI_API_KEY= <key goes here>
@@ -90,8 +93,10 @@ LIFERAY_ADMIN_EMAIL_ADDRESS=
 LIFERAY_ADMIN_PASSWORD=
 ```
 
-## Frequent updates are expected so it is recommended that you update often. 
+> [!TIP]
+> Your feedback and suggestions are useful to us. Please share your ideas for improvements!
 
-## Your feedback and suggestions are useful to us. Please share your ideas for improvements. 
+> [!IMPORTANT]
+> This is a personal project that is not directly supported by Liferay Inc. or Liferay Support.
 
 # Lets build great things!

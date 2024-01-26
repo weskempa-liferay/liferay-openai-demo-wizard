@@ -98,7 +98,7 @@ export default function Review() {
 
       <main className="py-20 flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
         <AppHeader
-          desc="Type your topic in the field below and wait for your blogs. <br/> Leave the field blank for a random blog topic."
+          desc='Type your topic in the field below and wait for your blogs. Examples of blog topics are "leadership skills and lessons learned", "aerospace engineering news", or "technology advancements in the medical field".'
           title="Liferay Blog Generator"
         />
 

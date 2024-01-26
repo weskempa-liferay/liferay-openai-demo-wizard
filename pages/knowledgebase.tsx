@@ -61,7 +61,7 @@ export default function Review() {
       <main className="py-20 flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
         <AppHeader
           desc={
-            'Type your topic in the field below and wait for your Knowledge Base Threads. <br/> Leave the field blank for a random Knowledge Base topic.'
+            'Type your topic in the field below and wait for your Knowledge Base Threads. Examples of knowledge base topics are "dangerous material handling", "healthy living tips", or "creating a positive work environment".'
           }
           title={'Liferay Knowledge Base Content Generator'}
         />
@@ -96,7 +96,7 @@ export default function Review() {
               defaultValue="3"
               inputChange={setKBFolderNumberInput}
               label="Number of Folders to Create"
-              name="kbNumber"
+              name="kbSectionNumber"
               placeholder="Number of of knowledge base sections"
             />
 
@@ -104,7 +104,7 @@ export default function Review() {
               defaultValue="4"
               inputChange={setKBArticleNumberInput}
               label="Number of Articles to Create per Section"
-              name="kbSectionNumber"
+              name="kbNumber"
               placeholder="Number of of knowledge base sections"
             />
             

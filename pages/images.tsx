@@ -91,10 +91,10 @@ export default function Images() {
         <form onSubmit={onSubmit}>
           <div className="w-700 grid grid-cols-1 gap-2 sm:grid-cols-1 md:gap-4 mb-5">
             <FieldString
-              defaultValue={''}
+              defaultValue=''
               inputChange={setImageDescriptionInput}
-              label={'Enter an image description'}
-              name={'imageDescription'}
+              label='Enter an Image Description'
+              name='imageDescription'
               placeholder={
                 'Provide a detailed description of the image(s) you want to generate.'
               }

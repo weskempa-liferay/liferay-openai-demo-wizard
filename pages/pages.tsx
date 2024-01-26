@@ -53,8 +53,8 @@ export default function Review() {
 
       <main className="py-20 flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
         <AppHeader
-          desc="Type your business description in the field below and wait for your pages."
-          title="Liferay Page Generator"
+          desc='Type your business description in the field below and wait for your pages. Examples of site descriptions are "automotive supplier portal", "college student portal", or "botanical hobbyist site".'
+          title='Liferay Page Generator'
         />
 
         <form onSubmit={onSubmit}>
@@ -63,7 +63,7 @@ export default function Review() {
               defaultValue="Company Intranet Portal"
               inputChange={setPageTopicInput}
               label="Site Description"
-              name="sitetopic"
+              name="siteTopic"
               placeholder="Enter a site description"
             />
 

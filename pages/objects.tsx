@@ -109,7 +109,7 @@ export default function Objects() {
             <FieldString
               defaultValue="You are a helpful assistant responsible for providing a list of answers"
               inputChange={setAiRoleInput}
-              label="Role the OpenAI should act as"
+              label="The role the AI generator should act as"
               name="role"
               placeholder="Enter the AI role here"
             />

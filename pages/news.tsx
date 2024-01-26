@@ -135,9 +135,9 @@ export default function News() {
       <main className="py-20 flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
         <AppHeader
           desc={
-            "Type your topic in the field below and wait for your News. <br/> Leave the 'News Topic' field blank for a random News topic."
+            'Type your topic in the field below and wait for your News. Examples of news topics are "technological advancements in healthcare", "new years resolutions", or "successful leadership approaches and goals".'
           }
-          title="Liferay News Generator"
+          title='Liferay News Generator'
         />
 
         <div className="fixed top-2 right-5 text-lg download-options p-5 rounded">
@@ -151,7 +151,7 @@ export default function News() {
             <FieldString
               defaultValue=""
               inputChange={setNewsTopicInput}
-              label="News topic"
+              label="News Topic"
               name="topic"
               placeholder="Enter a News topic"
             />

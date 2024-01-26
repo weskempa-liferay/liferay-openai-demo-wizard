@@ -101,8 +101,8 @@ export default function Faqs() {
 
       <main className="py-20 flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
         <AppHeader
-          desc="Type your topic in the field below and wait for your FAQs. <br/> Leave the FAQ topic field blank for a random faq topic."
-          title="Liferay FAQ Generator"
+          desc='Type your topic in the field below and wait for your FAQs. Examples of FAQ topics are "budget planning", "starting a manufacturing company", or "practical uses of sodium bicarbonate".'
+          title='Liferay FAQ Generator'
         />
 
         <div className="fixed top-2 right-5 p-5 text-lg download-options rounded">
@@ -116,7 +116,7 @@ export default function Faqs() {
             <FieldString
               defaultValue=""
               inputChange={setFAQTopicInput}
-              label="FAQ topic"
+              label="FAQ Topic"
               name="topic"
               placeholder="Enter a FAQ Topic"
             />

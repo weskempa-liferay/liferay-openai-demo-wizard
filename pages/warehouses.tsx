@@ -12,7 +12,7 @@ import ResultDisplay from './components/resultdisplay';
 
 export default function Review() {
   const [warehouseRegionInput, setWarehouseRegionInput] = useState(
-    'Midwest United States'
+    'Europe'
   );
   
   const [warehouseNumberInput, setWarehouseNumberInput] = useState('10');
@@ -49,24 +49,24 @@ export default function Review() {
 
       <main className="py-20 flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
         <AppHeader
-          desc="Type your region into the field below and wait for your warehouses. <br/> Example suggestions 'Europe', 'Midwest United States', 'The greater Chicago area'."
+          desc="Type your region into the field below and wait for your warehouses. <br/> Example regions  are 'global', 'Midwestern United States', 'Italy and surrounding countries'."
           title="Liferay Warehouse Generator"
         />
 
         <form onSubmit={onSubmit}>
           <div className="w-700 grid grid-cols-2 gap-2 sm:grid-cols-2 md:gap-4 mb-5">
             <FieldString
-              defaultValue="National Internet, Phone, and Cable"
+              defaultValue="Europe"
               inputChange={setWarehouseRegionInput}
               label="Region for Warehouses"
               name="regionName"
-              placeholder="Enter a business description"
+              placeholder="Enter a region for your warehouses"
             />
 
             <FieldString
               defaultValue="10"
               inputChange={setWarehouseNumberInput}
-              label="Prefered Number of Warehouses"
+              label="Number of Warehouses"
               name="numberOfWarehouses"
               placeholder="Enter a the number of warehouses to generate"
             />

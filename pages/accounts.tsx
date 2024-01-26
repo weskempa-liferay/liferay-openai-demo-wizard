@@ -52,7 +52,7 @@ export default function Review() {
       <main className="py-20 flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
         <AppHeader
           desc={
-            'Type your business description in the field below and wait for your Accounts. <br/> Leave the field blank for generic business accounts.'
+            'Type your business description in the field below and wait for your Accounts. Examples of business descriptions are "automotive supplies", "medical equipment", or "government services".'
           }
           title={'Liferay Account Generator'}
         />
@@ -63,7 +63,7 @@ export default function Review() {
               defaultValue=""
               inputChange={setAccountTopicInput}
               label="Business Description"
-              name="topic"
+              name="businessDescription"
               placeholder="Enter a Business Description"
             />
 

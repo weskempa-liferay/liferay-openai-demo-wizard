@@ -12,7 +12,7 @@ export default function AppHeader({ desc, title }) {
       </div>
 
       <h3 className="text-slate-200 font-bold text-3xl mb-3">{title}</h3>
-      <p className="text-slate-400 text-center text-lg mb-10">
+      <p className="text-slate-400 text-center text-lg w-1/2 mb-10">
         <i dangerouslySetInnerHTML={{ __html: desc }}></i>
       </p>
     </>

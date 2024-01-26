@@ -65,7 +65,7 @@ export default function MessageBoard() {
       <main className="py-20 flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
         <AppHeader
           desc={
-            'Type your topic in the field below and wait for your Message Board Threads. <br/> Leave the field blank for a random Message Board topic.'
+            'Type your topic in the field below and wait for your Message Board Threads. Examples of message board topics are "healthy living", "travel advice and tips", or "running a successful dog grooming business".'
           }
           title={'Liferay Message Board Content Generator'}
         />

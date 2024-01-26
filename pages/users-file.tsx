@@ -102,7 +102,7 @@ export default function UsersFile() {
           <div className="w-500 grid grid-cols-1 gap-2 sm:grid-cols-1 md:gap-4 mb-5">
             <FieldFile
               inputChange={handleOnChange}
-              label="File that contains users"
+              label="Users CSV File"
               name="fileUpload"
             />
           </div>

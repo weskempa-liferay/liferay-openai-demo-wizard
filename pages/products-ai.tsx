@@ -121,8 +121,8 @@ export default function Products() {
 
       <main className="py-20 flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
         <AppHeader
-          desc="This is an Open AI integration to generate demo products."
-          title="Liferay Product Generator"
+          desc='This is an Open AI integration to generate demo products. Examples of the commerce theme are "home energy saving products", "electric vehicles", or "bird feeders and supplies"'
+          title='Liferay Product Generator'
         />
 
         <form onSubmit={onSubmit}>
@@ -133,7 +133,7 @@ export default function Products() {
               inputChange={setCompanyThemeInput}
               label="Commerce Theme"
               name="companyTheme"
-              placeholder="Enter a company theme"
+              placeholder="Enter a commerce theme"
             />
 
             <FieldString

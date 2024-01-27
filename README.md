@@ -97,6 +97,6 @@ LIFERAY_ADMIN_PASSWORD=
 > Your feedback and suggestions are useful to us. Please share your ideas for improvements!
 
 > [!IMPORTANT]
-> This is a personal project that is not directly supported by Liferay Inc. or Liferay Support.
+> This is a personal project not directly supported by Liferay Inc.
 
-# Lets build great things!
+# Let's build great things!

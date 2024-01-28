@@ -13,15 +13,15 @@ Utilizing this OpenAI Wizard doesn't just speed up content creation, which many 
 - **Accounts**
 - **Blogs with Images**
 - **Taxonomy with Category Structure**
-- **Commerce Categories and Products with Images (CSV and OpenAI)**
-- **Custom Liferay Objects Schemas**
 - **Multilingual FAQs**
-- **Generation of Images within the Document and Media**
-- **Multilingual News Articles with Images**
+- **Generation of Images within Document and Media**
 - **Knowledge Base Folders and Articles**
 - **Message Board Sections, Threads, and Messages**
+- **Multilingual News Articles with Images**
+- **Custom Liferay Objects Schemas**
 - **Organization Structures**
 - **Page Hierarchies**
+- **Commerce Categories and Products with Images (CSV and OpenAI)**
 - **Users (CSV and OpenAI)**
 - **User Groups**
 - **Warehouses with with Latitude and Longitude**

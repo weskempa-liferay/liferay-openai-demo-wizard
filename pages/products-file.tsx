@@ -157,6 +157,7 @@ export default function ProductsFile() {
               inputChange={handleOnChange}
               label="Products CSV File"
               name="fileUpload"
+              accept=".csv"
             />
 
           </div>

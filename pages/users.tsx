@@ -24,7 +24,7 @@ export default function Users() {
           <NavItem
             description="Upload a list of specific users from a CSV file."
             path="/users-file"
-            title="CSV Upload"
+            title="File Upload"
           />
         </div>
       </main>

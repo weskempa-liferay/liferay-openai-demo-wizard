@@ -20,7 +20,7 @@ export default async function WarehousesAction(req, res) {
       locations: {
         description:  'An array of ' +
                       req.body.warehouseNumber +
-                      ' locations a region',
+                      ' warehouse locations a region',
         items: {
           properties: {
             name: {
@@ -50,12 +50,12 @@ export default async function WarehousesAction(req, res) {
     messages: [
       {
         content:
-          'You are a helpful assistant tasked with listing locations within an area.',
+          'You are a helpful assistant tasked with listing warehouse locations within an area.',
         role: 'system',
       },
       {
         content:
-          'Provide a list of ' +  req.body.warehouseNumber + ' locations with latitude and longitude within the region of ' +
+          'Provide a list of ' +  req.body.warehouseNumber + ' warehouse locations with latitude and longitude within the region of ' +
           req.body.warehouseRegion + '. ',
         role: 'user',
       },

@@ -24,7 +24,7 @@ export default function Products() {
           <NavItem
             description="Upload a list of specific products from a CSV file."
             path="/products-file"
-            title="CSV Upload"
+            title="File Upload"
           />
         </div>
       </main>

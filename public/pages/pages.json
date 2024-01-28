@@ -1,0 +1,103 @@
+{
+	"pages":[{
+		"name": "Vehicles",
+		"pages": [
+			{
+				"name":	"Rugged Capability"
+			},
+			{
+				"name":	"Electrified Vehicles"
+			},
+			{
+				"name":	"Certified Pre-Owned"
+			}
+		]
+	},
+	{
+		"name": "Shopping Tools",
+		"pages": [
+			{
+				"name":	"Build & Price"
+			},
+			{
+				"name":	"See Offers"
+			},
+			{
+				"name":	"Search Inventory"
+			},
+			{
+				"name": "Estimate Payments"
+			},
+			{
+				"name":	"Apply for Financing"
+			},
+			{
+				"name":	"Trade-In Value"
+			},
+			{
+				"name":	"Lease or Finance"
+			}
+		]
+	},
+	{
+		"name": "Discover",
+		"pages": [
+			{
+				"name":	"About Us"
+			},
+			{
+				"name":	"News & Events"
+			},
+			{
+				"name":	"Awards, Accolades & Ratings"
+			},
+			{
+				"name": "Careers"
+			},
+			{
+				"name":	"Investor Relations"
+			},
+			{
+				"name":	"Corporate Social Responsibility"
+			},
+			{
+				"name":	"Financial Services"
+			},
+			{
+				"name":	"Merchandise & Apparel"
+			}
+		]
+	},
+	{
+		"name": "Help & Support",
+		"pages": [
+			{
+				"name":	"FAQ"
+			},
+			{
+				"name":	"Customer Service"
+			},
+			{
+				"name":	"Buyer’s Guide"
+			}
+		]
+	},
+	{
+		"name": "Owners",
+		"pages": [
+			{
+				"name":	"Schedule Service"
+			},
+			{
+				"name":	"Parts & Service"
+			},
+			{
+				"name":	"Roadside Assistance"
+			}
+		]
+	},
+	{	
+		"name": "My Account",
+		"viewableBy": "Members"
+	}]
+}

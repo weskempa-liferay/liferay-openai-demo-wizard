@@ -1,4 +1,4 @@
-export default function FieldFile({ inputChange, label, name }) {
+export default function FieldFile({ inputChange, label, name, accept }) {
   return (
     <label
       className="block mb-2 p-4 text-sm font-medium text-gray-200"
@@ -6,7 +6,7 @@ export default function FieldFile({ inputChange, label, name }) {
     >
       {label}
       <input
-        accept={'.csv'}
+        accept={accept}
         className="block w-full mt-1 text-sm text-gray-900 border border-gray-300 p-4 rounded-lg cursor-pointer bg-white focus:outline-none"
         id={name}
         name={name}

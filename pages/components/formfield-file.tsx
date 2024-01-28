@@ -1,7 +1,7 @@
 export default function FieldFile({ inputChange, label, name, accept }) {
   return (
     <label
-      className="block mb-2 p-4 text-sm font-medium text-gray-200"
+      className="block mb-2 text-sm font-medium text-gray-200"
       htmlFor={name}
     >
       {label}

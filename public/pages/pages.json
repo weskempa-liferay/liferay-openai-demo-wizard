@@ -49,7 +49,18 @@
 				"name":	"News & Events"
 			},
 			{
-				"name":	"Awards, Accolades & Ratings"
+				"name":	"Awards, Accolades & Ratings",
+				"pages": [
+					{
+						"name":	"Awards"
+					},
+					{
+						"name":	"Accolades"
+					},
+					{
+						"name":	"Ratings"
+					}
+				]
 			},
 			{
 				"name": "Careers"

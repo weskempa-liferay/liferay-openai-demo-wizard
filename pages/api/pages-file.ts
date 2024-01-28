@@ -13,12 +13,7 @@ const debug = logger('Pages Action');
 export default async function SitesAction(req, res) {
   const start = new Date().getTime();
 
-  //debug(req.body.fileoutput);
-
   let pages = JSON.parse(req.body.fileoutput).pages;
-
-  //debug(pages);
-  //debug(pages.length);
 
   for (let i = 0; i < pages.length; i++) {
     debug(pages[i]);
@@ -35,9 +30,12 @@ export default async function SitesAction(req, res) {
 }
 
 async function createSitePage(groupId, page, parentPath) {
-  debug('Creating ' + page.name + ' with parent ' + parentPath);
   
-  const postBody = getPageSchema(page.name, parentPath, "Anyone");
+  let viewableBy = ("viewableBy" in page)? page["viewableBy"] : "Anyone";
+  
+  debug('Creating ' + page.name + ' with parent ' + parentPath + ' viewable by ' + viewableBy);
+
+  const postBody = getPageSchema(page.name, parentPath, viewableBy);
 
   const orgApiPath =
     process.env.LIFERAY_PATH + '/o/headless-delivery/v1.0/sites/'+groupId+'/site-pages';
@@ -68,7 +66,7 @@ async function createSitePage(groupId, page, parentPath) {
 
 function getPageSchema(name, parentPath, viewableBy){
 
-  return {
+  let pageSchema = {
     "pageDefinition": {
       "pageElement": {
         "pageElements": [
@@ -121,13 +119,8 @@ function getPageSchema(name, parentPath, viewableBy){
           "ADD_DISCUSSION"
         ],
         "roleKey": "Site Member"
-      },
-      {
-        "actionKeys": [
-          "VIEW"
-        ],
-        "roleKey": "Guest"
       }
+      
     ],
     "parentSitePage": {
       "friendlyUrlPath": parentPath
@@ -138,4 +131,15 @@ function getPageSchema(name, parentPath, viewableBy){
     },  
     "viewableBy": viewableBy
   };
+
+  if(viewableBy=="Anyone"){
+    pageSchema.pagePermissions.push({
+        "actionKeys": [
+          "VIEW"
+        ],
+        "roleKey": "Guest"
+      });
+  }
+
+  return pageSchema;
 }

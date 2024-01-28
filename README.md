@@ -20,9 +20,9 @@ Utilizing this OpenAI Wizard doesn't just speed up content creation, which many 
 - **Multilingual News Articles with Images**
 - **Custom Liferay Objects Schemas**
 - **Organization Structures**
-- **Page Hierarchies**
-- **Commerce Categories and Products with Images (CSV and OpenAI)**
-- **Users (CSV and OpenAI)**
+- **Page Hierarchies(AI Generation and File Upload)**
+- **Commerce Categories and Products with Images (AI Generation and File Upload)**
+- **Users (AI Generation and File Upload)**
 - **User Groups**
 - **Warehouses with with Latitude and Longitude**
 - **Wiki Nodes and Pages**

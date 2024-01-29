@@ -35,6 +35,12 @@ form .btn-popuptoggle {
   border-bottom-left-radius: 0;
 }
 
+.popup label{
+  color:#777;
+  font-size: small;
+  font-weight: bold;
+}
+
 .download-options {
   background-color: rgba(100, 100, 150, 0.3);
 }

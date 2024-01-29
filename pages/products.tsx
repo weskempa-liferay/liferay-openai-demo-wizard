@@ -4,6 +4,9 @@ import AppHeader from './components/appheader';
 import NavItem from './components/navitem';
 
 export default function Products() {
+
+  const setAppConfig = () => {}
+  
   return (
     <div>
       <AppHead title="Product Generation Options" />
@@ -29,7 +32,7 @@ export default function Products() {
         </div>
       </main>
 
-      <AppFooter />
+      <AppFooter setConfig={setAppConfig}/>
     </div>
   );
 }

@@ -35,6 +35,10 @@ export default function Faqs() {
   const [result, setResult] = useState(() => '');
   const [isLoading, setIsLoading] = useState(false);
 
+  const [appConfig, setAppConfig] = useState({
+    model:functions.getDefaultAIModel()
+  });
+
   async function onSubmit(event) {
     event.preventDefault();
     setIsLoading(true);
@@ -45,6 +49,7 @@ export default function Faqs() {
 
     const response = await fetch('/api/faqs', {
       body: JSON.stringify({
+        config: appConfig,
         categoryIds: categoryIdsInput,
         defaultLanguage: defaultLanguageInput,
         faqNumber: faqNumberInput,
@@ -191,7 +196,7 @@ export default function Faqs() {
         )}
       </main>
 
-      <AppFooter />
+      <AppFooter setConfig={setAppConfig}/>
     </div>
   );
 }

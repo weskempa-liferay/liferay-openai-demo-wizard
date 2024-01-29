@@ -27,12 +27,17 @@ export default function Review() {
   const [viewOptionsInput, setViewOptionsSelect] = useState('Anyone');
   const viewOptions = functions.getViewOptions();
 
+  const [appConfig, setAppConfig] = useState({
+    model:functions.getDefaultAIModel()
+  });
+
   async function onSubmit(event) {
     event.preventDefault();
     setIsLoading(true);
 
     const response = await fetch('/api/knowledgebase', {
       body: JSON.stringify({
+        config: appConfig,
         kbArticleLength: kbArticleLengthInput,
         kbArticleNumber: kbArticleNumberInput,
         kbFolderNumber: kbFolderNumberInput,
@@ -136,7 +141,7 @@ export default function Review() {
         )}
       </main>
 
-      <AppFooter />
+      <AppFooter setConfig={setAppConfig}/>
     </div>
   );
 }

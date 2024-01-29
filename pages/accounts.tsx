@@ -10,6 +10,7 @@ import FieldSubmit from './components/formfield-submit';
 import LoadingAnimation from './components/loadinganimation';
 import ResultDisplay from './components/resultdisplay';
 import { logger } from './utils/logger';
+import functions from './utils/functions';
 
 const debug = logger('Accounts');
 
@@ -19,6 +20,10 @@ export default function Review() {
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState('');
 
+  const [appConfig, setAppConfig] = useState({
+    model:functions.getDefaultAIModel()
+  });
+  
   async function onSubmit(event) {
     event.preventDefault();
     setIsLoading(true);
@@ -26,6 +31,7 @@ export default function Review() {
     debug('Posting Accounts');
     const response = await fetch('/api/accounts', {
       body: JSON.stringify({
+        config: appConfig,
         accountNumber: accountNumberInput,
         accountTopic: accountTopicInput
       }),
@@ -86,7 +92,7 @@ export default function Review() {
         )}
       </main>
 
-      <AppFooter />
+      <AppFooter setConfig={setAppConfig}/>
     </div>
   );
 }

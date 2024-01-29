@@ -2,6 +2,7 @@ import hljs from 'highlight.js';
 import { useEffect, useState } from 'react';
 import React from 'react';
 
+import functions from './utils/functions';
 import AppFooter from './components/appfooter';
 import AppHead from './components/apphead';
 import AppHeader from './components/appheader';
@@ -32,6 +33,10 @@ export default function Products() {
 
   const [result, setResult] = useState(() => '');
   const [isLoading, setIsLoading] = useState(false);
+
+  const [appConfig, setAppConfig] = useState({
+    model:functions.getDefaultAIModel()
+  });
 
   const onImageStyleInputChange = (value) => {
     setImageStyleInput(value);
@@ -92,6 +97,7 @@ export default function Products() {
     setIsLoading(true);
     const response = await fetch('/api/products-ai', {
       body: JSON.stringify({
+        config: appConfig,
         catalogId: productCatalogSelect,
         vocabularyName: vocabularyNameInput,
         companyTheme: companyThemeInput,
@@ -192,7 +198,7 @@ export default function Products() {
         )}
       </main>
 
-      <AppFooter />
+      <AppFooter setConfig={setAppConfig}/>
     </div>
   );
 }

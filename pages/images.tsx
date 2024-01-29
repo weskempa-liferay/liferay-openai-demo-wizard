@@ -1,6 +1,7 @@
 import hljs from 'highlight.js';
 import { useEffect, useState } from 'react';
 
+import functions from './utils/functions';
 import AppFooter from './components/appfooter';
 import AppHead from './components/apphead';
 import AppHeader from './components/appheader';
@@ -24,6 +25,10 @@ export default function Images() {
   const [result, setResult] = useState('');
   const [showStyleInput, setShowImageStyleInput] = useState(false);
   const [submitLabel, setSubmitLabel] = useState('');
+
+  const [appConfig, setAppConfig] = useState({
+    model:functions.getDefaultAIModel()
+  });
 
   let USDollar = new Intl.NumberFormat('en-US', {
     currency: 'USD',
@@ -58,6 +63,7 @@ export default function Images() {
     setIsLoading(true);
     const response = await fetch('/api/images', {
       body: JSON.stringify({
+        config: appConfig,
         imageDescription: imageDescriptionInput,
         imageFolderId: imageFolderIdInput,
         imageGeneration: imageGenerationType,
@@ -138,7 +144,7 @@ export default function Images() {
         )}
       </main>
 
-      <AppFooter />
+      <AppFooter setConfig={setAppConfig}/>
     </div>
   );
 }

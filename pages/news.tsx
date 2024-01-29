@@ -37,6 +37,10 @@ export default function News() {
   const [structureIdInput, setStructureIdInput] = useState('');
   const [submitLabel, setSubmitLabel] = useState('');
 
+  const [appConfig, setAppConfig] = useState({
+    model:functions.getDefaultAIModel()
+  });
+
   const onImageStyleInputChange = (value) => {
     setImageStyleInput(value);
   };
@@ -100,6 +104,7 @@ export default function News() {
     setIsLoading(true);
     const response = await fetch('/api/news', {
       body: JSON.stringify({
+        config: appConfig,
         categoryIds: categoryIdsInput,
         defaultLanguage: defaultLanguageInput,
         folderId: folderIdInput,
@@ -253,7 +258,7 @@ export default function News() {
         )}
       </main>
 
-      <AppFooter />
+      <AppFooter setConfig={setAppConfig}/>
     </div>
   );
 }

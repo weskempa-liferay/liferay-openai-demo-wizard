@@ -1,6 +1,7 @@
 import hljs from 'highlight.js';
 import { useState } from 'react';
 
+import functions from './utils/functions';
 import AppFooter from './components/appfooter';
 import AppHead from './components/apphead';
 import AppHeader from './components/appheader';
@@ -28,6 +29,10 @@ export default function Objects() {
   const [result, setResult] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  const [appConfig, setAppConfig] = useState({
+    model:functions.getDefaultAIModel()
+  });
+
   const onSubmit = async (event) => {
     event.preventDefault();
     setIsLoading(true);
@@ -44,6 +49,7 @@ export default function Objects() {
 
     const response = await fetch('/api/objects', {
       body: JSON.stringify({
+        config: appConfig,
         aiEndpoint: aiEndpointInput,
         aiRequest: aiRequestInput,
         aiRole: aiRoleInput,
@@ -173,7 +179,7 @@ export default function Objects() {
         )}
       </main>
 
-      <AppFooter />
+      <AppFooter setConfig={setAppConfig}/>
 
       <div className="hidden">{updateCount}</div>
     </div>

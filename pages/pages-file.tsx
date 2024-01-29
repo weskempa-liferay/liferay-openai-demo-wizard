@@ -2,6 +2,7 @@ import hljs from 'highlight.js';
 import { useState } from 'react';
 import React from 'react';
 
+import functions from './utils/functions';
 import AppFooter from './components/appfooter';
 import AppHead from './components/apphead';
 import AppHeader from './components/appheader';
@@ -20,6 +21,10 @@ export default function PagesFile() {
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState(() => '');
   const [siteIdInput, setSiteIdInput] = useState('');
+
+  const [appConfig, setAppConfig] = useState({
+    model:functions.getDefaultAIModel()
+  });
 
   const handleOnChange = (file) => {
     setFile(file.target.files[0]);
@@ -67,6 +72,7 @@ export default function PagesFile() {
 
     const response = await fetch('/api/pages-file', {
       body: JSON.stringify({
+        config: appConfig,
         fileoutput: fileOutput,
         siteId:siteIdInput,
       }),
@@ -128,7 +134,7 @@ export default function PagesFile() {
         )}
       </main>
 
-      <AppFooter />
+      <AppFooter setConfig={setAppConfig}/>
     </div>
   );
 }

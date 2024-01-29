@@ -3,13 +3,13 @@ import fs from 'fs';
 export default async function UserImagesAction(req, res) {
   const folder = process.cwd() + '/public/users/user-images/';
 
-  let styleList = [];
+  let imgList = [];
 
   fs.readdir(folder, (err, files) => {
     files.forEach((file) => {
-      if (file.startsWith(req.body.gender)) styleList.push(file);
+      if (file.startsWith(req.body.gender)) imgList.push(file);
     });
 
-    res.status(200).json({ result: styleList[req.body.index % 6] });
+    res.status(200).json({ result: imgList[req.body.index % 6] });
   });
 }

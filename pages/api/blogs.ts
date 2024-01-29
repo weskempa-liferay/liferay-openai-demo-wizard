@@ -70,10 +70,8 @@ export default async function Action(req, res) {
   }
 
   let response = await openai.chat.completions.create({
-    frequency_penalty: 0.6,
     function_call: { name: 'get_blog_content' },
     functions: [{ name: 'get_blog_content', parameters: schema }],
-    max_tokens: 1000,
     messages: [
       { content: 'You are a blog author.', role: 'system' },
       {
@@ -87,11 +85,11 @@ export default async function Action(req, res) {
         role: 'user',
       },
     ],
-    model: 'gpt-3.5-turbo',
-    presence_penalty: 0,
+    model: req.body.config.model,
     temperature: 0.8,
   });
 
+  debug(response);
   debug(response.choices[0].message.function_call.arguments);
   let blogJsonArticles = JSON.parse(response.choices[0].message.function_call.arguments).articles;
 

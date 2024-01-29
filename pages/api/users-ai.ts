@@ -14,6 +14,9 @@ const debug = logger('Users AI - Action');
 
 export default async function UsersAIAction(req, res) {
   let start = new Date().getTime();
+
+  debug(req.body);
+
   let successCount = 0;
   let errorCount = 0;
 
@@ -81,7 +84,7 @@ export default async function UsersAIAction(req, res) {
         role: 'user',
       },
     ],
-    model: 'gpt-3.5-turbo',
+    model: req.body.config.model,
     temperature: 0.6,
   });
 
@@ -149,7 +152,8 @@ export default async function UsersAIAction(req, res) {
       successCount++;
     } catch (error) {
       errorCount++;
-      console.log(error.code);
+      console.log(error.code + " for user " + 
+        userlist[i].alternateName + " | " + userlist[i].emailAddress);
     }
   }
 

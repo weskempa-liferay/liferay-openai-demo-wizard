@@ -2,6 +2,7 @@ import hljs from 'highlight.js';
 import { useState } from 'react';
 import React from 'react';
 
+import functions from './utils/functions';
 import AppFooter from './components/appfooter';
 import AppHead from './components/apphead';
 import AppHeader from './components/appheader';
@@ -21,11 +22,16 @@ export default function UsersAI() {
   const [result, setResult] = useState(() => '');
   const [isLoading, setIsLoading] = useState(false);
 
+  const [appConfig, setAppConfig] = useState({
+    model:functions.getDefaultAIModel()
+  });
+
   async function onSubmit(event) {
     event.preventDefault();
     setIsLoading(true);
     const response = await fetch('/api/users-ai', {
       body: JSON.stringify({
+        config: appConfig,
         emailPrefix: emailPrefixInput,
         password: passwordInput,
         userNumber: userNumberInput,
@@ -65,11 +71,11 @@ export default function UsersAI() {
             />
 
             <FieldString
-              defaultValue="@liferay.xyz"
+              defaultValue="liferay.xyz"
               inputChange={setEmailPrefixInput}
               label="Email Prefix"
               name="emailPrefix"
-              placeholder="@liferay.xyz"
+              placeholder="liferay.xyz"
             />
 
             <FieldString
@@ -91,7 +97,7 @@ export default function UsersAI() {
         )}
       </main>
 
-      <AppFooter />
+      <AppFooter setConfig={setAppConfig}/>
     </div>
   );
 }

@@ -4,6 +4,9 @@ import AppHeader from './components/appheader';
 import NavItem from './components/navitem';
 
 export default function Users() {
+
+  const setAppConfig = () => {}
+  
   return (
     <div>
       <AppHead title="User Generation Options" />
@@ -29,7 +32,7 @@ export default function Users() {
         </div>
       </main>
 
-      <AppFooter />
+      <AppFooter setConfig={setAppConfig}/>
     </div>
   );
 }

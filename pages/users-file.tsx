@@ -2,6 +2,7 @@ import hljs from 'highlight.js';
 import { useState } from 'react';
 import React from 'react';
 
+import functions from './utils/functions';
 import AppFooter from './components/appfooter';
 import AppHead from './components/apphead';
 import AppHeader from './components/appheader';
@@ -18,6 +19,10 @@ export default function UsersFile() {
   const [file, setFile] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState(() => '');
+
+  const [appConfig, setAppConfig] = useState({
+    model:functions.getDefaultAIModel()
+  });
 
   const handleOnChange = (file) => {
     setFile(file.target.files[0]);
@@ -65,6 +70,7 @@ export default function UsersFile() {
     setIsLoading(true);
     const response = await fetch('/api/users-file', {
       body: JSON.stringify({
+        config: appConfig,
         csvoutput: csvOutput,
       }),
       headers: {
@@ -118,7 +124,7 @@ export default function UsersFile() {
         )}
       </main>
 
-      <AppFooter />
+      <AppFooter setConfig={setAppConfig}/>
     </div>
   );
 }

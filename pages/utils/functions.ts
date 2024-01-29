@@ -45,6 +45,17 @@ const functions = {
       { id: 'Owner', name: 'Owner' }
     ];
   },
+  getAIModelOptions: () => {
+    return [
+      { id: 'gpt-3.5-turbo', name: 'GPT 3.5 Turbo' },
+      { id: 'gpt-3.5-turbo-1106', name: 'GPT 3.5 Turbo (u1106) - Default' },
+      { id: 'gpt-4', name: 'GPT 4.0' },
+      { id: 'gpt-4-turbo-preview', name: 'GPT 4.0 Turbo Preview (u0125)' }
+    ];
+  },
+  getDefaultAIModel: () => {
+    return "gpt-3.5-turbo-1106";
+  },
   getAvailableLanguages,
   getBase64data,
   getFilePostOptions: (apiPath, fileStream, fileKey) => {

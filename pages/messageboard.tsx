@@ -29,12 +29,17 @@ export default function MessageBoard() {
 
   const languageOptions = functions.getAvailableLanguages();
 
+  const [appConfig, setAppConfig] = useState({
+    model:functions.getDefaultAIModel()
+  });
+
   async function onSubmit(event) {
     event.preventDefault();
     setIsLoading(true);
 
     const response = await fetch('/api/messageboard', {
       body: JSON.stringify({
+        config: appConfig,
         mbMessageNumber: mbMessageNumberInput,
         mbSectionNumber: mbSectionNumberInput,
         mbThreadLength: mbThreadLengthInput,
@@ -149,7 +154,7 @@ export default function MessageBoard() {
         )}
       </main>
 
-      <AppFooter />
+      <AppFooter setConfig={setAppConfig}/>
     </div>
   );
 }

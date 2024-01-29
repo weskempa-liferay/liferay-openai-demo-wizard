@@ -2,6 +2,7 @@ import hljs from 'highlight.js';
 import { useState, useEffect } from 'react';
 import React from 'react';
 
+import functions from './utils/functions';
 import AppFooter from './components/appfooter';
 import AppHead from './components/apphead';
 import AppHeader from './components/appheader';
@@ -24,6 +25,10 @@ export default function ProductsFile() {
   const [productCatalogSelect, setProductCatalogSelect] = useState('');
   const [productCatalogOptions, setProductCatalogOptions] = useState([]);
   const [result, setResult] = useState(() => '');
+
+  const [appConfig, setAppConfig] = useState({
+    model:functions.getDefaultAIModel()
+  });
 
   useEffect(() => {
     debug('Load');
@@ -87,6 +92,7 @@ export default function ProductsFile() {
     setIsLoading(true);
     const response = await fetch('/api/products-file', {
       body: JSON.stringify({
+        config: appConfig,
         csvoutput: csvOutput,
         catalogId: productCatalogSelect,
         gloablSiteId: globalSiteIdInput,
@@ -172,7 +178,7 @@ export default function ProductsFile() {
         )}
       </main>
 
-      <AppFooter />
+      <AppFooter setConfig={setAppConfig}/>
     </div>
   );
 }

@@ -1,5 +1,4 @@
-import { ArrowUpTrayIcon } from '@heroicons/react/24/solid';
-import { XCircleIcon } from '@heroicons/react/24/solid';
+import { ArrowUpTrayIcon, XCircleIcon } from '@heroicons/react/24/solid';
 import { useEffect, useState } from 'react';
 import React from 'react';
 

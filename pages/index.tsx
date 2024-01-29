@@ -97,6 +97,9 @@ const navItems = [
 ];
 
 const HomePage = () => {
+
+  const setAppConfig = () => {}
+
   return (
     <>
       <AppHead title="" />
@@ -115,7 +118,7 @@ const HomePage = () => {
           </div>
         </div>
 
-        <AppFooter />
+        <AppFooter setConfig={setAppConfig}/>
       </main>
     </>
   );

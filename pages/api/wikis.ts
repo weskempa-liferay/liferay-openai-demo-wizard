@@ -97,7 +97,7 @@ export default async function WikiAction(req, res) {
         role: 'user',
       },
     ],
-    model: 'gpt-3.5-turbo',
+    model: req.body.config.model,
     temperature: 0.6,
   });
 

@@ -13,6 +13,8 @@ const debug = logger('Accounts - Action');
 export default async function Action(req, res) {
   let start = new Date().getTime();
 
+  debug(req.body);
+
   const accountSchema = {
     properties: {
       accounts: {
@@ -50,7 +52,7 @@ export default async function Action(req, res) {
         role: 'user',
       },
     ],
-    model: 'gpt-3.5-turbo',
+    model: req.body.config.model,
     temperature: 0.6,
   });
 

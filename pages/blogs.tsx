@@ -33,6 +33,10 @@ export default function Review() {
   const [viewOptionsInput, setViewOptionsSelect] = useState('Anyone');
   const viewOptions = functions.getViewOptions();
 
+  const [appConfig, setAppConfig] = useState({
+    model:functions.getDefaultAIModel()
+  });
+
   const languageOptions = functions.getAvailableLanguages();
 
   useEffect(() => {
@@ -69,6 +73,7 @@ export default function Review() {
 
     const response = await fetch('/api/blogs', {
       body: JSON.stringify({
+        config: appConfig,
         blogLength: blogLengthInput,
         blogNumber: blogNumberInput,
         blogLanguage: blogLanguageInput,
@@ -167,7 +172,7 @@ export default function Review() {
         )}
       </main>
 
-      <AppFooter />
+      <AppFooter setConfig={setAppConfig}/>
     </div>
   );
 }

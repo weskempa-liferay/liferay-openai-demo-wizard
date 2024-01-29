@@ -11,6 +11,7 @@ import FieldSubmit from './components/formfield-submit';
 import LoadingAnimation from './components/loadinganimation';
 import ResultDisplay from './components/resultdisplay';
 import { logger } from './utils/logger';
+import functions from './utils/functions';
 
 const debug = logger('Categories');
 
@@ -30,6 +31,10 @@ export default function Categories() {
   const [result, setResult] = useState(() => '');
   const [isLoading, setIsLoading] = useState(false);
 
+  const [appConfig, setAppConfig] = useState({
+    model:functions.getDefaultAIModel()
+  });
+
   async function onSubmit(event) {
     event.preventDefault();
     setIsLoading(true);
@@ -37,6 +42,7 @@ export default function Categories() {
 
     const response = await fetch('/api/categories', {
       body: JSON.stringify({
+        config: appConfig,
         categorytNumber: categorytNumberInput,
         childCategorytNumber: childCategorytNumberInput,
         defaultLanguage: defaultLanguageInput,
@@ -134,7 +140,7 @@ export default function Categories() {
         )}
       </main>
 
-      <AppFooter />
+      <AppFooter setConfig={setAppConfig}/>
     </div>
   );
 }

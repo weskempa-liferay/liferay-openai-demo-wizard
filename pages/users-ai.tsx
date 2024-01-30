@@ -74,7 +74,7 @@ export default function UsersAI() {
               defaultValue="liferay.xyz"
               inputChange={setEmailPrefixInput}
               label="Email Prefix"
-              name="emailPrefix"
+              name="companyEmailPrefix"
               placeholder="liferay.xyz"
             />
 

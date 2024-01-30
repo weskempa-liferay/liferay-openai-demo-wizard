@@ -56,6 +56,23 @@ const functions = {
   getDefaultAIModel: () => {
     return "gpt-3.5-turbo-1106";
   },
+  getD2ImageSizeOptions: () => {
+    return [
+      { name: '1024x1024', id: '1024x1024-standard', cost: 0.02 },
+      { name: '512x512', id: '512x512-standard', cost: 0.018 },
+      { name: '256x256', id: '256x256-standard', cost: 0.016 }
+    ];
+  },
+  getD3ImageSizeOptions: () => {
+    return [
+      { name: '1024x1024', id: '1024x1024-standard', cost: 0.04 },
+      { name: '1024x1792', id: '1024x1792-standard', cost: 0.08 },
+      { name: '1792x1024', id: '1792x1024-standard', cost: 0.08 },
+      { name: '1024x1024 HD', id: '1024x1024-hd', cost: 0.08 },
+      { name: '1024x1792 HD', id: '1024x1792-hd', cost: 0.12 },
+      { name: '1792x1024 HD', id: '1792x1024-hd', cost: 0.12 }
+    ];
+  },
   getAvailableLanguages,
   getBase64data,
   getFilePostOptions: (apiPath, fileStream, fileKey) => {

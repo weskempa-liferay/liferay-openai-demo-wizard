@@ -7,6 +7,7 @@ import AppHead from './components/apphead';
 import AppHeader from './components/appheader';
 import FieldImageType from './components/formfield-imagetype';
 import FieldString from './components/formfield-string';
+import FieldSelect from './components/formfield-select';
 import FieldSubmit from './components/formfield-submit';
 import ImageStyle from './components/imagestyle';
 import LoadingAnimation from './components/loadinganimation';
@@ -18,13 +19,17 @@ const debug = logger('Images');
 export default function Images() {
   const [imageDescriptionInput, setImageDescriptionInput] = useState('');
   const [imageFolderIdInput, setImageFolderIdInput] = useState('');
-  const [imageGenerationType, setImageGenerationType] = useState('none');
+  const [imageGenerationType, setImageGenerationType] = useState('dall-e-2');
+  const [imageGenerationSize, setImageGenerationSize] = useState('1024x1024');
+  const [imageGenerationQuality, setImageGenerationQuality] = useState('standard');
   const [imageNumberInput, setImageNumberInput] = useState('1');
   const [imageStyleInput, setImageStyleInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState('');
   const [showStyleInput, setShowImageStyleInput] = useState(false);
   const [submitLabel, setSubmitLabel] = useState('');
+
+  const [dalliOptions, setDalliOptions] = useState([]);
 
   const [appConfig, setAppConfig] = useState({
     model:functions.getDefaultAIModel()
@@ -37,26 +42,65 @@ export default function Images() {
 
   useEffect(() => {
     updateCost();
-  }, [imageNumberInput, imageGenerationType]);
+  }, [imageGenerationType,imageGenerationSize,imageGenerationQuality,imageNumberInput]);
+
+  useEffect(() => {
+    setDalliOptions(functions.getD2ImageSizeOptions());
+  }, []);
+
+  const handleSetImageGenerationType = (value) => {
+
+    setImageGenerationType(value);
+    setImageGenerationSize("1024x1024");
+    setImageGenerationQuality("standard");
+
+    if (value == 'dall-e-2') {
+      setShowImageStyleInput(false);
+      setDalliOptions(functions.getD2ImageSizeOptions());
+    } else if (value == 'dall-e-3'){
+      setShowImageStyleInput(true);
+      setDalliOptions(functions.getD3ImageSizeOptions());
+    }
+  };
+
+  const handleSetImageGenerationParams = (value) => {
+    setImageGenerationSize(value.split("-")[0]);
+    setImageGenerationQuality(value.split("-")[1]);
+  }
 
   const updateCost = () => {
-    setShowImageStyleInput(false);
+
     let cost = '';
+
+    let imageSizeCost = getImageSizeCost(imageGenerationType,
+       imageGenerationSize+"-"+imageGenerationQuality);
 
     if (isNaN(parseInt(imageNumberInput))) {
       cost = '$0.00';
-    } else if (imageGenerationType == 'dall-e-3') {
-      setShowImageStyleInput(true);
-      cost = USDollar.format(parseInt(imageNumberInput) * 0.04);
-    } else if (imageGenerationType == 'dall-e-2') {
-      setShowImageStyleInput(false);
-      cost = USDollar.format(parseInt(imageNumberInput) * 0.02);
+    } else if (imageGenerationType == 'dall-e-3' || imageGenerationType == 'dall-e-2') {
+      cost = USDollar.format(parseInt(imageNumberInput) * imageSizeCost);
     } else {
-      cost = '<$0.01';
+      cost = '$0.02';
     }
 
     setSubmitLabel('Generate Images - Estimated cost: ' + cost);
   };
+
+  const getImageSizeCost = (type, size) => {
+    let imgCost = 0.02;
+    let options = functions.getD2ImageSizeOptions();
+    
+    if(type == 'dall-e-3')
+      options = functions.getD3ImageSizeOptions();
+
+    for(let i = 0; i < options.length; i++){
+      if(options[i].id==size){
+        return options[i].cost;
+      }
+    }
+
+    return imgCost;
+  }
 
   async function onSubmit(event) {
     event.preventDefault();
@@ -67,6 +111,8 @@ export default function Images() {
         imageDescription: imageDescriptionInput,
         imageFolderId: imageFolderIdInput,
         imageGeneration: imageGenerationType,
+        imageGenerationSize: imageGenerationSize,
+        imageGenerationQuality: imageGenerationQuality,
         imageNumber: imageNumberInput,
         imageStyle: imageStyleInput,
       }),
@@ -105,10 +151,6 @@ export default function Images() {
                 'Provide a detailed description of the image(s) you want to generate.'
               }
             />
-
-            {showStyleInput && (
-              <ImageStyle styleInputChange={setImageStyleInput} />
-            )}
           </div>
 
           <div className="w-700 grid grid-cols-2 gap-2 sm:grid-cols-2 md:gap-4 mb-5">
@@ -130,8 +172,19 @@ export default function Images() {
 
             <FieldImageType
               includeNone={false}
-              inputChange={setImageGenerationType}
+              inputChange={handleSetImageGenerationType}
             />
+
+            <FieldSelect
+              inputChange={handleSetImageGenerationParams}
+              label="Image Size"
+              name="imageSize"
+              optionMap={dalliOptions}
+            />
+
+            {showStyleInput && (
+              <ImageStyle styleInputChange={setImageStyleInput} />
+            )}
           </div>
 
           <FieldSubmit disabled={isLoading} label={submitLabel} />

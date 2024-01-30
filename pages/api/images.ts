@@ -16,12 +16,11 @@ const runCountMax = 10;
 export default async function ImagesAction(req, res) {
   let start = new Date().getTime();
 
+  debug(req.body);
+
   const runCount = req.body.imageNumber;
   const imageDescription = req.body.imageDescription;
   const imageGeneration = req.body.imageGeneration;
-
-  debug('requesting ' + runCount + ' images');
-  debug(`include images: ${imageGeneration} ${imageDescription}`);
 
   let pictureDescription = imageDescription;
 
@@ -41,7 +40,8 @@ export default async function ImagesAction(req, res) {
         model: imageGeneration,
         n: 1,
         prompt: pictureDescription,
-        size: '1024x1024',
+        size: req.body.imageGenerationSize,
+        quality: req.body.imageGenerationQuality,
       });
 
       debug(imageResponse.data[0].url);
@@ -102,8 +102,6 @@ function postImageToLiferay(file, req) {
   setTimeout(function () {
     request(options, function (err, res, body) {
       if (err) console.log(err);
-
-      debug(res);
     });
   }, 100);
 }

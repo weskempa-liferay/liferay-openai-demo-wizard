@@ -14,7 +14,7 @@ Utilizing this OpenAI Wizard doesn't just speed up content creation, which many 
 - **Blogs with Images**
 - **Taxonomy with Category Structure**
 - **Multilingual FAQs**
-- **Generation of Images within Document and Media**
+- **Generation of Images within Document and Media with choice of dimensions and quality**
 - **Knowledge Base Folders and Articles**
 - **Message Board Sections, Threads, and Messages**
 - **Multilingual News Articles with Images**

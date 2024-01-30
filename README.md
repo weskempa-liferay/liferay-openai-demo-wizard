@@ -93,10 +93,13 @@ LIFERAY_ADMIN_EMAIL_ADDRESS=
 LIFERAY_ADMIN_PASSWORD=
 ```
 
-> [!TIP]
-> Your feedback and suggestions are useful to us. Please share your ideas for improvements!
+> [!WARNING]
+> Never use personal information, passwords, or sensitive data for generative AI prompts.
 
 > [!IMPORTANT]
 > This is a personal project not directly supported by Liferay Inc.
+
+> [!TIP]
+> Your feedback and suggestions are useful to us. Please share your ideas for improvements!
 
 # Let's build great things!

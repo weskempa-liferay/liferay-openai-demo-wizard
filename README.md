@@ -14,7 +14,7 @@ Utilizing this OpenAI Wizard doesn't just speed up content creation, which many 
 - **Blogs with Images**
 - **Taxonomy with Category Structure**
 - **Multilingual FAQs**
-- **Generation of Images within Document and Media with choice of dimensions and quality**
+- **Generation of Images within Documents and Media with a choice of dimensions and quality**
 - **Knowledge Base Folders and Articles**
 - **Message Board Sections, Threads, and Messages**
 - **Multilingual News Articles with Images**
@@ -24,7 +24,7 @@ Utilizing this OpenAI Wizard doesn't just speed up content creation, which many 
 - **Commerce Categories and Products with Images (AI Generation and File Upload)**
 - **Users (AI Generation and File Upload)**
 - **User Groups**
-- **Warehouses with with Latitude and Longitude**
+- **Warehouses with Latitude and Longitude**
 - **Wiki Nodes and Pages**
 
 As we move forward, expect more options and deeper integrations for content types.

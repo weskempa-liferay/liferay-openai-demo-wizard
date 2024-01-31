@@ -93,6 +93,11 @@ LIFERAY_ADMIN_EMAIL_ADDRESS=
 LIFERAY_ADMIN_PASSWORD=
 ```
 
+> [!IMPORTANT]
+> Using a $ in the .env file results in the error, "Cannot read properties of undefined (reading 'split')". '$' characters will need to be escaped in the .env file. ([See source](https://github.com/bkeepers/dotenv/issues/214))
+
+---
+
 > [!WARNING]
 > Never use personal information, passwords, or sensitive data for generative AI prompts.
 

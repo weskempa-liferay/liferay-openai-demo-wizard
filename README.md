@@ -94,7 +94,7 @@ LIFERAY_ADMIN_PASSWORD=
 ```
 
 > [!IMPORTANT]
-> Using a $ in the .env file results in the error, "Cannot read properties of undefined (reading 'split')". '$' characters will need to be escaped in the .env file. ([See source](https://github.com/bkeepers/dotenv/issues/214))
+> Using a '$' character in the .env file results in the error, "Cannot read properties of undefined (reading 'split')". '$' characters will need to be escaped in the .env file. ([See source](https://github.com/bkeepers/dotenv/issues/214))
 
 ---
 

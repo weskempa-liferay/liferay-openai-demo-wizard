@@ -13,6 +13,8 @@ const debug = logger('ProductsAction');
 export default async function ProductsAction(req, res) {
   let start = new Date().getTime();
 
+  debug(req.body);
+
   const imageGeneration = req.body.imageGeneration;
   let catalogId = req.body.catalogId;
   let globalSiteId = req.body.gloablSiteId;
@@ -250,8 +252,6 @@ export default async function ProductsAction(req, res) {
           process.env.LIFERAY_PATH +
           '/o/headless-commerce-admin-catalog/v1.0/products';
 
-        debug('sending: ' + productName);
-        debug(apiPath);
         debug(productJson);
 
         productResponse = await axios.post(apiPath, productJson, options);
@@ -265,9 +265,13 @@ export default async function ProductsAction(req, res) {
         };
 
         debug('includeImages:' + imageGeneration);
+
         if (imageGeneration != 'none') {
           let imagePrompt =
-            'Create a commerce catalog image for a ' + productName;
+            'Create a commerce product image for "' + productName + '", ' + shortDescription;
+
+          debug("Using image prompt: "+imagePrompt);
+
           if (req.body.imageStyle) {
             imagePrompt =
               'Create an image in the style of ' +

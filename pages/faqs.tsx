@@ -183,7 +183,7 @@ export default function Faqs() {
           <FieldSubmit disabled={isLoading} label={'Generate FAQs'} />
         </form>
 
-        <p className="text-slate-100 text-center text-lg mb-3 rounded p-5 bg-white/10 italic">
+        <p className="text-slate-100 text-center text-lg mb-3 rounded p-5 bg-white/10 w-1/2 italic">
           <b>Note:</b> FAQ generation requires a specific content structure.{' '}
           <br />
           Please use the supplied FAQ Structure and Fragment supplied above.

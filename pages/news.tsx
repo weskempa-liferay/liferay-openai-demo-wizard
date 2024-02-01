@@ -245,7 +245,7 @@ export default function News() {
           <FieldSubmit disabled={isLoading} label={submitLabel} />
         </form>
 
-        <p className="text-slate-100 text-center text-lg mb-3 rounded p-5 bg-white/10 italic">
+        <p className="text-slate-100 text-center text-lg mb-3 rounded p-5 bg-white/10 w-1/2 italic">
           <b>Note:</b> News Article generation requires a specific content
           structure. <br />
           Please use the supplied News Structure supplied above.

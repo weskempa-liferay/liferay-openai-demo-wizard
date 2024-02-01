@@ -102,6 +102,10 @@ export default function Review() {
           <FieldSubmit disabled={isLoading} label="Generate Pages" />
         </form>
 
+        <p className="text-slate-100 text-center text-lg mb-3 rounded p-5 bg-white/10 w-1/2 italic">
+          <b>Note:</b> The AI generation of page lists was not dependable for GPT 3.5. Because of this, GPT 4.0 is automatically enforced.
+        </p>
+
         {isLoading ? (
           <LoadingAnimation />
         ) : (

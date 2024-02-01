@@ -15,14 +15,26 @@ export default async function SitesAction(req, res) {
 
   debug(req.body);
 
-  const pagesSchema = {
+  const siteMapSchema = {
     properties: {
-      pages: {
+      sitepages: {
         description: 'An array of ' +
         req.body.pageNumber +
-        ' pages',
+        ' site pages',
         items: {
           properties: {
+            name: {
+              description: 'The name of the page.',
+              type: 'string',
+            },
+            contentDescription: {
+              description: 'A description of the types of content and features that would be available on this page.',
+              type: 'string',
+            },
+            pageComponentList: {
+              description: 'A comma-delimited list of page expected components. Provide more than 1 if possible.',
+              type: 'string',
+            },
             childpages: {
               description:
                 'An array of ' +
@@ -30,29 +42,30 @@ export default async function SitesAction(req, res) {
                 ' pages that are children the parent page',
               items: {
                 properties: {
-                  name: {
+                  childPageName: {
                     description: 'A creative name of the business',
                     type: 'string',
                   },
+                  childPageContentDescription: {
+                    description: 'A description of the types of content and features that would be available on this page.',
+                    type: 'string',
+                  },
+                  childPageComponentList: {
+                    description: 'A comma-delimited list of expected page components. Provide more than 1 if possible.',
+                    type: 'string',
+                  }
                 },
+                required: ['name', 'contentDescription',"pageComponentList"],
                 type: 'object',
               },
-              required: ['name'],
+              required: ['childpages'],
               type: 'array',
-            },
-            name: {
-              description: 'A name of the page.',
-              type: 'string',
-            },
-            description: {
-              description: 'A sentence that can be used to describe the page.',
-              type: 'string',
-            },
+            }
           },
-          required: ['name', 'description', 'childpages'],
+          required: ['name', 'contentDescription',"pageComponentList"],
           type: 'object',
         },
-        required: ['pages'],
+        required: ['sitepages'],
         type: 'array',
       },
     },
@@ -60,44 +73,67 @@ export default async function SitesAction(req, res) {
   };
 
   const response = await openai.chat.completions.create({
-    functions: [{ name: 'get_pages', parameters: pagesSchema }],
+    functions: [{ name: 'get_sitemap', parameters: siteMapSchema }],
     messages: [
       {
         content:
-          'You are an page manager responsible for listing the pages for your company.',
+          'You are an site manager responsible for planning the website navigation for your company\'s site.',
         role: 'system',
       },
       {
         content:
-          'Create a list of expected pages and related child pages with a company\'s ' +
-          req.body.pageTopic + ' site. ' +
-          'Do not include double quotes in the response.',
+          'Create a site map of the expected website pages and related child pages with a company\'s ' +
+          req.body.pageTopic + ' website site. ',
         role: 'user',
       },
     ],
-    model: req.body.config.model,
-    temperature: 0.6,
+    // TODO - Some models provide inconsistant result here with gpt-3.5-turbo-u1106. Need to review
+    // Forcing newer model
+    // model: req.body.config.model,
+    model: "gpt-4",
+    temperature: 0.8,
   });
+  
+  debug( JSON.parse(
+    response.choices[0].message.function_call.arguments
+  ) );
 
   let pages = JSON.parse(
     response.choices[0].message.function_call.arguments
-  ).pages;
+  ).sitepages;
+
   debug(JSON.stringify(pages));
 
-
-  for (let i = 0; i < pages.length; i++) {
-    debug(pages[i]);
-
-    const pagePath = await createSitePage(
-      req.body.siteId, pages[i], "home");
-
-    const childpages = pages[i].childpages;
-    if(childpages){
-      for (let j = 0; j < childpages.length; j++) {
-        let childPageId = await createSitePage(req.body.siteId, childpages[j], pagePath);
+  if(pages){
+    for (let i = 0; i < pages.length; i++) {
+      debug(pages[i]);
+  
+      const pagePath = await createSitePage(
+        req.body.siteId,
+        pages[i].name,
+        pages[i].contentDescription,
+        pages[i].pageComponentList,
+        "home");
+  
+      const childpages = pages[i].childpages;
+      if(childpages){
+        for (let j = 0; j < childpages.length; j++) {
+          let childPageId = await createSitePage(
+            req.body.siteId,
+            childpages[j].childPageName,
+            childpages[j].childPageContentDescription,
+            childpages[j].childPageComponentList,
+            pagePath);
+        }
       }
+  
     }
+  } else {
+    res.status(200).json({
+      result: 'Error: No results returned.'
+    });
 
+    return;
   }
 
   let end = new Date().getTime();
@@ -107,10 +143,10 @@ export default async function SitesAction(req, res) {
   });
 }
 
-async function createSitePage(groupId, page, parentPath) {
-  debug('Creating ' + page.name + ' with parent ' + parentPath);
+async function createSitePage(groupId, name, contentDescription, pageComponentList, parentPath) {
+  debug('Creating ' + name + ' with parent ' + parentPath);
   
-  const postBody = getPageSchema(page.name, parentPath);
+  const postBody = getPageSchema(name, contentDescription, pageComponentList, parentPath);
 
   const orgApiPath =
     process.env.LIFERAY_PATH + '/o/headless-delivery/v1.0/sites/'+groupId+'/site-pages';
@@ -132,7 +168,7 @@ async function createSitePage(groupId, page, parentPath) {
   return returnPath;
 }
 
-function getPageSchema(name, parentPath){
+function getPageSchema(name, contentDescription, pageComponentList, parentPath){
 
   return {
     "pageDefinition": {
@@ -146,7 +182,29 @@ function getPageSchema(name, parentPath){
               }
             },
             "pageElements": [
-              
+              {
+                "definition": {
+                  "fragment": {
+                    "key": "BASIC_COMPONENT-paragraph"
+                  },
+                  "fragmentConfig": {},
+                  "fragmentFields": [
+                    {
+                      "id": "element-text",
+                      "value": {
+                        "fragmentLink": {},
+                        "text": {
+                          "value_i18n": {
+                            "en_US": contentDescription + " <br/>[" + pageComponentList + "]"
+                          }
+                        },
+                      }
+                    }
+                  ],
+                  "indexed": true
+                },
+                "type": "Fragment"
+              }
             ],
             "type": "Section"
           }

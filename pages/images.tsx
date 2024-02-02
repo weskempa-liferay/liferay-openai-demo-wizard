@@ -19,7 +19,7 @@ const debug = logger('Images');
 export default function Images() {
   const [imageDescriptionInput, setImageDescriptionInput] = useState('');
   const [imageFolderIdInput, setImageFolderIdInput] = useState('');
-  const [imageGenerationType, setImageGenerationType] = useState('dall-e-2');
+  const [imageGenerationType, setImageGenerationType] = useState('dall-e-3');
   const [imageGenerationSize, setImageGenerationSize] = useState('1024x1024');
   const [imageGenerationQuality, setImageGenerationQuality] = useState('standard');
   const [imageNumberInput, setImageNumberInput] = useState('1');

@@ -9,8 +9,8 @@ export default function FieldImageType({ includeNone, inputChange }) {
         onChange={(event) => inputChange(event.target.value)}
       >
         {includeNone && <option value="none">None</option>}
-        <option value="dall-e-2">DALL·E 2 (Basic Images)</option>
         <option value="dall-e-3">DALL·E 3 (Highest-Quality Images)</option>
+        <option value="dall-e-2">DALL·E 2 (Basic Images)</option>
       </select>
     </label>
   );

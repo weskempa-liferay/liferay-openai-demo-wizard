@@ -7,6 +7,7 @@ import AppFooter from './components/appfooter';
 import AppHead from './components/apphead';
 import AppHeader from './components/appheader';
 import FieldString from './components/formfield-string';
+import FieldToggle from './components/formfield-toggle';
 import FieldSubmit from './components/formfield-submit';
 import LoadingAnimation from './components/loadinganimation';
 import ResultDisplay from './components/resultdisplay';
@@ -19,6 +20,7 @@ export default function Review() {
     useState('3');
   const [pageNumberInput, setPageNumberInput] = useState('8');
   const [siteIdInput, setSiteIdInput] = useState('');
+  const [addPageContentInput, setAddPageContent] = useState(true);
 
   const [result, setResult] = useState(() => '');
   const [isLoading, setIsLoading] = useState(false);
@@ -26,6 +28,10 @@ export default function Review() {
   const [appConfig, setAppConfig] = useState({
     model:functions.getDefaultAIModel()
   });
+
+  const handlePageContentChange = (value) => {
+    setAddPageContent(!addPageContentInput);
+  };
 
   async function onSubmit(event) {
     event.preventDefault();
@@ -37,6 +43,7 @@ export default function Review() {
         pageTopic: pageTopicInput,
         siteId:siteIdInput,
         pageNumber: pageNumberInput,
+        addPageContent:addPageContentInput,
         childPageNumber: childPageNumberInput
       }),
       headers: {
@@ -95,6 +102,13 @@ export default function Review() {
               label="Maximum Number of Child Pages"
               name="numberOfChildPages"
               placeholder="Enter a the max number of child pages to generate"
+            />
+
+            <FieldToggle
+              defaultValue={true}
+              fieldKey="addContent"
+              inputChange={handlePageContentChange}
+              name="Generate Page Content (EARLY RELEASE)"
             />
 
           </div>

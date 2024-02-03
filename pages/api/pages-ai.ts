@@ -14,6 +14,15 @@ export default async function SitesAction(req, res) {
   const start = new Date().getTime();
 
   debug(req.body);
+/*
+  if(true==true){
+
+    res.status(200).json({
+      result: 'returning early',
+    });
+    return false;
+  }
+  */
 
   const siteMapSchema = {
     properties: {
@@ -32,7 +41,7 @@ export default async function SitesAction(req, res) {
               type: 'string',
             },
             pageComponentList: {
-              description: 'A comma-delimited list of page expected components. Provide more than 1 if possible.',
+              description: 'A comma-delimited list of page expected components. Provide more than 1 if possible.  Do not include header, footer, and Sidebar as page elements.',
               type: 'string',
             },
             childpages: {
@@ -51,7 +60,7 @@ export default async function SitesAction(req, res) {
                     type: 'string',
                   },
                   childPageComponentList: {
-                    description: 'A comma-delimited list of expected page components. Provide more than 1 if possible.',
+                    description: 'A comma-delimited list of expected page components. Provide more than 1 if possible. Do not include header, footer, and Sidebar as page elements.',
                     type: 'string',
                   }
                 },
@@ -87,7 +96,7 @@ export default async function SitesAction(req, res) {
         role: 'user',
       },
     ],
-    // TODO - Some models provide inconsistant result here with gpt-3.5-turbo-u1106. Need to review
+    // TODO - gpt-3.5 models provide inconsistant result. Need to explore options.
     // Forcing newer model
     // model: req.body.config.model,
     model: "gpt-4",
@@ -113,6 +122,7 @@ export default async function SitesAction(req, res) {
         pages[i].name,
         pages[i].contentDescription,
         pages[i].pageComponentList,
+        req.body.addPageContent, 
         "home");
   
       const childpages = pages[i].childpages;
@@ -123,6 +133,7 @@ export default async function SitesAction(req, res) {
             childpages[j].childPageName,
             childpages[j].childPageContentDescription,
             childpages[j].childPageComponentList,
+            req.body.addPageContent, 
             pagePath);
         }
       }
@@ -143,10 +154,10 @@ export default async function SitesAction(req, res) {
   });
 }
 
-async function createSitePage(groupId, name, contentDescription, pageComponentList, parentPath) {
+async function createSitePage(groupId, name, contentDescription, pageComponentList, addPageContent, parentPath) {
   debug('Creating ' + name + ' with parent ' + parentPath);
   
-  const postBody = getPageSchema(name, contentDescription, pageComponentList, parentPath);
+  const postBody = getPageSchema(name, contentDescription, pageComponentList, addPageContent, parentPath);
 
   const orgApiPath =
     process.env.LIFERAY_PATH + '/o/headless-delivery/v1.0/sites/'+groupId+'/site-pages';
@@ -168,9 +179,9 @@ async function createSitePage(groupId, name, contentDescription, pageComponentLi
   return returnPath;
 }
 
-function getPageSchema(name, contentDescription, pageComponentList, parentPath){
+function getPageSchema(name, contentDescription, pageComponentList, addPageContent, parentPath){
 
-  return {
+  let pageSchema = {
     "pageDefinition": {
       "pageElement": {
         "pageElements": [
@@ -181,31 +192,7 @@ function getPageSchema(name, contentDescription, pageComponentList, parentPath){
                 "widthType": "Fixed"
               }
             },
-            "pageElements": [
-              {
-                "definition": {
-                  "fragment": {
-                    "key": "BASIC_COMPONENT-paragraph"
-                  },
-                  "fragmentConfig": {},
-                  "fragmentFields": [
-                    {
-                      "id": "element-text",
-                      "value": {
-                        "fragmentLink": {},
-                        "text": {
-                          "value_i18n": {
-                            "en_US": contentDescription + " <br/>[" + pageComponentList + "]"
-                          }
-                        },
-                      }
-                    }
-                  ],
-                  "indexed": true
-                },
-                "type": "Fragment"
-              }
-            ],
+            "pageElements": [],
             "type": "Section"
           }
         ],
@@ -262,4 +249,55 @@ function getPageSchema(name, contentDescription, pageComponentList, parentPath){
     },  
     "viewableBy": "Anyone"
   };
+  
+
+  pageSchema.pageDefinition.pageElement.pageElements[0].pageElements.push(
+    getContent("paragraph",contentDescription)
+  );
+
+  if(addPageContent){
+    let contentArray = pageComponentList.split(",");
+
+    for (let i = 0; i < contentArray.length; i++){
+      pageSchema.pageDefinition.pageElement.pageElements[0].pageElements.push(
+        getContent("paragraph","["+contentArray[i]+"]")
+      );
+    }
+  }
+
+  return pageSchema;
+}
+
+function getContent(contentType, content){
+  let appliedContent = {};
+  
+  if(contentType == "paragraph"){
+    appliedContent = 
+    {
+      "definition": {
+        "fragment": {
+          "key": "BASIC_COMPONENT-paragraph"
+        },
+        "fragmentConfig": {},
+        "fragmentFields": [
+          {
+            "id": "element-text",
+            "value": {
+              "fragmentLink": {},
+              "text": {
+                "value_i18n": {
+                  "en_US": content
+                }
+              },
+            }
+          }
+        ],
+        "indexed": true
+      },
+      "type": "Fragment"
+    };
+  }
+
+  return appliedContent;
+    
 }

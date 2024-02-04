@@ -108,7 +108,7 @@ export default function Review() {
               defaultValue={true}
               fieldKey="addContent"
               inputChange={handlePageContentChange}
-              name="Generate Page Content (EARLY RELEASE)"
+              name="Generate Page Content (EARLY RELEASE, increases content generation time)"
             />
 
           </div>
@@ -117,7 +117,7 @@ export default function Review() {
         </form>
 
         <p className="text-slate-100 text-center text-lg mb-3 rounded p-5 bg-white/10 w-1/2 italic">
-          <b>Note:</b> The AI generation of page lists was not dependable for GPT 3.5. Because of this, GPT 4.0 is automatically enforced.
+          <b>Note:</b> The AI generation of page lists was not dependable for GPT 3.5. Because of this, GPT 4.0 is automatically enforced for generating a complete page structure. Subsequent calls will use the selected model.
         </p>
 
         {isLoading ? (

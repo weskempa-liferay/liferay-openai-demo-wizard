@@ -41,7 +41,7 @@ export default async function SitesAction(req, res) {
               type: 'string',
             },
             pageComponentList: {
-              description: 'A comma-delimited list of page expected components. Provide more than 1 if possible.  Do not include header, footer, and Sidebar as page elements.',
+              description: 'A comma-delimited list of expected page components, not including not include Header, Footer, or Sidebar. Provide more than 1 if possible.',
               type: 'string',
             },
             childpages: {
@@ -60,9 +60,16 @@ export default async function SitesAction(req, res) {
                     type: 'string',
                   },
                   childPageComponentList: {
-                    description: 'A comma-delimited list of expected page components. Provide more than 1 if possible. Do not include header, footer, and Sidebar as page elements.',
+                    description: 'A comma-delimited list of expected page components, not including not include Header, Footer, or Sidebar. Provide more than 1 if possible.',
                     type: 'string',
-                  }
+                  },
+                  /*
+                  "unit": {
+                    "type": "string",
+                    "enum": ["login", "form", "product list"],
+                    "description": "Types of page components" 
+                  },
+                  */
                 },
                 required: ['name', 'contentDescription',"pageComponentList"],
                 type: 'object',
@@ -252,52 +259,176 @@ function getPageSchema(name, contentDescription, pageComponentList, addPageConte
   
 
   pageSchema.pageDefinition.pageElement.pageElements[0].pageElements.push(
-    getContent("paragraph",contentDescription)
+    getParagraph(contentDescription)
   );
 
   if(addPageContent){
     let contentArray = pageComponentList.split(",");
 
     for (let i = 0; i < contentArray.length; i++){
-      pageSchema.pageDefinition.pageElement.pageElements[0].pageElements.push(
-        getContent("paragraph","["+contentArray[i]+"]")
-      );
+      let type = contentArray[i].trim();
+      if(type!="Header" && type!="Footer" && type!="Sidebar" && type!="Search bar" && type!="Filters")
+        pageSchema.pageDefinition.pageElement.pageElements[0].pageElements.push(
+          getContent(type)
+        );
     }
   }
 
   return pageSchema;
 }
 
-function getContent(contentType, content){
+function getContent(contentType){
   let appliedContent = {};
+  let seed = contentType.toLowerCase();
   
-  if(contentType == "paragraph"){
-    appliedContent = 
-    {
-      "definition": {
-        "fragment": {
-          "key": "BASIC_COMPONENT-paragraph"
-        },
-        "fragmentConfig": {},
-        "fragmentFields": [
-          {
-            "id": "element-text",
-            "value": {
-              "fragmentLink": {},
-              "text": {
-                "value_i18n": {
-                  "en_US": content
-                }
-              },
-            }
-          }
-        ],
-        "indexed": true
-      },
-      "type": "Fragment"
-    };
+  if(seed.indexOf("blog")>-1){
+    //TODO Option to call Blog API
+    appliedContent = getBlog();
+  } else if (seed.indexOf("faq")>-1){
+    //TODO Option to call FAQ API
+    appliedContent = getCollectionDisplay();
+  } else if (seed.indexOf("order history")>-1){
+    appliedContent = getOrderHistory();
+  } else if (seed.indexOf("form")>-1){
+    //TODO Explore Object Schema Creation using AI Prompts
+    appliedContent = getFormContainer();
+  } else if (seed.indexOf("login")>-1 || seed.indexOf("sign in")>-1){
+    appliedContent = getLogin();
+  } else if (seed.indexOf("calendar")>-1){
+    appliedContent = getCalendar();
+  } else {
+    appliedContent = getParagraph(contentType);
   }
 
   return appliedContent;
     
 }
+
+function getCalendar(){
+  return {
+    "definition": {
+      "widgetInstance": {
+        "widgetConfig": {},
+        "widgetName": "com_liferay_calendar_web_portlet_CalendarPortlet"
+      }
+    },
+    "type": "Widget"
+  }
+}
+
+function getLogin(){
+  return {
+    "definition": {
+      "widgetInstance": {
+        "widgetConfig": {},
+        "widgetName": "com_liferay_login_web_portlet_LoginPortlet"
+      }
+    },
+    "type": "Widget"
+  }
+}
+
+function getFormContainer(){
+  return {
+    "definition": {
+      "formConfig": {
+        "formReference": {
+          "contextSource": "DisplayPageItem"
+        }
+      },
+      "indexed": true,
+      "layout": {}
+    },
+    "type": "Form"
+  }
+}
+
+function getOrderHistory(){
+  return {
+    "definition": {
+      "widgetInstance": {
+        "widgetConfig": {},
+        "widgetName": "com_liferay_commerce_order_content_web_internal_portlet_CommerceOrderContentPortlet"
+      }
+    },
+    "type": "Widget"
+  }
+}
+
+function getCollectionDisplay(){
+  return {
+    "definition": {
+      "collectionViewports": [
+        {
+          "collectionViewportDefinition": {
+            "numberOfColumns": 1
+          },
+          "id": "landscapeMobile"
+        },
+        {
+          "collectionViewportDefinition": {},
+          "id": "portraitMobile"
+        },
+        {
+          "collectionViewportDefinition": {},
+          "id": "tablet"
+        }
+      ],
+      "displayAllItems": false,
+      "displayAllPages": true,
+      "numberOfColumns": 1,
+      "numberOfItems": 5,
+      "numberOfItemsPerPage": 20,
+      "numberOfPages": 5,
+      "paginationType": "Numeric",
+      "showAllItems": false
+    },
+    "pageElements": [
+      {
+        "definition": {
+          "collectionItemConfig": {}
+        },
+        "type": "CollectionItem"
+      }
+    ],
+    "type": "Collection"
+  }
+}
+
+function getBlog(){
+  return {
+    "definition": {
+      "widgetInstance": {
+        "widgetConfig": {},
+        "widgetName": "com_liferay_blogs_web_portlet_BlogsPortlet"
+      }
+    },
+    "type": "Widget"
+  }
+}
+
+function getParagraph(content){
+  return {
+    "definition": {
+      "fragment": {
+        "key": "BASIC_COMPONENT-paragraph"
+      },
+      "fragmentConfig": {},
+      "fragmentFields": [
+        {
+          "id": "element-text",
+          "value": {
+            "fragmentLink": {},
+            "text": {
+              "value_i18n": {
+                "en_US": content
+              }
+            },
+          }
+        }
+      ],
+      "indexed": true
+    },
+    "type": "Fragment"
+  };
+};

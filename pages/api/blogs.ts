@@ -14,12 +14,11 @@ const openai = new OpenAI({
 const debug = logger('Blogs - Action');
 
 export default async function Action(req, res) {
+  let start = new Date().getTime();
+  debug(req.body);
+
   const runCount = req.body.blogNumber;
   const imageGeneration = req.body.imageGeneration;
-
-  debug('requesting ' + runCount + ' blog(s)');
-  debug('include images: ' + imageGeneration);
-  debug('blog language: ' + req.body.blogLanguage);
 
   const runCountMax = 10;
   const blogContentSet = [];
@@ -28,7 +27,7 @@ export default async function Action(req, res) {
     properties: {
       articles: {
         description:
-          'An array of ' + req.body.blogNumber + ' blog articles',
+          'An array of ' + runCount + ' blog articles',
         items: {
           properties: {
             headline: {
@@ -89,8 +88,6 @@ export default async function Action(req, res) {
     temperature: 0.8,
   });
 
-  debug(response);
-  debug(response.choices[0].message.function_call.arguments);
   let blogJsonArticles = JSON.parse(response.choices[0].message.function_call.arguments).articles;
 
   for (let i = 0; i < blogJsonArticles.length; i++) {
@@ -201,7 +198,7 @@ async function postBlogToLiferay(req, blogJson, imageId) {
   try {
     const response = await axios.post(apiPath, blogJson, options);
 
-    debug(response.data);
+    debug('Blog added with ID:' + response.data.id);
     debug('Blog Import Process Complete.');
   } catch (error) {
     debug(error);

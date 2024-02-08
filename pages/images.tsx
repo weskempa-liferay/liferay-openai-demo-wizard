@@ -45,7 +45,7 @@ export default function Images() {
   }, [imageGenerationType,imageGenerationSize,imageGenerationQuality,imageNumberInput]);
 
   useEffect(() => {
-    setDalliOptions(functions.getD2ImageSizeOptions());
+    setDalliOptions(functions.getD3ImageSizeOptions());
   }, []);
 
   const handleSetImageGenerationType = (value) => {

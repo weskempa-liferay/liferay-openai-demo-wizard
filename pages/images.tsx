@@ -26,7 +26,7 @@ export default function Images() {
   const [imageStyleInput, setImageStyleInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState('');
-  const [showStyleInput, setShowImageStyleInput] = useState(false);
+  const [showStyleInput, setShowImageStyleInput] = useState(true);
   const [submitLabel, setSubmitLabel] = useState('');
 
   const [dalliOptions, setDalliOptions] = useState([]);

@@ -18,7 +18,7 @@ Utilizing this OpenAI Wizard doesn't just speed up content creation, which many 
 - **Knowledge Base Folders and Articles**
 - **Message Board Sections, Threads, and Messages**
 - **Multilingual News Articles with Images**
-- **Custom Liferay Objects Schemas**
+- **Data for Custom Liferay Objects**
 - **Organization Structures**
 - **Page Hierarchies (AI Generation and File Upload)**
 - **Commerce Categories and Products with Images (AI Generation and File Upload)**

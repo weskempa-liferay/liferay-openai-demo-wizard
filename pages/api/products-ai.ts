@@ -130,7 +130,10 @@ export default async function ProductsAction(req, res) {
       '/o/headless-admin-taxonomy/v1.0/sites/' +
       globalSiteId +
       '/taxonomy-vocabularies';
-    let vocabPostObj = { name: req.body.vocabularyName };
+    let vocabPostObj = { 
+        name: req.body.vocabularyName,
+        viewableBy: "Anyone"
+      };
 
     let options = functions.getAPIOptions('POST', 'en-US');
 
@@ -165,7 +168,11 @@ export default async function ProductsAction(req, res) {
       categMap.set(currCategory, categoryId);
     } else {
 
-      currCategoryJson = { name: currCategory, taxonomyVocabularyId: vocabId };
+      currCategoryJson = { 
+        name: currCategory,
+        taxonomyVocabularyId: vocabId,
+        viewableBy: "Anyone"
+      };
 
       apiPath =
         process.env.LIFERAY_PATH +
@@ -268,7 +275,7 @@ export default async function ProductsAction(req, res) {
 
         if (imageGeneration != 'none') {
           let imagePrompt =
-            'Create a commerce product image for "' + productName + '", ' + shortDescription;
+            'Create a "' + req.body.companyTheme + '" commerce product image for "' + productName + '", ' + shortDescription;
 
           debug("Using image prompt: "+imagePrompt);
 

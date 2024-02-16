@@ -60,9 +60,9 @@ export default async function WarehousesAction(req, res) {
         role: 'user',
       },
     ],
-    model: req.body.config.model,
+    //model: req.body.config.model,
     // Default 3.5 model no longer appears to provide useful results. Forcing a newer model until this is corrected.
-    //model: "gpt-4-turbo-preview",
+    model: "gpt-4-turbo-preview",
     temperature: 0.6,
   });
 

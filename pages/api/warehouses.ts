@@ -20,7 +20,7 @@ export default async function WarehousesAction(req, res) {
       locations: {
         description:  'An array of ' +
                       req.body.warehouseNumber +
-                      ' warehouse locations a region',
+                      ' cities, regions, or counties within a region. ',
         items: {
           properties: {
             name: {
@@ -50,17 +50,19 @@ export default async function WarehousesAction(req, res) {
     messages: [
       {
         content:
-          'You are a helpful assistant tasked with listing warehouse locations within an area.',
+          'You are a helpful assistant tasked with listing cities, regions, or counties within an area.',
         role: 'system',
       },
       {
         content:
-          'Provide a list of ' +  req.body.warehouseNumber + ' warehouse locations with latitude and longitude within the region of ' +
+          'Provide a list of ' +  req.body.warehouseNumber + ' cities, regions, or counties with latitude and longitude within the region of ' +
           req.body.warehouseRegion + '. ',
         role: 'user',
       },
     ],
     model: req.body.config.model,
+    // Default 3.5 model no longer appears to provide useful results. Forcing a newer model until this is corrected.
+    //model: "gpt-4-turbo-preview",
     temperature: 0.6,
   });
 

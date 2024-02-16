@@ -82,7 +82,7 @@ export default function Review() {
         </form>
 
         <p className="text-slate-100 text-center text-lg mb-3 rounded p-5 bg-white/10 w-1/2 italic">
-          <b>Note:</b> The AI generation of page lists was not dependable for GPT 3.5. Because of this, GPT 4.0 Turbo Preview is automatically enforced.
+          <b>Note:</b> Recently the AI generation of warehouse lists became not dependable for GPT 3.5. Because of this, GPT 4.0 Turbo Preview is automatically enforced.
         </p>
 
         {isLoading ? (

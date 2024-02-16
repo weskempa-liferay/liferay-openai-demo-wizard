@@ -73,7 +73,7 @@ export default function UsersAI() {
             <FieldString
               defaultValue="liferay.xyz"
               inputChange={setEmailPrefixInput}
-              label="Email Prefix"
+              label="Email Domain (example.com)"
               name="companyEmailPrefix"
               placeholder="liferay.xyz"
             />

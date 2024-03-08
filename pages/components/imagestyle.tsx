@@ -1,4 +1,4 @@
-import { ArrowUpTrayIcon, XCircleIcon } from '@heroicons/react/24/solid';
+import { BookOpenIcon, XCircleIcon } from '@heroicons/react/24/solid';
 import { useEffect, useState } from 'react';
 import React from 'react';
 
@@ -59,7 +59,7 @@ export default function AppImageStyle({ styleInputChange }) {
         onClick={() => setShowModal(true)}
         type="button"
       >
-        <ArrowUpTrayIcon className="h-5 w-5 text-white" />
+        <BookOpenIcon className="h-5 w-5 text-white" />
       </button>
       {showModal && (
         <>

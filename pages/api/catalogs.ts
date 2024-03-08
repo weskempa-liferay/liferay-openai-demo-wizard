@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import functions from '../utils/functions';
+import functions from '../../utils/functions';
 
 export default async function Action(req, res) {
   const response = await getCatalogList();

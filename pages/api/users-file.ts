@@ -2,8 +2,8 @@ import axios from 'axios';
 import fs from 'fs';
 import request from 'request';
 
-import functions from '../utils/functions';
-import { logger } from '../utils/logger';
+import functions from '../../utils/functions';
+import { logger } from '../../utils/logger';
 
 const debug = logger('Users File - Action');
 

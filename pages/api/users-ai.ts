@@ -3,8 +3,8 @@ import fs from 'fs';
 import OpenAI from 'openai';
 import request from 'request';
 
-import functions from '../utils/functions';
-import { logger } from '../utils/logger';
+import functions from '../../utils/functions';
+import { logger } from '../../utils/logger';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -152,8 +152,13 @@ export default async function UsersAIAction(req, res) {
       successCount++;
     } catch (error) {
       errorCount++;
-      console.log(error.code + " for user " + 
-        userlist[i].alternateName + " | " + userlist[i].emailAddress);
+      console.log(
+        error.code +
+          ' for user ' +
+          userlist[i].alternateName +
+          ' | ' +
+          userlist[i].emailAddress
+      );
     }
   }
 

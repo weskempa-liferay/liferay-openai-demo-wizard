@@ -40,6 +40,29 @@ export default function Images() {
   });
 
   useEffect(() => {
+
+    const updateCost = () => {
+      let cost = '';
+
+      let imageSizeCost = getImageSizeCost(
+        imageGenerationType,
+        imageGenerationSize + '-' + imageGenerationQuality
+      );
+
+      if (isNaN(parseInt(imageNumberInput))) {
+        cost = '$0.00';
+      } else if (
+        imageGenerationType == 'dall-e-3' ||
+        imageGenerationType == 'dall-e-2'
+      ) {
+        cost = USDollar.format(parseInt(imageNumberInput) * imageSizeCost);
+      } else {
+        cost = '$0.02';
+      }
+
+      setSubmitLabel('Generate Images - Estimated cost: ' + cost);
+    };
+    
     updateCost();
   }, [
     imageGenerationType,
@@ -69,28 +92,6 @@ export default function Images() {
   const handleSetImageGenerationParams = (value) => {
     setImageGenerationSize(value.split('-')[0]);
     setImageGenerationQuality(value.split('-')[1]);
-  };
-
-  const updateCost = () => {
-    let cost = '';
-
-    let imageSizeCost = getImageSizeCost(
-      imageGenerationType,
-      imageGenerationSize + '-' + imageGenerationQuality
-    );
-
-    if (isNaN(parseInt(imageNumberInput))) {
-      cost = '$0.00';
-    } else if (
-      imageGenerationType == 'dall-e-3' ||
-      imageGenerationType == 'dall-e-2'
-    ) {
-      cost = USDollar.format(parseInt(imageNumberInput) * imageSizeCost);
-    } else {
-      cost = '$0.02';
-    }
-
-    setSubmitLabel('Generate Images - Estimated cost: ' + cost);
   };
 
   const getImageSizeCost = (type, size) => {

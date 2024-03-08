@@ -38,32 +38,34 @@ export default function Blogs() {
   const languageOptions = functions.getAvailableLanguages();
 
   useEffect(() => {
+
+    const updateCost = () => {
+      const USDollar = new Intl.NumberFormat('en-US', {
+        currency: 'USD',
+        style: 'currency',
+      });
+
+      setShowImageStyleInput(false);
+
+      let cost = '';
+
+      if (isNaN(parseInt(blogNumberInput))) {
+        cost = '$0.00';
+      } else if (imageGenerationType == 'dall-e-3') {
+        setShowImageStyleInput(true);
+        cost = USDollar.format(parseInt(blogNumberInput) * 0.04);
+      } else if (imageGenerationType == 'dall-e-2') {
+        cost = USDollar.format(parseInt(blogNumberInput) * 0.02);
+      } else {
+        cost = '<$0.01';
+      }
+
+      setSubmitLabel('Generate Blogs - Estimated cost: ' + cost);
+    };
+
     updateCost();
   }, [blogNumberInput, imageGenerationType]);
 
-  const updateCost = () => {
-    const USDollar = new Intl.NumberFormat('en-US', {
-      currency: 'USD',
-      style: 'currency',
-    });
-
-    setShowImageStyleInput(false);
-
-    let cost = '';
-
-    if (isNaN(parseInt(blogNumberInput))) {
-      cost = '$0.00';
-    } else if (imageGenerationType == 'dall-e-3') {
-      setShowImageStyleInput(true);
-      cost = USDollar.format(parseInt(blogNumberInput) * 0.04);
-    } else if (imageGenerationType == 'dall-e-2') {
-      cost = USDollar.format(parseInt(blogNumberInput) * 0.02);
-    } else {
-      cost = '<$0.01';
-    }
-
-    setSubmitLabel('Generate Blogs - Estimated cost: ' + cost);
-  };
 
   async function onSubmit(event) {
     event.preventDefault();

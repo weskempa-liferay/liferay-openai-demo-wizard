@@ -7,10 +7,10 @@ import {
 import { useEffect, useState } from 'react';
 import Cookies from 'universal-cookie';
 
+import FieldPassword from '../components/formfield-password';
+import FieldString from '../components/formfield-string';
 import functions from '../utils/functions';
 import FieldConfigSelect from './formfield-config-select';
-import FieldString from '../components/formfield-string';
-import FieldPassword from '../components/formfield-password';
 
 const cookies = new Cookies();
 
@@ -28,10 +28,10 @@ export default function AppFooter({ setConfig }) {
   const [base64data, setBase64data] = useState('');
 
   const [appConfig, setAppConfig] = useState({
-    model:functions.getDefaultAIModel(),
     base64data:'',
-    openAIKey:'',
     login:'',
+    model:functions.getDefaultAIModel(),
+    openAIKey:'',
     serverURL:''
   });
 
@@ -45,10 +45,10 @@ export default function AppFooter({ setConfig }) {
 
   const getConfigObject = () => {
     return {
-      model:aiModelSelect,
       base64data:base64data,
-      openAIKey:openAIKey,
       login:login,
+      model:aiModelSelect,
+      openAIKey:openAIKey,
       serverURL:serverURL
     };
   }
@@ -73,8 +73,8 @@ export default function AppFooter({ setConfig }) {
       APP_CONFIG,
       getConfigObject(),
       {
-        path: '/',
-        expires: new Date(Date.now()+2592000)
+        expires: new Date(Date.now()+2592000),
+        path: '/'
       }
     );
 
@@ -114,8 +114,8 @@ export default function AppFooter({ setConfig }) {
     
     fetch('/api/env',
       {
-        method: "POST", 
         body: JSON.stringify(appConfig), 
+        method: "POST", 
       })
       .then((res) => res.json())
       .then((json) => setEnv(json));
@@ -226,8 +226,8 @@ export default function AppFooter({ setConfig }) {
                                 
                         <FieldPassword
                           defaultValue=""
-                          inputChange={setPassword}
                           enterPressed={enterPressed}
+                          inputChange={setPassword}
                           label="Password"
                           name="password"
                           placeholder="Enter password (Password is never saved directly)"

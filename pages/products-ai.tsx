@@ -33,8 +33,8 @@ export default function Products() {
   const [isLoading, setIsLoading] = useState(false);
 
   const [appConfig, setAppConfig] = useState({
-    model: functions.getDefaultAIModel(),
-    base64data:''
+    base64data:'',
+    model: functions.getDefaultAIModel()
   });
 
   const onImageStyleInputChange = (value) => {
@@ -52,8 +52,8 @@ export default function Products() {
     const fetchData = async () => {
       const response = await fetch('/api/catalogs',
       {
-        method: "POST", 
-        body: JSON.stringify(appConfig),
+        body: JSON.stringify(appConfig), 
+        method: "POST",
       });
       const catalogs = await response.json();
 

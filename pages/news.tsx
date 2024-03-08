@@ -49,29 +49,30 @@ export default function News() {
   });
 
   useEffect(() => {
+
+    const updateCost = () => {
+      setShowImageStyleInput(false);
+      let cost = '';
+
+      showImageFolderInput(false);
+      if (isNaN(parseInt(newsNumberInput))) {
+        cost = '$0.00';
+      } else if (imageGenerationType == 'dall-e-3') {
+        setShowImageStyleInput(true);
+        cost = USDollar.format(parseInt(newsNumberInput) * 0.04);
+        showImageFolderInput(true);
+      } else if (imageGenerationType == 'dall-e-2') {
+        cost = USDollar.format(parseInt(newsNumberInput) * 0.02);
+        showImageFolderInput(true);
+      } else {
+        cost = '<$0.01';
+      }
+
+      setSubmitLabel('Generate News - Estimated cost: ' + cost);
+    };
+    
     updateCost();
   }, [newsNumberInput, imageGenerationType]);
-
-  const updateCost = () => {
-    setShowImageStyleInput(false);
-    let cost = '';
-
-    showImageFolderInput(false);
-    if (isNaN(parseInt(newsNumberInput))) {
-      cost = '$0.00';
-    } else if (imageGenerationType == 'dall-e-3') {
-      setShowImageStyleInput(true);
-      cost = USDollar.format(parseInt(newsNumberInput) * 0.04);
-      showImageFolderInput(true);
-    } else if (imageGenerationType == 'dall-e-2') {
-      cost = USDollar.format(parseInt(newsNumberInput) * 0.02);
-      showImageFolderInput(true);
-    } else {
-      cost = '<$0.01';
-    }
-
-    setSubmitLabel('Generate News - Estimated cost: ' + cost);
-  };
 
   const handleStructureClick = () => {
     downloadFile({

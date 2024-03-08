@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 
 export default function FieldPassword({
   defaultValue,
-  inputChange,
   enterPressed,
+  inputChange,
   label,
   name,
   placeholder,
@@ -34,10 +34,10 @@ export default function FieldPassword({
                                 border-gray-200 text-slate-700 rounded"
         name={name}
         onChange={(e) => handleInputChange(e.target.value)}
+        onKeyDown={handleKeyPress}
         placeholder={placeholder}
         type="password"
         value={input}
-        onKeyDown={handleKeyPress}
       />
     </label>
   );

@@ -27,6 +27,14 @@ const getBase64data = () => {
 };
 
 const functions = {
+  getAIModelOptions: () => {
+    return [
+      { id: 'gpt-3.5-turbo', name: 'GPT 3.5 Turbo' },
+      { id: 'gpt-3.5-turbo-1106', name: 'GPT 3.5 Turbo (u1106) - Default' },
+      { id: 'gpt-4', name: 'GPT 4.0' },
+      { id: 'gpt-4-turbo-preview', name: 'GPT 4.0 Turbo Preview (u0125)' }
+    ];
+  },
   getAPIOptions: (method, defaultLanguage) => {
     return {
       headers: {
@@ -38,43 +46,28 @@ const functions = {
       method: method
     };
   },
-  getViewOptions: () => {
+  getAvailableLanguages,
+  getBase64data,
+  getD2ImageSizeOptions: () => {
     return [
-      { id: 'Anyone', name: 'Anyone' },
-      { id: 'Members', name: 'Members' },
-      { id: 'Owner', name: 'Owner' }
+      { cost: 0.02, id: '1024x1024-standard', name: '1024x1024' },
+      { cost: 0.018, id: '512x512-standard', name: '512x512' },
+      { cost: 0.016, id: '256x256-standard', name: '256x256' }
     ];
   },
-  getAIModelOptions: () => {
+  getD3ImageSizeOptions: () => {
     return [
-      { id: 'gpt-3.5-turbo', name: 'GPT 3.5 Turbo' },
-      { id: 'gpt-3.5-turbo-1106', name: 'GPT 3.5 Turbo (u1106) - Default' },
-      { id: 'gpt-4', name: 'GPT 4.0' },
-      { id: 'gpt-4-turbo-preview', name: 'GPT 4.0 Turbo Preview (u0125)' }
+      { cost: 0.04, id: '1024x1024-standard', name: '1024x1024' },
+      { cost: 0.08, id: '1024x1792-standard', name: '1024x1792' },
+      { cost: 0.08, id: '1792x1024-standard', name: '1792x1024' },
+      { cost: 0.08, id: '1024x1024-hd', name: '1024x1024 HD' },
+      { cost: 0.12, id: '1024x1792-hd', name: '1024x1792 HD' },
+      { cost: 0.12, id: '1792x1024-hd', name: '1792x1024 HD' }
     ];
   },
   getDefaultAIModel: () => {
     return "gpt-3.5-turbo-1106";
   },
-  getD2ImageSizeOptions: () => {
-    return [
-      { name: '1024x1024', id: '1024x1024-standard', cost: 0.02 },
-      { name: '512x512', id: '512x512-standard', cost: 0.018 },
-      { name: '256x256', id: '256x256-standard', cost: 0.016 }
-    ];
-  },
-  getD3ImageSizeOptions: () => {
-    return [
-      { name: '1024x1024', id: '1024x1024-standard', cost: 0.04 },
-      { name: '1024x1792', id: '1024x1792-standard', cost: 0.08 },
-      { name: '1792x1024', id: '1792x1024-standard', cost: 0.08 },
-      { name: '1024x1024 HD', id: '1024x1024-hd', cost: 0.08 },
-      { name: '1024x1792 HD', id: '1024x1792-hd', cost: 0.12 },
-      { name: '1792x1024 HD', id: '1792x1024-hd', cost: 0.12 }
-    ];
-  },
-  getAvailableLanguages,
-  getBase64data,
   getFilePostOptions: (apiPath, fileStream, fileKey) => {
     let options = {
         formData: {},
@@ -97,6 +90,13 @@ const functions = {
     }
 
     return languages[0].name;
+  },
+  getViewOptions: () => {
+    return [
+      { id: 'Anyone', name: 'Anyone' },
+      { id: 'Members', name: 'Members' },
+      { id: 'Owner', name: 'Owner' }
+    ];
   },
   millisToMinutesAndSeconds: (millis) => {
     const date = new Date(millis);

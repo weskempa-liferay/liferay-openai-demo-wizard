@@ -2,22 +2,20 @@ import hljs from 'highlight.js';
 import { useEffect, useState } from 'react';
 import React from 'react';
 
-import functions from './utils/functions';
-import AppFooter from './components/appfooter';
-import AppHead from './components/apphead';
-import AppHeader from './components/appheader';
-import FieldImageType from './components/formfield-imagetype';
-import FieldString from './components/formfield-string';
-import FieldSelect from './components/formfield-select';
-import FieldSubmit from './components/formfield-submit';
-import ImageStyle from './components/imagestyle';
-import LoadingAnimation from './components/loadinganimation';
-import ResultDisplay from './components/resultdisplay';
-import { logger } from './utils/logger';
+import FieldImageType from '../components/formfield-imagetype';
+import FieldSelect from '../components/formfield-select';
+import FieldString from '../components/formfield-string';
+import FieldSubmit from '../components/formfield-submit';
+import ImageStyle from '../components/imagestyle';
+import Layout from '../components/layout';
+import LoadingAnimation from '../components/loadinganimation';
+import ResultDisplay from '../components/resultdisplay';
+import functions from '../utils/functions';
+import { logger } from '../utils/logger';
 
 const debug = logger('Blogs');
 
-export default function Review() {
+export default function Blogs() {
   const [blogLengthInput, setBlogLengthInput] = useState('200');
   const [blogNumberInput, setBlogNumberInput] = useState('3');
   const [blogTopicInput, setBlogTopicInput] = useState('');
@@ -34,7 +32,7 @@ export default function Review() {
   const viewOptions = functions.getViewOptions();
 
   const [appConfig, setAppConfig] = useState({
-    model:functions.getDefaultAIModel()
+    model: functions.getDefaultAIModel(),
   });
 
   const languageOptions = functions.getAvailableLanguages();
@@ -73,15 +71,15 @@ export default function Review() {
 
     const response = await fetch('/api/blogs', {
       body: JSON.stringify({
-        config: appConfig,
+        blogLanguage: blogLanguageInput,
         blogLength: blogLengthInput,
         blogNumber: blogNumberInput,
-        blogLanguage: blogLanguageInput,
         blogTopic: blogTopicInput,
-        viewOptions: viewOptionsInput,
+        config: appConfig,
         imageGeneration: imageGenerationType,
         imageStyle: imageStyleInput,
         siteId: siteIdInput,
+        viewOptions: viewOptionsInput,
       }),
       headers: {
         'Content-Type': 'application/json',
@@ -98,81 +96,74 @@ export default function Review() {
   }
 
   return (
-    <div>
-      <AppHead title="Blog Generator" />
+    <Layout
+      description={`Type your topic in the field below and wait for your blogs. Examples of blog topics are "leadership skills and lessons learned", "aerospace engineering news", or "technology advancements in the medical field".`}
+      setAppConfig={setAppConfig}
+      title="Liferay Blog Generator"
+    >
+      <form onSubmit={onSubmit}>
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 md:gap-4 mb-5">
+          <FieldString
+            defaultValue=""
+            inputChange={setBlogTopicInput}
+            label="Blog Topic"
+            name="topic"
+            placeholder="Enter a blog topic"
+          />
 
-      <main className="py-20 flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
-        <AppHeader
-          desc='Type your topic in the field below and wait for your blogs. Examples of blog topics are "leadership skills and lessons learned", "aerospace engineering news", or "technology advancements in the medical field".'
-          title="Liferay Blog Generator"
-        />
+          <FieldString
+            defaultValue="3"
+            inputChange={setBlogNumberInput}
+            label="Number of Posts to Create (Max 10)"
+            name="blogNumber"
+            placeholder="Number of blog posts"
+          />
 
-        <form onSubmit={onSubmit}>
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 md:gap-4 mb-5">
-            <FieldString
-              defaultValue=""
-              inputChange={setBlogTopicInput}
-              label="Blog Topic"
-              name="topic"
-              placeholder="Enter a blog topic"
-            />
+          <FieldString
+            defaultValue="200"
+            inputChange={setBlogLengthInput}
+            label="Expected Blog Post Length (in # of words)"
+            name="blogLength"
+            placeholder="Enter a the expected blog length"
+          />
 
-            <FieldString
-              defaultValue="3"
-              inputChange={setBlogNumberInput}
-              label="Number of Posts to Create (Max 10)"
-              name="blogNumber"
-              placeholder="Number of blog posts"
-            />
+          <FieldString
+            defaultValue=""
+            inputChange={setSiteIdInput}
+            label="Site ID or Asset Library Group ID"
+            name="siteId"
+            placeholder="Enter a site ID or asset library group ID"
+          />
 
-            <FieldString
-              defaultValue="200"
-              inputChange={setBlogLengthInput}
-              label="Expected Blog Post Length (in # of words)"
-              name="blogLength"
-              placeholder="Enter a the expected blog length"
-            />
+          <FieldSelect
+            inputChange={setBlogLanguageInput}
+            label="Blog Language"
+            name="blogLanguage"
+            optionMap={languageOptions}
+          />
 
-            <FieldString
-              defaultValue=""
-              inputChange={setSiteIdInput}
-              label="Site ID or Asset Library Group ID"
-              name="siteId"
-              placeholder="Enter a site ID or asset library group ID"
-            />
-            
-            <FieldSelect
-              inputChange={setBlogLanguageInput}
-              label="Blog Language"
-              name="blogLanguage"
-              optionMap={languageOptions}
-            />
+          <FieldSelect
+            inputChange={setViewOptionsSelect}
+            label="View Options"
+            name="viewOption"
+            optionMap={viewOptions}
+          />
 
-            <FieldSelect
-              inputChange={setViewOptionsSelect}
-              label="View Options"
-              name="viewOption"
-              optionMap={viewOptions}
-            />
+          <FieldImageType includeNone inputChange={setImageGenerationType} />
 
-            <FieldImageType includeNone inputChange={setImageGenerationType} />
+          {showStyleInput && (
+            <ImageStyle styleInputChange={setImageStyleInput} />
+          )}
+        </div>
 
-            {showStyleInput && (
-              <ImageStyle styleInputChange={setImageStyleInput} />
-            )}
-          </div>
+        <FieldSubmit disabled={isLoading} label={submitLabel} />
+      </form>
 
-          <FieldSubmit disabled={isLoading} label={submitLabel} />
-        </form>
-
-        {isLoading ? (
-          <LoadingAnimation />
-        ) : (
-          result && <ResultDisplay result={result} />
-        )}
-      </main>
-
-      <AppFooter setConfig={setAppConfig}/>
-    </div>
+      {isLoading ? (
+        <LoadingAnimation />
+      ) : (
+        result && <ResultDisplay result={result} />
+      )}
+    </Layout>
   );
 }

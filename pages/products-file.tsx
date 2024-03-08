@@ -1,19 +1,17 @@
 import hljs from 'highlight.js';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import React from 'react';
 
-import functions from './utils/functions';
-import AppFooter from './components/appfooter';
-import AppHead from './components/apphead';
-import AppHeader from './components/appheader';
-import TopNavItem from './components/apptopnavitem';
-import FieldFile from './components/formfield-file';
-import FieldString from './components/formfield-string';
-import FieldSelect from './components/formfield-select';
-import FieldSubmit from './components/formfield-submit';
-import LoadingAnimation from './components/loadinganimation';
-import ResultDisplay from './components/resultdisplay';
-import { logger } from './utils/logger';
+import TopNavItem from '../components/apptopnavitem';
+import FieldFile from '../components/formfield-file';
+import FieldSelect from '../components/formfield-select';
+import FieldString from '../components/formfield-string';
+import FieldSubmit from '../components/formfield-submit';
+import Layout from '../components/layout';
+import LoadingAnimation from '../components/loadinganimation';
+import ResultDisplay from '../components/resultdisplay';
+import functions from '../utils/functions';
+import { logger } from '../utils/logger';
 
 const debug = logger('ProductsFile');
 
@@ -21,13 +19,13 @@ export default function ProductsFile() {
   const [file, setFile] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [globalSiteIdInput, setGlobalSiteIdInput] = useState('');
-  const [vocabularyNameInput,setVocabularyNameInput] = useState("Furniture");
+  const [vocabularyNameInput, setVocabularyNameInput] = useState('Furniture');
   const [productCatalogSelect, setProductCatalogSelect] = useState('');
   const [productCatalogOptions, setProductCatalogOptions] = useState([]);
   const [result, setResult] = useState(() => '');
 
   const [appConfig, setAppConfig] = useState({
-    model:functions.getDefaultAIModel()
+    model: functions.getDefaultAIModel(),
   });
 
   useEffect(() => {
@@ -44,7 +42,6 @@ export default function ProductsFile() {
 
     fetchData();
   }, []);
-
 
   const handleOnChange = (file) => {
     setFile(file.target.files[0]);
@@ -92,11 +89,11 @@ export default function ProductsFile() {
     setIsLoading(true);
     const response = await fetch('/api/products-file', {
       body: JSON.stringify({
+        catalogId: productCatalogSelect,
         config: appConfig,
         csvoutput: csvOutput,
-        catalogId: productCatalogSelect,
         gloablSiteId: globalSiteIdInput,
-        vocabularyName: vocabularyNameInput
+        vocabularyName: vocabularyNameInput,
       }),
       headers: {
         'Content-Type': 'application/json',
@@ -113,72 +110,61 @@ export default function ProductsFile() {
   }
 
   return (
-    <div>
-      <AppHead title="Products Generator" />
-
-      <main className="py-20 flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
-        <AppHeader
-          desc="Use the form below to create products."
-          title="Liferay Products Generator"
+    <Layout
+      description="Use the form below to create products."
+      setAppConfig={setAppConfig}
+      title="Liferay Products Generator"
+    >
+      <div className="fixed top-2 right-5 text-lg download-options p-5 rounded">
+        <TopNavItem
+          label="Example products CSV File"
+          onClick={handleExampleClick}
         />
+      </div>
 
-        <div className="fixed top-2 right-5 text-lg download-options p-5 rounded">
-          <TopNavItem
-            label="Example products CSV File"
-            onClick={handleExampleClick}
+      <form onSubmit={onSubmit}>
+        <div className="w-700 grid grid-cols-1 gap-2 sm:grid-cols-3 mb-5">
+          <FieldString
+            defaultValue="Furniture"
+            inputChange={setVocabularyNameInput}
+            label="Name of Product Vocabulary"
+            name="nameOfProductVocabulary"
+            placeholder="Name of the product vocabulary"
+          />
+
+          <FieldString
+            defaultValue=""
+            inputChange={setGlobalSiteIdInput}
+            label="Global Site ID for Taxonomy"
+            name="globalSiteId"
+            placeholder="Enter the global site ID"
+          />
+
+          <FieldSelect
+            inputChange={setProductCatalogSelect}
+            label="Product Catalog"
+            name="productCatalogSelect"
+            optionMap={productCatalogOptions}
           />
         </div>
 
-        <form onSubmit={onSubmit}>
-          <div className="w-700 grid grid-cols-1 gap-2 sm:grid-cols-3 mb-5">
+        <div className="w-700 grid grid-cols-1 gap-2 sm:grid-cols-1 mb-5">
+          <FieldFile
+            accept=".csv"
+            inputChange={handleOnChange}
+            label="Products CSV File"
+            name="fileUpload"
+          />
+        </div>
 
-            <FieldString
-              defaultValue="Furniture"
-              inputChange={setVocabularyNameInput}
-              label="Name of Product Vocabulary"
-              name="nameOfProductVocabulary"
-              placeholder="Name of the product vocabulary"
-            />
+        <FieldSubmit disabled={isLoading} label={'Import Products'} />
+      </form>
 
-            <FieldString
-              defaultValue=""
-              inputChange={setGlobalSiteIdInput}
-              label="Global Site ID for Taxonomy"
-              name="globalSiteId"
-              placeholder="Enter the global site ID"
-            />
-
-            <FieldSelect
-              inputChange={setProductCatalogSelect}
-              label="Product Catalog"
-              name="productCatalogSelect"
-              optionMap={productCatalogOptions}
-            />
-          
-          </div>
-
-          <div className="w-700 grid grid-cols-1 gap-2 sm:grid-cols-1 mb-5">
-
-            <FieldFile
-              inputChange={handleOnChange}
-              label="Products CSV File"
-              name="fileUpload"
-              accept=".csv"
-            />
-
-          </div>
-
-          <FieldSubmit disabled={isLoading} label={'Import Products'} />
-        </form>
-
-        {isLoading ? (
-          <LoadingAnimation />
-        ) : (
-          result && <ResultDisplay result={result} />
-        )}
-      </main>
-
-      <AppFooter setConfig={setAppConfig}/>
-    </div>
+      {isLoading ? (
+        <LoadingAnimation />
+      ) : (
+        result && <ResultDisplay result={result} />
+      )}
+    </Layout>
   );
 }

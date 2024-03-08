@@ -1,18 +1,16 @@
 import hljs from 'highlight.js';
 import { useEffect, useState } from 'react';
 
-import functions from './utils/functions';
-import AppFooter from './components/appfooter';
-import AppHead from './components/apphead';
-import AppHeader from './components/appheader';
-import FieldImageType from './components/formfield-imagetype';
-import FieldString from './components/formfield-string';
-import FieldSelect from './components/formfield-select';
-import FieldSubmit from './components/formfield-submit';
-import ImageStyle from './components/imagestyle';
-import LoadingAnimation from './components/loadinganimation';
-import ResultDisplay from './components/resultdisplay';
-import { logger } from './utils/logger';
+import FieldImageType from '../components/formfield-imagetype';
+import FieldSelect from '../components/formfield-select';
+import FieldString from '../components/formfield-string';
+import FieldSubmit from '../components/formfield-submit';
+import ImageStyle from '../components/imagestyle';
+import Layout from '../components/layout';
+import LoadingAnimation from '../components/loadinganimation';
+import ResultDisplay from '../components/resultdisplay';
+import functions from '../utils/functions';
+import { logger } from '../utils/logger';
 
 const debug = logger('Images');
 
@@ -21,7 +19,8 @@ export default function Images() {
   const [imageFolderIdInput, setImageFolderIdInput] = useState('');
   const [imageGenerationType, setImageGenerationType] = useState('dall-e-3');
   const [imageGenerationSize, setImageGenerationSize] = useState('1024x1024');
-  const [imageGenerationQuality, setImageGenerationQuality] = useState('standard');
+  const [imageGenerationQuality, setImageGenerationQuality] =
+    useState('standard');
   const [imageNumberInput, setImageNumberInput] = useState('1');
   const [imageStyleInput, setImageStyleInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -32,7 +31,7 @@ export default function Images() {
   const [dalliOptions, setDalliOptions] = useState([]);
 
   const [appConfig, setAppConfig] = useState({
-    model:functions.getDefaultAIModel()
+    model: functions.getDefaultAIModel(),
   });
 
   let USDollar = new Intl.NumberFormat('en-US', {
@@ -42,42 +41,50 @@ export default function Images() {
 
   useEffect(() => {
     updateCost();
-  }, [imageGenerationType,imageGenerationSize,imageGenerationQuality,imageNumberInput]);
+  }, [
+    imageGenerationType,
+    imageGenerationSize,
+    imageGenerationQuality,
+    imageNumberInput,
+  ]);
 
   useEffect(() => {
     setDalliOptions(functions.getD3ImageSizeOptions());
   }, []);
 
   const handleSetImageGenerationType = (value) => {
-
     setImageGenerationType(value);
-    setImageGenerationSize("1024x1024");
-    setImageGenerationQuality("standard");
+    setImageGenerationSize('1024x1024');
+    setImageGenerationQuality('standard');
 
     if (value == 'dall-e-2') {
       setShowImageStyleInput(false);
       setDalliOptions(functions.getD2ImageSizeOptions());
-    } else if (value == 'dall-e-3'){
+    } else if (value == 'dall-e-3') {
       setShowImageStyleInput(true);
       setDalliOptions(functions.getD3ImageSizeOptions());
     }
   };
 
   const handleSetImageGenerationParams = (value) => {
-    setImageGenerationSize(value.split("-")[0]);
-    setImageGenerationQuality(value.split("-")[1]);
-  }
+    setImageGenerationSize(value.split('-')[0]);
+    setImageGenerationQuality(value.split('-')[1]);
+  };
 
   const updateCost = () => {
-
     let cost = '';
 
-    let imageSizeCost = getImageSizeCost(imageGenerationType,
-       imageGenerationSize+"-"+imageGenerationQuality);
+    let imageSizeCost = getImageSizeCost(
+      imageGenerationType,
+      imageGenerationSize + '-' + imageGenerationQuality
+    );
 
     if (isNaN(parseInt(imageNumberInput))) {
       cost = '$0.00';
-    } else if (imageGenerationType == 'dall-e-3' || imageGenerationType == 'dall-e-2') {
+    } else if (
+      imageGenerationType == 'dall-e-3' ||
+      imageGenerationType == 'dall-e-2'
+    ) {
       cost = USDollar.format(parseInt(imageNumberInput) * imageSizeCost);
     } else {
       cost = '$0.02';
@@ -89,18 +96,17 @@ export default function Images() {
   const getImageSizeCost = (type, size) => {
     let imgCost = 0.02;
     let options = functions.getD2ImageSizeOptions();
-    
-    if(type == 'dall-e-3')
-      options = functions.getD3ImageSizeOptions();
 
-    for(let i = 0; i < options.length; i++){
-      if(options[i].id==size){
+    if (type == 'dall-e-3') options = functions.getD3ImageSizeOptions();
+
+    for (let i = 0; i < options.length; i++) {
+      if (options[i].id == size) {
         return options[i].cost;
       }
     }
 
     return imgCost;
-  }
+  };
 
   async function onSubmit(event) {
     event.preventDefault();
@@ -111,8 +117,8 @@ export default function Images() {
         imageDescription: imageDescriptionInput,
         imageFolderId: imageFolderIdInput,
         imageGeneration: imageGenerationType,
-        imageGenerationSize: imageGenerationSize,
         imageGenerationQuality: imageGenerationQuality,
+        imageGenerationSize: imageGenerationSize,
         imageNumber: imageNumberInput,
         imageStyle: imageStyleInput,
       }),
@@ -131,73 +137,66 @@ export default function Images() {
   }
 
   return (
-    <div>
-      <AppHead title={'Image Generator'} />
+    <Layout
+      description="Type your topic in the field below and wait for your images."
+      setAppConfig={setAppConfig}
+      title="Liferay Image Generator"
+    >
+      <form onSubmit={onSubmit}>
+        <div className="w-700 grid grid-cols-1 gap-2 sm:grid-cols-1 md:gap-4 mb-5">
+          <FieldString
+            defaultValue=""
+            inputChange={setImageDescriptionInput}
+            label="Enter an Image Description"
+            name="imageDescription"
+            placeholder={
+              'Provide a detailed description of the image(s) you want to generate.'
+            }
+          />
+        </div>
 
-      <main className="py-20 flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
-        <AppHeader
-          desc={'Type your topic in the field below and wait for your images.'}
-          title={'Liferay Image Generator'}
-        />
+        <div className="w-700 grid grid-cols-2 gap-2 sm:grid-cols-2 md:gap-4 mb-5">
+          <FieldString
+            defaultValue="1"
+            inputChange={setImageNumberInput}
+            label="Number of Images to Generate (Max 10)"
+            name="imageNumber"
+            placeholder="Number of images"
+          />
 
-        <form onSubmit={onSubmit}>
-          <div className="w-700 grid grid-cols-1 gap-2 sm:grid-cols-1 md:gap-4 mb-5">
-            <FieldString
-              defaultValue=''
-              inputChange={setImageDescriptionInput}
-              label='Enter an Image Description'
-              name='imageDescription'
-              placeholder={
-                'Provide a detailed description of the image(s) you want to generate.'
-              }
-            />
-          </div>
+          <FieldString
+            defaultValue=""
+            inputChange={setImageFolderIdInput}
+            label="Image Folder ID"
+            name="imageFolderId"
+            placeholder="Enter a Document Library Folder ID"
+          />
 
-          <div className="w-700 grid grid-cols-2 gap-2 sm:grid-cols-2 md:gap-4 mb-5">
-            <FieldString
-              defaultValue="1"
-              inputChange={setImageNumberInput}
-              label="Number of Images to Generate (Max 10)"
-              name="imageNumber"
-              placeholder="Number of images"
-            />
+          <FieldImageType
+            includeNone={false}
+            inputChange={handleSetImageGenerationType}
+          />
 
-            <FieldString
-              defaultValue=""
-              inputChange={setImageFolderIdInput}
-              label="Image Folder ID"
-              name="imageFolderId"
-              placeholder="Enter a Document Library Folder ID"
-            />
+          <FieldSelect
+            inputChange={handleSetImageGenerationParams}
+            label="Image Size"
+            name="imageSize"
+            optionMap={dalliOptions}
+          />
 
-            <FieldImageType
-              includeNone={false}
-              inputChange={handleSetImageGenerationType}
-            />
+          {showStyleInput && (
+            <ImageStyle styleInputChange={setImageStyleInput} />
+          )}
+        </div>
 
-            <FieldSelect
-              inputChange={handleSetImageGenerationParams}
-              label="Image Size"
-              name="imageSize"
-              optionMap={dalliOptions}
-            />
+        <FieldSubmit disabled={isLoading} label={submitLabel} />
+      </form>
 
-            {showStyleInput && (
-              <ImageStyle styleInputChange={setImageStyleInput} />
-            )}
-          </div>
-
-          <FieldSubmit disabled={isLoading} label={submitLabel} />
-        </form>
-
-        {isLoading ? (
-          <LoadingAnimation />
-        ) : (
-          result && <ResultDisplay result={result} />
-        )}
-      </main>
-
-      <AppFooter setConfig={setAppConfig}/>
-    </div>
+      {isLoading ? (
+        <LoadingAnimation />
+      ) : (
+        result && <ResultDisplay result={result} />
+      )}
+    </Layout>
   );
 }

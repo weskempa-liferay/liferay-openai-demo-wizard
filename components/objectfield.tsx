@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
-import FieldSelect from './../components/formfield-select';
-import FieldString from './../components/formfield-string';
+import FieldSelect from './formfield-select';
+import FieldString from './formfield-string';
 
 const fieldOptions = [{ id: 'string', name: 'String' }];
 

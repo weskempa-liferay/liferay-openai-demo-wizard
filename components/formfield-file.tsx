@@ -1,4 +1,4 @@
-export default function FieldFile({ inputChange, label, name, accept }) {
+export default function FieldFile({ accept, inputChange, label, name }) {
   return (
     <label
       className="block mb-2 text-sm font-medium text-gray-200"

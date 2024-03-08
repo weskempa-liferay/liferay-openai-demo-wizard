@@ -1,8 +1,8 @@
 import { RocketLaunchIcon } from '@heroicons/react/24/solid';
 
-import AppFooter from './components/appfooter';
-import AppHead from './components/apphead';
-import NavItem from './components/navitem';
+import AppFooter from '../components/footer';
+import AppHead from '../components/head';
+import NavItem from '../components/navitem';
 
 const navItems = [
   {
@@ -16,14 +16,12 @@ const navItems = [
     title: 'Blogs',
   },
   {
-    description:
-      'Create a taxonomy and category structure based on a theme.',
+    description: 'Create a taxonomy and category structure based on a theme.',
     path: '/categories',
     title: 'Categories',
   },
   {
-    description:
-      'Create a set of multilingual FAQs based on a topic.',
+    description: 'Create a set of multilingual FAQs based on a topic.',
     path: '/faqs',
     title: 'FAQs',
   },
@@ -34,26 +32,22 @@ const navItems = [
     title: 'Images',
   },
   {
-    description:
-      'Create knowledge base folders and articles based on a topic.',
+    description: 'Create knowledge base folders and articles based on a topic.',
     path: '/knowledgebase',
     title: 'Knowledge Base',
   },
   {
-    description:
-      'Choose a topic to create message board sections and threads.',
+    description: 'Choose a topic to create message board sections and threads.',
     path: '/messageboard',
     title: 'Message Boards',
   },
   {
-    description:
-      'Create a set of multilingual news articles based on a topic.',
+    description: 'Create a set of multilingual news articles based on a topic.',
     path: '/news',
     title: 'News',
   },
   {
-    description:
-      'Populate a custom object with records based on a prompt.',
+    description: 'Populate a custom object with records based on a prompt.',
     path: '/objects',
     title: 'Objects',
   },
@@ -69,8 +63,7 @@ const navItems = [
     title: 'Page Hierarchies',
   },
   {
-    description:
-      'Use a company theme to generate products and categories.',
+    description: 'Use a company theme to generate products and categories.',
     path: '/products',
     title: 'Products',
   },
@@ -93,12 +86,11 @@ const navItems = [
     description: 'Create a set of wiki nodes and pages based on a prompt.',
     path: '/wikis',
     title: 'Wikis',
-  }
+  },
 ];
 
 const HomePage = () => {
-
-  const setAppConfig = () => {}
+  const setAppConfig = () => {};
 
   return (
     <>
@@ -107,7 +99,8 @@ const HomePage = () => {
       <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
         <div className="container flex flex-col items-center justify-center gap-12 px-4 pt-6 pb-20">
           <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-[4rem]">
-            Liferay <span className="text-[hsl(210,70%,50%)]">OpenAI</span> Content Wizard
+            Liferay <span className="text-[hsl(210,70%,50%)]">OpenAI</span>{' '}
+            Content Wizard
             <RocketLaunchIcon className="inline pl-3 h-20 w-20 relative bottom-2 text-[hsl(210,50%,80%)]" />
           </h1>
 
@@ -118,7 +111,7 @@ const HomePage = () => {
           </div>
         </div>
 
-        <AppFooter setConfig={setAppConfig}/>
+        <AppFooter setConfig={setAppConfig} />
       </main>
     </>
   );

@@ -2,16 +2,14 @@ import hljs from 'highlight.js';
 import { useState } from 'react';
 import React from 'react';
 
-import functions from './utils/functions';
-import AppFooter from './components/appfooter';
-import AppHead from './components/apphead';
-import AppHeader from './components/appheader';
-import FieldString from './components/formfield-string';
-import FieldSubmit from './components/formfield-submit';
-import LoadingAnimation from './components/loadinganimation';
-import ResultDisplay from './components/resultdisplay';
+import FieldString from '../components/formfield-string';
+import FieldSubmit from '../components/formfield-submit';
+import Layout from '../components/layout';
+import LoadingAnimation from '../components/loadinganimation';
+import ResultDisplay from '../components/resultdisplay';
+import functions from '../utils/functions';
 
-export default function Review() {
+export default function Organizations() {
   const [organizationTopicInput, setOrganizationTopicInput] = useState(
     'National Internet, Phone, and Cable'
   );
@@ -23,17 +21,17 @@ export default function Review() {
   const [isLoading, setIsLoading] = useState(false);
 
   const [appConfig, setAppConfig] = useState({
-    model:functions.getDefaultAIModel()
+    model: functions.getDefaultAIModel(),
   });
 
   async function onSubmit(event) {
     event.preventDefault();
     setIsLoading(true);
-    
+
     const response = await fetch('/api/organizations', {
       body: JSON.stringify({
-        config: appConfig,
         childOrganizationtNumber: childOrganizationtNumberInput,
+        config: appConfig,
         departmentNumber: departmentNumberInput,
         organizationTopic: organizationTopicInput,
       }),
@@ -52,53 +50,46 @@ export default function Review() {
   }
 
   return (
-    <div>
-      <AppHead title="Organization Generator" />
+    <Layout
+      description='Type your business description in the field below and wait for your organization. Examples of business descriptions are "automotive supplies", "medical equipment", or "government services".'
+      setAppConfig={setAppConfig}
+      title="Liferay Organization Generator"
+    >
+      <form onSubmit={onSubmit}>
+        <div className="w-700 grid grid-cols-2 gap-2 sm:grid-cols-2 md:gap-4 mb-5">
+          <FieldString
+            defaultValue="National Internet, Phone, and Cable"
+            inputChange={setOrganizationTopicInput}
+            label="Business Description"
+            name="businessDescription"
+            placeholder="Enter a business description"
+          />
 
-      <main className="py-20 flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
-        <AppHeader
-          desc='Type your business description in the field below and wait for your organization. Examples of business descriptions are "automotive supplies", "medical equipment", or "government services".'
-          title='Liferay Organization Generator'
-        />
+          <FieldString
+            defaultValue="3"
+            inputChange={setChildOrganizationtNumberInput}
+            label="Number of Child Organizations"
+            name="numberOfChildOrganizations"
+            placeholder="Enter a the number of child organizations to generate"
+          />
 
-        <form onSubmit={onSubmit}>
-          <div className="w-700 grid grid-cols-2 gap-2 sm:grid-cols-2 md:gap-4 mb-5">
-            <FieldString
-              defaultValue="National Internet, Phone, and Cable"
-              inputChange={setOrganizationTopicInput}
-              label="Business Description"
-              name="businessDescription"
-              placeholder="Enter a business description"
-            />
+          <FieldString
+            defaultValue="3"
+            inputChange={setDepartmentNumberInput}
+            label="Number of Departments"
+            name="numberOfDepartments"
+            placeholder="Enter a the number of departments to generate"
+          />
+        </div>
 
-            <FieldString
-              defaultValue="3"
-              inputChange={setChildOrganizationtNumberInput}
-              label="Number of Child Organizations"
-              name="numberOfChildOrganizations"
-              placeholder="Enter a the number of child organizations to generate"
-            />
+        <FieldSubmit disabled={isLoading} label="Generate Organization" />
+      </form>
 
-            <FieldString
-              defaultValue="3"
-              inputChange={setDepartmentNumberInput}
-              label="Number of Departments"
-              name="numberOfDepartments"
-              placeholder="Enter a the number of departments to generate"
-            />
-          </div>
-
-          <FieldSubmit disabled={isLoading} label="Generate Organization" />
-        </form>
-
-        {isLoading ? (
-          <LoadingAnimation />
-        ) : (
-          result && <ResultDisplay result={result} />
-        )}
-      </main>
-
-      <AppFooter setConfig={setAppConfig}/>
-    </div>
+      {isLoading ? (
+        <LoadingAnimation />
+      ) : (
+        result && <ResultDisplay result={result} />
+      )}
+    </Layout>
   );
 }

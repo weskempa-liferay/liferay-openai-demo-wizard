@@ -2,18 +2,16 @@ import hljs from 'highlight.js';
 import { useEffect, useState } from 'react';
 import React from 'react';
 
-import functions from './utils/functions';
-import AppFooter from './components/appfooter';
-import AppHead from './components/apphead';
-import AppHeader from './components/appheader';
-import FieldImageType from './components/formfield-imagetype';
-import FieldSelect from './components/formfield-select';
-import FieldString from './components/formfield-string';
-import FieldSubmit from './components/formfield-submit';
-import ImageStyle from './components/imagestyle';
-import LoadingAnimation from './components/loadinganimation';
-import ResultDisplay from './components/resultdisplay';
-import { logger } from './utils/logger';
+import FieldImageType from '../components/formfield-imagetype';
+import FieldSelect from '../components/formfield-select';
+import FieldString from '../components/formfield-string';
+import FieldSubmit from '../components/formfield-submit';
+import ImageStyle from '../components/imagestyle';
+import Layout from '../components/layout';
+import LoadingAnimation from '../components/loadinganimation';
+import ResultDisplay from '../components/resultdisplay';
+import functions from '../utils/functions';
+import { logger } from '../utils/logger';
 
 const debug = logger('Products');
 
@@ -35,7 +33,7 @@ export default function Products() {
   const [isLoading, setIsLoading] = useState(false);
 
   const [appConfig, setAppConfig] = useState({
-    model:functions.getDefaultAIModel()
+    model: functions.getDefaultAIModel(),
   });
 
   const onImageStyleInputChange = (value) => {
@@ -97,15 +95,15 @@ export default function Products() {
     setIsLoading(true);
     const response = await fetch('/api/products-ai', {
       body: JSON.stringify({
-        config: appConfig,
         catalogId: productCatalogSelect,
-        vocabularyName: vocabularyNameInput,
         companyTheme: companyThemeInput,
+        config: appConfig,
         gloablSiteId: globalSiteIdInput,
         imageGeneration: imageGenerationType,
         imageStyle: imageStyleInput,
         numberOfCategories: categoryNumberInput,
         numberOfProducts: productNumberInput,
+        vocabularyName: vocabularyNameInput,
       }),
       headers: {
         'Content-Type': 'application/json',
@@ -122,83 +120,75 @@ export default function Products() {
   }
 
   return (
-    <div>
-      <AppHead title="Product Generator" />
+    <Layout
+      description='This is an Open AI integration to generate demo products. Examples of the commerce theme are "home energy saving products", "electric vehicles", or "bird feeders and supplies"'
+      setAppConfig={setAppConfig}
+      title="Liferay Product Generator"
+    >
+      <form onSubmit={onSubmit}>
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 mb-5">
+          <FieldString
+            defaultValue=""
+            inputChange={setCompanyThemeInput}
+            label="Commerce Theme"
+            name="companyTheme"
+            placeholder="Enter a commerce theme"
+          />
 
-      <main className="py-20 flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
-        <AppHeader
-          desc='This is an Open AI integration to generate demo products. Examples of the commerce theme are "home energy saving products", "electric vehicles", or "bird feeders and supplies"'
-          title='Liferay Product Generator'
-        />
+          <FieldString
+            defaultValue=""
+            inputChange={setVocabularyNameInput}
+            label="Vocabulary Name"
+            name="vocabularyName"
+            placeholder="Enter a vocabulary name"
+          />
 
-        <form onSubmit={onSubmit}>
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 mb-5">
+          <FieldString
+            defaultValue=""
+            inputChange={setGlobalSiteIdInput}
+            label="Global Site ID for Taxonomy"
+            name="globalSiteId"
+            placeholder="Enter the global site ID"
+          />
 
-            <FieldString
-              defaultValue=""
-              inputChange={setCompanyThemeInput}
-              label="Commerce Theme"
-              name="companyTheme"
-              placeholder="Enter a commerce theme"
-            />
+          <FieldString
+            defaultValue="5"
+            inputChange={setCategoryNumberInput}
+            label="Number of Categories"
+            name="numberOfCategories"
+            placeholder="Enter the number of categories"
+          />
 
-            <FieldString
-              defaultValue=""
-              inputChange={setVocabularyNameInput}
-              label="Vocabulary Name"
-              name="vocabularyName"
-              placeholder="Enter a vocabulary name"
-            />
+          <FieldString
+            defaultValue="3"
+            inputChange={setProductNumberInput}
+            label="Number of Products per Category"
+            name="numberOfProducts"
+            placeholder="Enter the number of products per category"
+          />
 
-            <FieldString
-              defaultValue=""
-              inputChange={setGlobalSiteIdInput}
-              label="Global Site ID for Taxonomy"
-              name="globalSiteId"
-              placeholder="Enter the global site ID"
-            />
+          <FieldSelect
+            inputChange={setProductCatalogSelect}
+            label="Product Catalog"
+            name="productCatalogSelect"
+            optionMap={productCatalogOptions}
+          />
 
-            <FieldString
-              defaultValue="5"
-              inputChange={setCategoryNumberInput}
-              label="Number of Categories"
-              name="numberOfCategories"
-              placeholder="Enter the number of categories"
-            />
+          <FieldImageType includeNone inputChange={setImageGenerationType} />
 
-            <FieldString
-              defaultValue="3"
-              inputChange={setProductNumberInput}
-              label="Number of Products per Category"
-              name="numberOfProducts"
-              placeholder="Enter the number of products per category"
-            />
+          {showStyleInput && (
+            <ImageStyle styleInputChange={onImageStyleInputChange} />
+          )}
+        </div>
 
-            <FieldSelect
-              inputChange={setProductCatalogSelect}
-              label="Product Catalog"
-              name="productCatalogSelect"
-              optionMap={productCatalogOptions}
-            />
+        <FieldSubmit disabled={isLoading} label={submitLabel} />
+      </form>
 
-            <FieldImageType includeNone inputChange={setImageGenerationType} />
-
-            {showStyleInput && (
-              <ImageStyle styleInputChange={onImageStyleInputChange} />
-            )}
-          </div>
-
-          <FieldSubmit disabled={isLoading} label={submitLabel} />
-        </form>
-
-        {isLoading ? (
-          <LoadingAnimation />
-        ) : (
-          result && <ResultDisplay result={result} />
-        )}
-      </main>
-
-      <AppFooter setConfig={setAppConfig}/>
-    </div>
+      {isLoading ? (
+        <LoadingAnimation />
+      ) : (
+        result && <ResultDisplay result={result} />
+      )}
+    </Layout>
   );
 }

@@ -1,24 +1,30 @@
-import { BoltIcon, ExclamationTriangleIcon, Cog8ToothIcon, XCircleIcon } from '@heroicons/react/24/solid';
+import {
+  BoltIcon,
+  Cog8ToothIcon,
+  ExclamationTriangleIcon,
+  XCircleIcon,
+} from '@heroicons/react/24/solid';
 import { useEffect, useState } from 'react';
+import Cookies from 'universal-cookie';
 
 import functions from '../utils/functions';
-import FieldConfigSelect from '../components/formfield-config-select';
-
-import Cookies from 'universal-cookie';
+import FieldConfigSelect from './formfield-config-select';
 const cookies = new Cookies();
 
-export default function AppFooter({setConfig}) {
+export default function AppFooter({ setConfig }) {
   const [envMsg, setEnvMsg] = useState('&nbsp;');
   const [envStatus, setEnvStatus] = useState('connected');
 
   const [showModal, setShowModal] = useState(false);
-  const [aiModelSelect, setAIModelSelect] = useState(functions.getDefaultAIModel());
+  const [aiModelSelect, setAIModelSelect] = useState(
+    functions.getDefaultAIModel()
+  );
   const [appConfig, setAppConfig] = useState({
-    model:functions.getDefaultAIModel()
+    model: functions.getDefaultAIModel(),
   });
 
   const aiModelOptions = functions.getAIModelOptions();
-  const APP_CONFIG_AI = "ai-wizard-config";
+  const APP_CONFIG_AI = 'ai-wizard-config';
 
   const setEnv = (response) => {
     setEnvMsg(response.result);
@@ -26,8 +32,8 @@ export default function AppFooter({setConfig}) {
   };
 
   const saveConfiguration = () => {
-    setAppConfig({model:aiModelSelect});
-    setConfig({model:aiModelSelect});
+    setAppConfig({ model: aiModelSelect });
+    setConfig({ model: aiModelSelect });
 
     cookies.set(APP_CONFIG_AI, aiModelSelect, { path: '/' });
 
@@ -35,15 +41,15 @@ export default function AppFooter({setConfig}) {
   };
 
   useEffect(() => {
-    if(!cookies.get(APP_CONFIG_AI)){
+    if (!cookies.get(APP_CONFIG_AI)) {
       cookies.set(APP_CONFIG_AI, aiModelSelect, { path: '/' });
     } else {
       let appConfig = {
-        model:cookies.get(APP_CONFIG_AI)
+        model: cookies.get(APP_CONFIG_AI),
       };
 
       setAppConfig(appConfig);
-      setConfig(appConfig)
+      setConfig(appConfig);
     }
 
     fetch('/api/env')
@@ -53,28 +59,29 @@ export default function AppFooter({setConfig}) {
 
   return (
     <>
-    <div className="fixed bottom-0 left-0 bg-black/30 footer">
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
-        <label className="p-4 ml-4 text-gray-300 elative inline-flex items-center cursor-pointer">
-          {envStatus == 'connected' ? (
-            <BoltIcon className="h-7 w-7 pr-2 text-[hsl(210,70%,60%)]" />
-          ) : (
-            <ExclamationTriangleIcon className="h-7 w-7 pr-2 text-[hsl(25,70%,60%)]" />
-          )}
+      <div className="fixed bottom-0 left-0 bg-black/30 footer">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
+          <label className="p-4 ml-4 text-gray-300 elative inline-flex items-center cursor-pointer">
+            {envStatus == 'connected' ? (
+              <BoltIcon className="h-7 w-7 pr-2 text-[hsl(210,70%,60%)]" />
+            ) : (
+              <ExclamationTriangleIcon className="h-7 w-7 pr-2 text-[hsl(25,70%,60%)]" />
+            )}
 
-          <i dangerouslySetInnerHTML={{ __html: envMsg }}></i>
-        </label>
+            <i dangerouslySetInnerHTML={{ __html: envMsg }}></i>
+          </label>
 
-        <div className="mt-3.5 mr-3.5">
-          <div className="float-right">
-            <Cog8ToothIcon 
-              className="h-8 w-8 pr-2 cursor-pointer text-white"
-              onClick={() => setShowModal(true)} />
+          <div className="mt-3.5 mr-3.5">
+            <div className="float-right">
+              <Cog8ToothIcon
+                className="h-8 w-8 pr-2 cursor-pointer text-white"
+                onClick={() => setShowModal(true)}
+              />
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    {showModal && (
+      {showModal && (
         <>
           <div className="popup text-black justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
             <div className="relative w-auto my-6 mx-auto max-w-3xl">
@@ -93,19 +100,32 @@ export default function AppFooter({setConfig}) {
 
                 <div className="relative p-6 flex-auto">
                   <div className="mb-5">
-                    
                     <FieldConfigSelect
+                      defaultValue={appConfig.model}
                       inputChange={setAIModelSelect}
                       label="AI Model"
                       name="aiChoice"
                       optionMap={aiModelOptions}
-                      defaultValue={appConfig.model}
                     />
 
-                    <p className='text-xs text-black/60 pt-2 p-2 bg-sky-400/10 mt-2 rounded-lg font-light'>
-                      OpenAI <a className='text-sky-500' target="_new" href="https://platform.openai.com/docs/models/overview">Models</a> and <a className='text-sky-500' target="_new" href="https://openai.com/pricing">Pricing</a>
+                    <p className="text-xs text-black/60 pt-2 p-2 bg-sky-400/10 mt-2 rounded-lg font-light">
+                      OpenAI{' '}
+                      <a
+                        className="text-sky-500"
+                        href="https://platform.openai.com/docs/models/overview"
+                        target="_new"
+                      >
+                        Models
+                      </a>{' '}
+                      and{' '}
+                      <a
+                        className="text-sky-500"
+                        href="https://openai.com/pricing"
+                        target="_new"
+                      >
+                        Pricing
+                      </a>
                     </p>
-
                   </div>
                 </div>
 

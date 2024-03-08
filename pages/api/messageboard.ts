@@ -1,8 +1,8 @@
 import axios from 'axios';
 import OpenAI from 'openai';
 
-import functions from '../utils/functions';
-import { logger } from '../utils/logger';
+import functions from '../../utils/functions';
+import { logger } from '../../utils/logger';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -27,8 +27,9 @@ export default async function MessageBoardAction(req, res) {
         items: {
           properties: {
             category: {
-              description: 'Name of the message board category translated into ' +
-                            functions.getLanguageDisplayName(req.body.mbLanguage),
+              description:
+                'Name of the message board category translated into ' +
+                functions.getLanguageDisplayName(req.body.mbLanguage),
               type: 'string',
             },
             threads: {
@@ -36,7 +37,7 @@ export default async function MessageBoardAction(req, res) {
                 'An array of ' +
                 req.body.mbThreadNumber +
                 ' message board threads within the category translated into ' +
-                            functions.getLanguageDisplayName(req.body.mbLanguage),
+                functions.getLanguageDisplayName(req.body.mbLanguage),
               items: {
                 properties: {
                   articleBody: {
@@ -48,8 +49,9 @@ export default async function MessageBoardAction(req, res) {
                     type: 'string',
                   },
                   headline: {
-                    description: 'The title of the message board thread. Translated this response into ' +
-                    functions.getLanguageDisplayName(req.body.mbLanguage),
+                    description:
+                      'The title of the message board thread. Translated this response into ' +
+                      functions.getLanguageDisplayName(req.body.mbLanguage),
                     type: 'string',
                   },
                   messages: {
@@ -63,7 +65,9 @@ export default async function MessageBoardAction(req, res) {
                         message: {
                           description:
                             'The user message that relates to the message board threads. Translated this response into ' +
-                            functions.getLanguageDisplayName(req.body.mbLanguage),
+                            functions.getLanguageDisplayName(
+                              req.body.mbLanguage
+                            ),
                           type: 'string',
                         },
                       },
@@ -136,7 +140,7 @@ export default async function MessageBoardAction(req, res) {
 
     let mbSectionJson = {
       title: categories[i].category,
-      viewableBy: req.body.viewOptions
+      viewableBy: req.body.viewOptions,
     };
 
     let mbSectionResponse = await axios.post(
@@ -165,7 +169,7 @@ export default async function MessageBoardAction(req, res) {
       let mbThreadJson = {
         articleBody: threads[t].articleBody,
         headline: threads[t].headline,
-        viewableBy: req.body.viewOptions
+        viewableBy: req.body.viewOptions,
       };
 
       let mbThreadResponse = await axios.post(
@@ -192,7 +196,7 @@ export default async function MessageBoardAction(req, res) {
 
         let mbMessageJson = {
           articleBody: messages[m].message,
-          viewableBy: req.body.viewOptions
+          viewableBy: req.body.viewOptions,
         };
 
         let mbMessageThreadResponse = await axios.post(

@@ -1,8 +1,8 @@
 import axios from 'axios';
 import OpenAI from 'openai';
 
-import functions from '../utils/functions';
-import { logger } from '../utils/logger';
+import functions from '../../utils/functions';
+import { logger } from '../../utils/logger';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -45,9 +45,10 @@ export default async function KnowledgeBaseAction(req, res) {
                     type: 'string',
                   },
                   headline: {
-                    description: 'The headline of the knowledge base article. ' +
-                    ' Translate this into ' +
-                    functions.getLanguageDisplayName(req.body.kbLanguage),
+                    description:
+                      'The headline of the knowledge base article. ' +
+                      ' Translate this into ' +
+                      functions.getLanguageDisplayName(req.body.kbLanguage),
                     type: 'string',
                   },
                 },
@@ -58,9 +59,10 @@ export default async function KnowledgeBaseAction(req, res) {
               type: 'array',
             },
             category: {
-              description: 'Name of the knowledge base category.' +
-              ' Translate this into ' +
-              functions.getLanguageDisplayName(req.body.kbLanguage),
+              description:
+                'Name of the knowledge base category.' +
+                ' Translate this into ' +
+                functions.getLanguageDisplayName(req.body.kbLanguage),
               type: 'string',
             },
           },
@@ -121,7 +123,7 @@ export default async function KnowledgeBaseAction(req, res) {
 
     let kbSectionJson = {
       name: categories[i].category,
-      viewableBy: req.body.viewOptions
+      viewableBy: req.body.viewOptions,
     };
 
     let kbSectionResponse = await axios.post(
@@ -147,7 +149,7 @@ export default async function KnowledgeBaseAction(req, res) {
       let kbThreadJson = {
         articleBody: articles[t].articleBody,
         title: articles[t].headline,
-        viewableBy: req.body.viewOptions
+        viewableBy: req.body.viewOptions,
       };
 
       let kbThreadResponse = await axios.post(

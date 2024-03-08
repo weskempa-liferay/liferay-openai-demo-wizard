@@ -1,8 +1,8 @@
 import axios from 'axios';
 import OpenAI from 'openai';
 
-import functions from '../utils/functions';
-import { logger } from '../utils/logger';
+import functions from '../../utils/functions';
+import { logger } from '../../utils/logger';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -14,17 +14,17 @@ export default async function Action(req, res) {
   let start = new Date().getTime();
 
   debug(
-      'vocabularyName: ' +
-        req.body.vocabularyName +
-        ', categorytNumber: ' +
-        req.body.categorytNumber +
-        ', childCategorytNumber: ' +
-        req.body.childCategorytNumber +
-        ', siteId: ' +
-        req.body.siteId
-    );
+    'vocabularyName: ' +
+      req.body.vocabularyName +
+      ', categorytNumber: ' +
+      req.body.categorytNumber +
+      ', childCategorytNumber: ' +
+      req.body.childCategorytNumber +
+      ', siteId: ' +
+      req.body.siteId
+  );
 
-    let languages = req.body.languages;
+  let languages = req.body.languages;
 
   const categoriesSchema = {
     properties: {
@@ -45,8 +45,8 @@ export default async function Action(req, res) {
                     type: 'string',
                   },
                 },
-                type: 'object',
                 required: ['name'],
+                type: 'object',
               },
               type: 'array',
             },
@@ -67,21 +67,29 @@ export default async function Action(req, res) {
 
   if (req.body.manageLanguage) {
     for (let i = 0; i < languages.length; i++) {
-      categoriesSchema.properties.categories.items.properties['name_' + languages[i]] = {
+      categoriesSchema.properties.categories.items.properties[
+        'name_' + languages[i]
+      ] = {
         description:
           'The name of the category translated into ' +
           functions.getLanguageDisplayName(languages[i]),
         type: 'string',
       };
-      categoriesSchema.properties.categories.items.required.push('name_' + languages[i]);
+      categoriesSchema.properties.categories.items.required.push(
+        'name_' + languages[i]
+      );
 
-      categoriesSchema.properties.categories.items.properties.childcategories.items.properties['name_' + languages[i]] = {
+      categoriesSchema.properties.categories.items.properties.childcategories.items.properties[
+        'name_' + languages[i]
+      ] = {
         description:
           'The name of the child category translated into ' +
           functions.getLanguageDisplayName(languages[i]),
         type: 'string',
       };
-      categoriesSchema.properties.categories.items.properties.childcategories.items.required.push('name_' + languages[i]);
+      categoriesSchema.properties.categories.items.properties.childcategories.items.required.push(
+        'name_' + languages[i]
+      );
     }
   }
 
@@ -95,9 +103,14 @@ export default async function Action(req, res) {
       },
       {
         content:
-          'I need ' + req.body.vocabularyDescription + '. ' +
-          'Create '+ req.body.categorytNumber  + ' categories and ' +
-           req.body.childCategorytNumber +' child categories related to this topic. ' +
+          'I need ' +
+          req.body.vocabularyDescription +
+          '. ' +
+          'Create ' +
+          req.body.categorytNumber +
+          ' categories and ' +
+          req.body.childCategorytNumber +
+          ' child categories related to this topic. ' +
           'Do not include double quotes in the response.',
         role: 'user',
       },
@@ -113,44 +126,44 @@ export default async function Action(req, res) {
 
   // check if vocabulary exists
 
-  let vocabularyId = await getExistingVocabID(req.body.vocabularyName, req.body.siteId);
+  let vocabularyId = await getExistingVocabID(
+    req.body.vocabularyName,
+    req.body.siteId
+  );
 
-  if(vocabularyId>0){
-    debug("Using existing vocabularyId: "+vocabularyId);
+  if (vocabularyId > 0) {
+    debug('Using existing vocabularyId: ' + vocabularyId);
   } else {
-
     vocabularyId = await createVocabulary(
       req.body.vocabularyName,
       req.body.siteId,
       debug
     );
-  
   }
 
   for (let i = 0; i < categories.length; i++) {
     debug(categories[i]);
     // check if category exists
 
-    let categoryId = await getExistingCategoryID(categories[i].name, vocabularyId);
+    let categoryId = await getExistingCategoryID(
+      categories[i].name,
+      vocabularyId
+    );
 
-    if(categoryId>0){
-      debug("Using existing categoryId: "+categoryId);
+    if (categoryId > 0) {
+      debug('Using existing categoryId: ' + categoryId);
     } else {
-
       categoryId = await createCategory(
         categories[i],
         vocabularyId,
         req.body.manageLanguage,
         debug
       );
-
     }
 
     let childcategories = categories[i].childcategories;
 
-    debug(
-      categoryId + ' has ' + childcategories.length + ' child category.'
-    );
+    debug(categoryId + ' has ' + childcategories.length + ' child category.');
 
     for (let j = 0; j < childcategories.length; j++) {
       let childOrgId = await createChildCategory(
@@ -196,24 +209,26 @@ async function createVocabulary(vocabularyName, siteId, debug) {
 }
 
 async function createCategory(category, parentVocabId, manageLanguage, debug) {
-  let categoryJson = { name: category.name, taxonomyVocabularyId: parentVocabId };
+  let categoryJson = {
+    name: category.name,
+    taxonomyVocabularyId: parentVocabId,
+  };
 
-  if(manageLanguage){
+  if (manageLanguage) {
     let nameValues = {};
     for (const key in category) {
-
-      if(key.indexOf("name_")>=0){
+      if (key.indexOf('name_') >= 0) {
         let keySplit = key.split('_');
-        if(keySplit[0]=="name"){
+        if (keySplit[0] == 'name') {
           nameValues[keySplit[1]] = category[key];
         }
       }
     }
 
-    categoryJson["name_i18n"] = nameValues;
+    categoryJson['name_i18n'] = nameValues;
   }
 
-  debug("categoryJson");
+  debug('categoryJson');
   debug(categoryJson);
 
   let categoriesApiPath =
@@ -233,34 +248,38 @@ async function createCategory(category, parentVocabId, manageLanguage, debug) {
 
     debug('returned id:' + returnid);
   } catch (error) {
-    debug(error.response.data.status+":"+error.response.data.title);
+    debug(error.response.data.status + ':' + error.response.data.title);
   }
 
   return returnid;
 }
 
-async function createChildCategory(category, parentCategoryId, manageLanguage, debug) {
+async function createChildCategory(
+  category,
+  parentCategoryId,
+  manageLanguage,
+  debug
+) {
   let categoryJson = {
     name: category.name,
     parentTaxonomyCategory: { id: parentCategoryId },
   };
 
-  if(manageLanguage){
+  if (manageLanguage) {
     let nameValues = {};
     for (const key in category) {
-
-      if(key.indexOf("name_")>=0){
+      if (key.indexOf('name_') >= 0) {
         let keySplit = key.split('_');
-        if(keySplit[0]=="name"){
+        if (keySplit[0] == 'name') {
           nameValues[keySplit[1]] = category[key];
         }
       }
     }
 
-    categoryJson["name_i18n"] = nameValues;
+    categoryJson['name_i18n'] = nameValues;
   }
 
-  debug("categoryJson");
+  debug('categoryJson');
   debug(categoryJson);
 
   let categoriesApiPath =
@@ -280,61 +299,59 @@ async function createChildCategory(category, parentCategoryId, manageLanguage, d
 
     debug('returned id:' + returnid);
   } catch (error) {
-    debug(error.response.data.status+":"+error.response.data.title);
+    debug(error.response.data.status + ':' + error.response.data.title);
   }
 
   return returnid;
 }
 
 async function getExistingVocabID(name, globalSiteId) {
-  
-  name = name.replaceAll("'","''");
-  let filter = "name eq '"+name+"'";
+  name = name.replaceAll("'", "''");
+  let filter = "name eq '" + name + "'";
 
   let apiPath =
     process.env.LIFERAY_PATH +
     '/o/headless-admin-taxonomy/v1.0/sites/' +
     globalSiteId +
-    '/taxonomy-vocabularies?filter='+encodeURI(filter);
+    '/taxonomy-vocabularies?filter=' +
+    encodeURI(filter);
 
   let options = functions.getAPIOptions('GET', 'en-US');
 
   try {
     const vocabResponse = await axios.get(apiPath, options);
 
-    if(vocabResponse.data.items.length>0){
+    if (vocabResponse.data.items.length > 0) {
       return vocabResponse.data.items[0].id;
     } else {
       return -1;
     }
-    
   } catch (error) {
-    debug(error.response.data.status+":"+error.response.data.title);
+    debug(error.response.data.status + ':' + error.response.data.title);
   }
 }
 
 async function getExistingCategoryID(name, vocabId) {
-  
-  name = name.replaceAll("'","''");
-  let filter = "name eq '"+name+"'";
+  name = name.replaceAll("'", "''");
+  let filter = "name eq '" + name + "'";
 
   let apiPath =
     process.env.LIFERAY_PATH +
     '/o/headless-admin-taxonomy/v1.0/taxonomy-vocabularies/' +
     vocabId +
-    '/taxonomy-categories?filter='+encodeURI(filter);
+    '/taxonomy-categories?filter=' +
+    encodeURI(filter);
 
   let options = functions.getAPIOptions('GET', 'en-US');
 
   try {
     const categoryResponse = await axios.get(apiPath, options);
 
-    if(categoryResponse.data.items.length>0){
+    if (categoryResponse.data.items.length > 0) {
       return categoryResponse.data.items[0].id;
     } else {
       return -1;
     }
-    
   } catch (error) {
     debug(error);
   }

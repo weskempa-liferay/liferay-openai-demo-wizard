@@ -4,16 +4,16 @@ import OpenAI from 'openai';
 import functions from '../../utils/functions';
 import { logger } from '../../utils/logger';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
-let options = functions.getAPIOptions('POST', 'en-US');
-
 const debug = logger('MessageBoardAction');
 
 export default async function MessageBoardAction(req, res) {
   let start = new Date().getTime();
+
+  const openai = new OpenAI({
+    apiKey: req.body.config.openAIKey,
+  });
+
+  let options = functions.getAPIOptions('POST', 'en-US', req.body.config.base64data);
 
   debug(req.body);
 
@@ -131,7 +131,7 @@ export default async function MessageBoardAction(req, res) {
 
   for (let i = 0; categories.length > i; i++) {
     let sectionApiPath =
-      process.env.LIFERAY_PATH +
+      req.body.config.serverURL +
       '/o/headless-delivery/v1.0/sites/' +
       req.body.siteId +
       '/message-board-sections';
@@ -159,7 +159,7 @@ export default async function MessageBoardAction(req, res) {
 
     for (let t = 0; t < threads.length; t++) {
       let threadApiPath =
-        process.env.LIFERAY_PATH +
+        req.body.config.serverURL +
         '/o/headless-delivery/v1.0/message-board-sections/' +
         sectionId +
         '/message-board-threads';
@@ -187,7 +187,7 @@ export default async function MessageBoardAction(req, res) {
       let messages = threads[t].messages;
       for (let m = 0; m < messages.length; m++) {
         let messageApiPath =
-          process.env.LIFERAY_PATH +
+          req.body.config.serverURL +
           '/o/headless-delivery/v1.0/message-board-threads/' +
           threadId +
           '/message-board-messages';

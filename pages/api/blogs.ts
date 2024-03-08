@@ -7,15 +7,15 @@ import request from 'request';
 import functions from '../../utils/functions';
 import { logger } from '../../utils/logger';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 const debug = logger('Blogs - Action');
 
 export default async function Action(req, res) {
   let start = new Date().getTime();
   debug(req.body);
+
+  const openai = new OpenAI({
+    apiKey: req.body.config.openAIKey,
+  });
 
   const runCount = req.body.blogNumber;
   const imageGeneration = req.body.imageGeneration;
@@ -158,7 +158,7 @@ export default async function Action(req, res) {
 
 function postImageToLiferay(file, req, blogJson) {
   let blogImageApiPath =
-    process.env.LIFERAY_PATH +
+    req.body.config.serverURL +
     '/o/headless-delivery/v1.0/sites/' +
     req.body.siteId +
     '/blog-posting-images';
@@ -169,7 +169,8 @@ function postImageToLiferay(file, req, blogJson) {
   const options = functions.getFilePostOptions(
     blogImageApiPath,
     fileStream,
-    'file'
+    'file',
+    req.body.config.base64data
   );
 
   setTimeout(function () {
@@ -191,12 +192,12 @@ async function postBlogToLiferay(req, blogJson, imageId) {
   blogJson.viewableBy = req.body.viewOptions;
 
   let apiPath =
-    process.env.LIFERAY_PATH +
+    req.body.config.serverURL +
     '/o/headless-delivery/v1.0/sites/' +
     req.body.siteId +
     '/blog-postings';
 
-  let options = functions.getAPIOptions('POST', 'en-US');
+  let options = functions.getAPIOptions('POST', 'en-US', req.body.config.base64data);
 
   try {
     const response = await axios.post(apiPath, blogJson, options);

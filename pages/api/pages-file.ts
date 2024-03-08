@@ -4,20 +4,20 @@ import OpenAI from 'openai';
 import functions from '../../utils/functions';
 import { logger } from '../../utils/logger';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 const debug = logger('Pages Action');
 
 export default async function SitesAction(req, res) {
   const start = new Date().getTime();
 
+  const openai = new OpenAI({
+    apiKey: req.body.config.openAIKey,
+  });
+
   let pages = JSON.parse(req.body.fileoutput).pages;
 
   for (let i = 0; i < pages.length; i++) {
     debug(pages[i]);
-    await createSitePage(req.body.siteId, pages[i], 'home');
+    await createSitePage(req, req.body.siteId, pages[i], 'home');
   }
 
   let end = new Date().getTime();
@@ -27,7 +27,7 @@ export default async function SitesAction(req, res) {
   });
 }
 
-async function createSitePage(groupId, page, parentPath) {
+async function createSitePage(req, groupId, page, parentPath) {
   let viewableBy = 'viewableBy' in page ? page['viewableBy'] : 'Anyone';
 
   debug(
@@ -39,14 +39,14 @@ async function createSitePage(groupId, page, parentPath) {
       viewableBy
   );
 
-  const postBody = getPageSchema(page.name, parentPath, viewableBy);
+  const postBody = getPageSchema(req, page.name, parentPath, viewableBy);
 
   const orgApiPath =
-    process.env.LIFERAY_PATH +
+    req.body.config.serverURL +
     '/o/headless-delivery/v1.0/sites/' +
     groupId +
     '/site-pages';
-  const options = functions.getAPIOptions('POST', 'en-US');
+  const options = functions.getAPIOptions('POST', 'en-US', req.body.config.base64data);
   let returnPath = '';
 
   try {
@@ -58,7 +58,7 @@ async function createSitePage(groupId, page, parentPath) {
 
     if (page.pages && page.pages.length > 0) {
       for (let i = 0; i < page.pages.length; i++) {
-        createSitePage(groupId, page.pages[i], returnPath);
+        createSitePage(req, groupId, page.pages[i], returnPath);
       }
     }
   } catch (error) {
@@ -68,7 +68,7 @@ async function createSitePage(groupId, page, parentPath) {
   return returnPath;
 }
 
-function getPageSchema(name, parentPath, viewableBy) {
+function getPageSchema(req, name, parentPath, viewableBy) {
   let pageSchema = {
     pageDefinition: {
       pageElement: {

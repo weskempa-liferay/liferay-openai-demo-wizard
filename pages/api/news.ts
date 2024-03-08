@@ -7,15 +7,15 @@ import request from 'request';
 import functions from '../../utils/functions';
 import { logger } from '../../utils/logger';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 const debug = logger('NewsAction');
 
 export default async function NewsAction(req, res) {
   let start = new Date().getTime();
   let successes = 0;
+
+  const openai = new OpenAI({
+    apiKey: req.body.config.openAIKey,
+  });
 
   const runCount = req.body.newsNumber;
   const imageGeneration = req.body.imageGeneration;
@@ -214,14 +214,14 @@ function postImageToLiferay(file, req, newsJson) {
   const imageFolderId = parseInt(req.body.imageFolderId);
 
   let newsImageApiPath =
-    process.env.LIFERAY_PATH +
+    req.body.config.serverURL +
     '/o/headless-delivery/v1.0/sites/' +
     req.body.siteId +
     '/documents';
 
   if (imageFolderId) {
     newsImageApiPath =
-      process.env.LIFERAY_PATH +
+      req.body.config.serverURL +
       '/o/headless-delivery/v1.0/document-folders/' +
       imageFolderId +
       '/documents';
@@ -233,7 +233,8 @@ function postImageToLiferay(file, req, newsJson) {
   const options = functions.getFilePostOptions(
     newsImageApiPath,
     fileStream,
-    'file'
+    'file',
+    req.body.config.base64data
   );
 
   setTimeout(function () {
@@ -341,12 +342,12 @@ async function postNewsToLiferay(req, newsJson, imageId) {
   };
 
   const apiPath =
-    process.env.LIFERAY_PATH +
+    req.body.config.serverURL +
     '/o/headless-delivery/v1.0/sites/' +
     req.body.siteId +
     '/structured-contents';
 
-  const options = functions.getAPIOptions('POST', req.body.defaultLanguage);
+  const options = functions.getAPIOptions('POST', req.body.defaultLanguage, req.body.config.base64data);
 
   await axios.post(apiPath, JSON.stringify(newsSchema), options);
 

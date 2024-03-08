@@ -4,16 +4,16 @@ import OpenAI from 'openai';
 import functions from '../../utils/functions';
 import { logger } from '../../utils/logger';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
-let options = functions.getAPIOptions('POST', 'en-US');
-
 const debug = logger('KnowledgeBaseAction');
 
 export default async function KnowledgeBaseAction(req, res) {
   let start = new Date().getTime();
+
+  const openai = new OpenAI({
+    apiKey: req.body.config.openAIKey,
+  });
+
+  let options = functions.getAPIOptions('POST', 'en-US', req.body.config.base64data);
 
   debug(req.body);
 
@@ -114,7 +114,7 @@ export default async function KnowledgeBaseAction(req, res) {
 
   for (let i = 0; categories.length > i; i++) {
     let sectionApiPath =
-      process.env.LIFERAY_PATH +
+      req.body.config.serverURL +
       '/o/headless-delivery/v1.0/sites/' +
       req.body.siteId +
       '/knowledge-base-folders';
@@ -139,7 +139,7 @@ export default async function KnowledgeBaseAction(req, res) {
 
     for (let t = 0; t < articles.length; t++) {
       let threadApiPath =
-        process.env.LIFERAY_PATH +
+        req.body.config.serverURL +
         '/o/headless-delivery/v1.0/knowledge-base-folders/' +
         sectionId +
         '/knowledge-base-articles';
@@ -166,7 +166,7 @@ export default async function KnowledgeBaseAction(req, res) {
         let suggestions = articles[t].suggestions;
         for(let m=0; m<suggestions.length; m++){
 
-            let suggestionApiPath = process.env.LIFERAY_PATH + "/o/"+threadId+"/";
+            let suggestionApiPath = req.body.config.serverURL + "/o/"+threadId+"/";
 
             if(debug) console.log(suggestionApiPath);
     

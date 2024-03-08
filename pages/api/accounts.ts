@@ -4,14 +4,14 @@ import OpenAI from 'openai';
 import functions from '../../utils/functions';
 import { logger } from '../../utils/logger';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 const debug = logger('Accounts - Action');
 
 export default async function Action(req, res) {
   let start = new Date().getTime();
+
+  const openai = new OpenAI({
+    apiKey: req.body.config.openAIKey,
+  });
 
   debug(req.body);
 
@@ -74,10 +74,10 @@ export default async function Action(req, res) {
     };
 
     let faqApiPath =
-      process.env.LIFERAY_PATH +
+      req.body.config.serverURL +
       '/o/headless-commerce-admin-account/v1.0/accounts';
 
-    const options = functions.getAPIOptions('POST', 'en-US');
+    const options = functions.getAPIOptions('POST', 'en-US', req.body.config.base64data);
 
     try {
       const response = await axios.post(faqApiPath, postBody, options);

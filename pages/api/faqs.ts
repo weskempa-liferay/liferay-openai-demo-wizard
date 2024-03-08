@@ -4,14 +4,14 @@ import OpenAI from 'openai';
 import functions from '../../utils/functions';
 import { logger } from '../../utils/logger';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 const debug = logger('FaqsAction');
 
 export default async function FaqsAction(req, res) {
   let start = new Date().getTime();
+
+  const openai = new OpenAI({
+    apiKey: req.body.config.openAIKey,
+  });
 
   debug(req.body);
 
@@ -153,12 +153,12 @@ export default async function FaqsAction(req, res) {
     debug('postBody', JSON.stringify(postBody));
 
     const faqApiPath =
-      process.env.LIFERAY_PATH +
+      req.body.config.serverURL +
       '/o/headless-delivery/v1.0/sites/' +
       req.body.siteId +
       '/structured-contents';
 
-    const options = functions.getAPIOptions('POST', req.body.defaultLanguage);
+    const options = functions.getAPIOptions('POST', req.body.defaultLanguage, req.body.config.base64data);
 
     try {
       const response = await axios.post(faqApiPath, postBody, options);

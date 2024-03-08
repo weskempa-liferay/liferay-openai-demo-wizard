@@ -34,6 +34,7 @@ export default function Products() {
 
   const [appConfig, setAppConfig] = useState({
     model: functions.getDefaultAIModel(),
+    base64data:''
   });
 
   const onImageStyleInputChange = (value) => {
@@ -49,16 +50,21 @@ export default function Products() {
     debug('Load');
 
     const fetchData = async () => {
-      const response = await fetch('/api/catalogs');
+      const response = await fetch('/api/catalogs',
+      {
+        method: "POST", 
+        body: JSON.stringify(appConfig),
+      });
       const catalogs = await response.json();
 
-      debug(catalogs);
       setProductCatalogOptions(catalogs);
       setProductCatalogSelect(catalogs[0].id);
     };
 
-    fetchData();
-  }, []);
+    if(appConfig.base64data.length>0){
+      fetchData();
+    }
+  }, [appConfig]);
 
   useEffect(() => {
     updateCost();

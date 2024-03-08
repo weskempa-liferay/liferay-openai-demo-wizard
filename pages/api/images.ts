@@ -6,15 +6,15 @@ import request from 'request';
 import functions from '../../utils/functions';
 import { logger } from '../../utils/logger';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 const debug = logger('ImagesAction');
 const runCountMax = 10;
 
 export default async function ImagesAction(req, res) {
   let start = new Date().getTime();
+
+  const openai = new OpenAI({
+    apiKey: req.body.config.openAIKey,
+  });
 
   debug(req.body);
 
@@ -85,7 +85,7 @@ function postImageToLiferay(file, req) {
   const imageFolderId = parseInt(req.body.imageFolderId);
 
   let imageApiPath =
-    process.env.LIFERAY_PATH +
+    req.body.config.serverURL +
     '/o/headless-delivery/v1.0/document-folders/' +
     imageFolderId +
     '/documents';
@@ -96,7 +96,8 @@ function postImageToLiferay(file, req) {
   const options = functions.getFilePostOptions(
     imageApiPath,
     fileStream,
-    'file'
+    'file',
+    req.body.config.base64data
   );
 
   setTimeout(function () {

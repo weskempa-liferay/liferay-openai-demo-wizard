@@ -4,14 +4,14 @@ import OpenAI from 'openai';
 import functions from '../../utils/functions';
 import { logger } from '../../utils/logger';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 const debug = logger('OrganizationsAction');
 
 export default async function OrganizationsAction(req, res) {
   const start = new Date().getTime();
+
+  const openai = new OpenAI({
+    apiKey: req.body.config.openAIKey,
+  });
 
   debug(req.body);
 
@@ -99,13 +99,13 @@ export default async function OrganizationsAction(req, res) {
   for (let i = 0; i < organizations.length; i++) {
     debug(organizations[i]);
 
-    const orgId = await createOrganization(organizations[i], false);
+    const orgId = await createOrganization(req, organizations[i], false);
     const childbusinesses = organizations[i].childbusinesses;
 
     debug(orgId + ' has ' + childbusinesses.length + ' child businesses.');
 
     for (let j = 0; j < childbusinesses.length; j++) {
-      let childOrgId = await createOrganization(childbusinesses[j], orgId);
+      let childOrgId = await createOrganization(req, childbusinesses[j], orgId);
       let departments = childbusinesses[j].departments;
 
       debug(
@@ -113,7 +113,7 @@ export default async function OrganizationsAction(req, res) {
       );
 
       for (let k = 0; k < departments.length; k++) {
-        createOrganization(departments[k], childOrgId);
+        createOrganization(req, departments[k], childOrgId);
       }
     }
   }
@@ -125,7 +125,7 @@ export default async function OrganizationsAction(req, res) {
   });
 }
 
-async function createOrganization(organization, parentOrgId) {
+async function createOrganization(req, organization, parentOrgId) {
   debug('Creating ' + organization.name + ' with parent ' + parentOrgId);
 
   const postBody = {
@@ -138,8 +138,8 @@ async function createOrganization(organization, parentOrgId) {
   };
 
   const orgApiPath =
-    process.env.LIFERAY_PATH + '/o/headless-admin-user/v1.0/organizations';
-  const options = functions.getAPIOptions('POST', 'en-US');
+    req.body.config.serverURL + '/o/headless-admin-user/v1.0/organizations';
+  const options = functions.getAPIOptions('POST', 'en-US', req.body.config.base64data);
 
   let returnid = 0;
 

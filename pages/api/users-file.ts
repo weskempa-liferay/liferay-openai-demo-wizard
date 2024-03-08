@@ -16,10 +16,10 @@ export default async function UsersFileAction(req, res) {
 
   debug(userlist);
 
-  let roleList = await getRoleList();
+  let roleList = await getRoleList(req);
 
   let userApiPath =
-    process.env.LIFERAY_PATH + '/o/headless-admin-user/v1.0/user-accounts';
+    req.body.config.serverURL + '/o/headless-admin-user/v1.0/user-accounts';
   let userImagePath = '';
 
   for (let i = 0; i < userlist.length; i++) {
@@ -35,7 +35,7 @@ export default async function UsersFileAction(req, res) {
     debug('sending:', userlist[i]);
 
     try {
-      let options = functions.getAPIOptions('POST', 'en-US');
+      let options = functions.getAPIOptions('POST', 'en-US', req.body.config.base64data);
 
       const response = await axios.post(
         userApiPath,
@@ -49,7 +49,7 @@ export default async function UsersFileAction(req, res) {
 
       if (roleBriefs.length > 0) {
         let userRoleApiPath =
-          process.env.LIFERAY_PATH +
+          req.body.config.serverURL +
           '/o/headless-admin-user/v1.0/roles/' +
           roleBriefs[0].id +
           '/association/user-account/' +
@@ -59,7 +59,8 @@ export default async function UsersFileAction(req, res) {
 
         const options = functions.getAPIOptions(
           'POST',
-          req.body.defaultLanguage
+          req.body.defaultLanguage,
+          req.body.config.base64data
         );
 
         await axios.post(userRoleApiPath, '', options);
@@ -69,7 +70,7 @@ export default async function UsersFileAction(req, res) {
 
       if (userImagePath.length > 0) {
         let userImageApiPath =
-          process.env.LIFERAY_PATH +
+          req.body.config.serverURL +
           '/o/headless-admin-user/v1.0/user-accounts/' +
           response.data.id +
           '/image';
@@ -86,7 +87,8 @@ export default async function UsersFileAction(req, res) {
         const imgoptions = functions.getFilePostOptions(
           userImageApiPath,
           fileStream,
-          'image'
+          'image',
+          req.body.config.base64data
         );
 
         request(imgoptions, function (err, res, body) {
@@ -114,11 +116,11 @@ export default async function UsersFileAction(req, res) {
   });
 }
 
-async function getRoleList() {
+async function getRoleList(req) {
   let userApiPath =
-    process.env.LIFERAY_PATH + '/o/headless-admin-user/v1.0/roles';
+    req.body.config.serverURL + '/o/headless-admin-user/v1.0/roles';
 
-  let roleoptions = functions.getAPIOptions('GET', 'en-US');
+  let roleoptions = functions.getAPIOptions('GET', 'en-US', req.body.config.base64data);
 
   const roleresponse = await axios.get(userApiPath, roleoptions);
 

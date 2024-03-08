@@ -4,14 +4,14 @@ import OpenAI from 'openai';
 import functions from '../../utils/functions';
 import { logger } from '../../utils/logger';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 const debug = logger('ObjectsAction');
 
 export default async function ObjectsAction(req, res) {
   let start = new Date().getTime();
+
+  const openai = new OpenAI({
+    apiKey: req.body.config.openAIKey,
+  });
 
   const { aiEndpoint, aiRequest, aiRole, objectFields } = req.body;
 
@@ -53,9 +53,9 @@ export default async function ObjectsAction(req, res) {
   ).resultlist;
   debug(JSON.stringify(resultlist));
 
-  let objectApiPath = process.env.LIFERAY_PATH + aiEndpoint;
+  let objectApiPath = req.body.config.serverURL + aiEndpoint;
 
-  const options = functions.getAPIOptions('POST', 'en-US');
+  const options = functions.getAPIOptions('POST', 'en-US', req.body.config.base64data);
 
   try {
     const response = await axios.post(objectApiPath, resultlist, options);

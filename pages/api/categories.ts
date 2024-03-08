@@ -4,25 +4,16 @@ import OpenAI from 'openai';
 import functions from '../../utils/functions';
 import { logger } from '../../utils/logger';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 const debug = logger('Categories - Action');
 
 export default async function Action(req, res) {
   let start = new Date().getTime();
 
-  debug(
-    'vocabularyName: ' +
-      req.body.vocabularyName +
-      ', categorytNumber: ' +
-      req.body.categorytNumber +
-      ', childCategorytNumber: ' +
-      req.body.childCategorytNumber +
-      ', siteId: ' +
-      req.body.siteId
-  );
+  const openai = new OpenAI({
+    apiKey: req.body.config.openAIKey,
+  });
+
+  debug(req.body);
 
   let languages = req.body.languages;
 
@@ -127,6 +118,7 @@ export default async function Action(req, res) {
   // check if vocabulary exists
 
   let vocabularyId = await getExistingVocabID(
+    req,
     req.body.vocabularyName,
     req.body.siteId
   );
@@ -135,6 +127,7 @@ export default async function Action(req, res) {
     debug('Using existing vocabularyId: ' + vocabularyId);
   } else {
     vocabularyId = await createVocabulary(
+      req,
       req.body.vocabularyName,
       req.body.siteId,
       debug
@@ -146,6 +139,7 @@ export default async function Action(req, res) {
     // check if category exists
 
     let categoryId = await getExistingCategoryID(
+      req,
       categories[i].name,
       vocabularyId
     );
@@ -154,6 +148,7 @@ export default async function Action(req, res) {
       debug('Using existing categoryId: ' + categoryId);
     } else {
       categoryId = await createCategory(
+        req,
         categories[i],
         vocabularyId,
         req.body.manageLanguage,
@@ -167,6 +162,7 @@ export default async function Action(req, res) {
 
     for (let j = 0; j < childcategories.length; j++) {
       let childOrgId = await createChildCategory(
+        req,
         childcategories[j],
         categoryId,
         req.body.manageLanguage,
@@ -182,19 +178,19 @@ export default async function Action(req, res) {
   });
 }
 
-async function createVocabulary(vocabularyName, siteId, debug) {
+async function createVocabulary(req, vocabularyName, siteId, debug) {
   /* Setup Vocabulary */
 
   let apiPath =
-    process.env.LIFERAY_PATH +
+    req.body.config.serverURL +
     '/o/headless-admin-taxonomy/v1.0/sites/' +
     siteId +
     '/taxonomy-vocabularies';
   let vocabPostObj = { name: vocabularyName };
 
-  let options = functions.getAPIOptions('POST', '');
+  let options = functions.getAPIOptions('POST', '', req.body.config.base64data);
   let vocabularyId = '';
-
+  
   try {
     const vocabResponse = await axios.post(apiPath, vocabPostObj, options);
 
@@ -208,7 +204,7 @@ async function createVocabulary(vocabularyName, siteId, debug) {
   return vocabularyId;
 }
 
-async function createCategory(category, parentVocabId, manageLanguage, debug) {
+async function createCategory(req, category, parentVocabId, manageLanguage, debug) {
   let categoryJson = {
     name: category.name,
     taxonomyVocabularyId: parentVocabId,
@@ -232,12 +228,12 @@ async function createCategory(category, parentVocabId, manageLanguage, debug) {
   debug(categoryJson);
 
   let categoriesApiPath =
-    process.env.LIFERAY_PATH +
+    req.body.config.serverURL +
     '/o/headless-admin-taxonomy/v1.0/taxonomy-vocabularies/' +
     parentVocabId +
     '/taxonomy-categories';
 
-  const options = functions.getAPIOptions('POST', '');
+  const options = functions.getAPIOptions('POST', '', req.body.config.base64data);
 
   let returnid = 0;
 
@@ -255,6 +251,7 @@ async function createCategory(category, parentVocabId, manageLanguage, debug) {
 }
 
 async function createChildCategory(
+  req,
   category,
   parentCategoryId,
   manageLanguage,
@@ -283,12 +280,12 @@ async function createChildCategory(
   debug(categoryJson);
 
   let categoriesApiPath =
-    process.env.LIFERAY_PATH +
+    req.body.config.serverURL +
     '/o/headless-admin-taxonomy/v1.0/taxonomy-categories/' +
     parentCategoryId +
     '/taxonomy-categories';
 
-  const options = functions.getAPIOptions('POST', '');
+  const options = functions.getAPIOptions('POST', '', req.body.config.base64data);
 
   let returnid = 0;
 
@@ -305,18 +302,18 @@ async function createChildCategory(
   return returnid;
 }
 
-async function getExistingVocabID(name, globalSiteId) {
+async function getExistingVocabID(req, name, globalSiteId) {
   name = name.replaceAll("'", "''");
   let filter = "name eq '" + name + "'";
 
   let apiPath =
-    process.env.LIFERAY_PATH +
+    req.body.config.serverURL +
     '/o/headless-admin-taxonomy/v1.0/sites/' +
     globalSiteId +
     '/taxonomy-vocabularies?filter=' +
     encodeURI(filter);
 
-  let options = functions.getAPIOptions('GET', 'en-US');
+  let options = functions.getAPIOptions('GET', 'en-US', req.body.config.base64data);
 
   try {
     const vocabResponse = await axios.get(apiPath, options);
@@ -331,18 +328,18 @@ async function getExistingVocabID(name, globalSiteId) {
   }
 }
 
-async function getExistingCategoryID(name, vocabId) {
+async function getExistingCategoryID(req, name, vocabId) {
   name = name.replaceAll("'", "''");
   let filter = "name eq '" + name + "'";
 
   let apiPath =
-    process.env.LIFERAY_PATH +
+    req.body.config.serverURL +
     '/o/headless-admin-taxonomy/v1.0/taxonomy-vocabularies/' +
     vocabId +
     '/taxonomy-categories?filter=' +
     encodeURI(filter);
 
-  let options = functions.getAPIOptions('GET', 'en-US');
+  let options = functions.getAPIOptions('GET', 'en-US', req.body.config.base64data);
 
   try {
     const categoryResponse = await axios.get(apiPath, options);

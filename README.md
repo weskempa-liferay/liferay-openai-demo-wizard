@@ -66,14 +66,6 @@ cd liferay-openai-demo-wizard
 npm install
 ```
 
-1. Make a copy of the example environment variables file
-
-```bash
-cp .env.example .env
-```
-
-1. Add your OpenAI [API key]([https://beta.openai.com/account/api-keys](https://platform.openai.com/account/api-keys)) to the newly created `.env` file as well as fill in the details of your server.
-
 1. Run the app
 
 ```bash
@@ -84,17 +76,7 @@ You should now be able to access the app at [http://localhost:3000](http://local
 
 ## Deployment
 
-Once you have this up and running locally, fill in the required Environment Details. I am considering UI-based configurations, but for now, it is required to configure these settings in your environment variables. 
-
-```bash
-OPENAI_API_KEY= <key goes here>
-LIFERAY_PATH= <HTTP: or HTTPS: URL for the server, examples http://localhost:8080, http://127.0.0.1:8080, or https://webserver-lctexample-prd.lfr.cloud>
-LIFERAY_ADMIN_EMAIL_ADDRESS=
-LIFERAY_ADMIN_PASSWORD=
-```
-
-> [!IMPORTANT]
-> Using a '$' character in the .env file results in the error, "Cannot read properties of undefined (reading 'split')". '$' characters will need to be escaped in the .env file. ([See source](https://github.com/bkeepers/dotenv/issues/214))
+Configuration for the application is now done through the UI. Use the gear icon in the lower right of the screen to set your environment properties.
 
 ---
 

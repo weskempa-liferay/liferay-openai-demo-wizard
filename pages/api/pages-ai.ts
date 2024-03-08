@@ -4,25 +4,16 @@ import OpenAI from 'openai';
 import functions from '../../utils/functions';
 import { logger } from '../../utils/logger';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 const debug = logger('Pages Action');
 
 export default async function SitesAction(req, res) {
   const start = new Date().getTime();
 
-  debug(req.body);
-  /*
-  if(true==true){
+  const openai = new OpenAI({
+    apiKey: req.body.config.openAIKey,
+  });
 
-    res.status(200).json({
-      result: 'returning early',
-    });
-    return false;
-  }
-  */
+  debug(req.body);
 
   const siteMapSchema = {
     properties: {
@@ -126,6 +117,7 @@ export default async function SitesAction(req, res) {
       debug(pages[i]);
 
       const pagePath = await createSitePage(
+        req, 
         req.body.siteId,
         pages[i].name,
         pages[i].contentDescription,
@@ -138,6 +130,7 @@ export default async function SitesAction(req, res) {
       if (childpages) {
         for (let j = 0; j < childpages.length; j++) {
           let childPageId = await createSitePage(
+            req, 
             req.body.siteId,
             childpages[j].childPageName,
             childpages[j].childPageContentDescription,
@@ -164,6 +157,7 @@ export default async function SitesAction(req, res) {
 }
 
 async function createSitePage(
+  req, 
   groupId,
   name,
   contentDescription,
@@ -182,11 +176,11 @@ async function createSitePage(
   );
 
   const orgApiPath =
-    process.env.LIFERAY_PATH +
+    req.body.config.serverURL +
     '/o/headless-delivery/v1.0/sites/' +
     groupId +
     '/site-pages';
-  const options = functions.getAPIOptions('POST', 'en-US');
+  const options = functions.getAPIOptions('POST', 'en-US', req.body.config.base64data);
   let returnPath = '';
 
   try {

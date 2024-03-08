@@ -4,14 +4,14 @@ import OpenAI from 'openai';
 import functions from '../../utils/functions';
 import { logger } from '../../utils/logger';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 const debug = logger('ProductsAction');
 
 export default async function ProductsAction(req, res) {
   let start = new Date().getTime();
+
+  const openai = new OpenAI({
+    apiKey: req.body.config.openAIKey,
+  });
 
   debug(req.body);
 
@@ -114,18 +114,18 @@ export default async function ProductsAction(req, res) {
 
   // check if vocabulary exists
 
-  let vocabId = await getExistingVocabID(req.body.vocabularyName, globalSiteId);
+  let vocabId = await getExistingVocabID(req, req.body.vocabularyName, globalSiteId);
 
   /* Setup Vocabulary */
 
-  let options = await functions.getAPIOptions('POST', 'en-US');
+  let options = await functions.getAPIOptions('POST', 'en-US', req.body.config.base64data);
   let apiPath = '';
 
   if (vocabId > 0) {
     debug('Using existing vocabId: ' + vocabId);
   } else {
     apiPath =
-      process.env.LIFERAY_PATH +
+      req.body.config.serverURL +
       '/o/headless-admin-taxonomy/v1.0/sites/' +
       globalSiteId +
       '/taxonomy-vocabularies';
@@ -134,7 +134,7 @@ export default async function ProductsAction(req, res) {
       viewableBy: 'Anyone',
     };
 
-    let options = functions.getAPIOptions('POST', 'en-US');
+    let options = functions.getAPIOptions('POST', 'en-US', req.body.config.base64data);
 
     // wait for the vocab to complete before adding categories
     try {
@@ -157,7 +157,7 @@ export default async function ProductsAction(req, res) {
 
     // check if category exists
 
-    let categoryId = await getExistingCategoryID(currCategory, vocabId);
+    let categoryId = await getExistingCategoryID(req, currCategory, vocabId);
 
     // create the categories for the vocabulary that was just generated
 
@@ -172,7 +172,7 @@ export default async function ProductsAction(req, res) {
       };
 
       apiPath =
-        process.env.LIFERAY_PATH +
+        req.body.config.serverURL +
         '/o/headless-admin-taxonomy/v1.0/taxonomy-vocabularies/' +
         vocabId +
         '/taxonomy-categories';
@@ -253,7 +253,7 @@ export default async function ProductsAction(req, res) {
 
       try {
         apiPath =
-          process.env.LIFERAY_PATH +
+          req.body.config.serverURL +
           '/o/headless-commerce-admin-catalog/v1.0/products';
 
         debug(productJson);
@@ -265,7 +265,7 @@ export default async function ProductsAction(req, res) {
         productCategoryJson = {
           id: currCategoryId,
           name: currCategory,
-          siteId: process.env.LIFERAY_GLOBAL_SITE_ID,
+          siteId: globalSiteId,
         };
 
         debug('includeImages:' + imageGeneration);
@@ -309,7 +309,7 @@ export default async function ProductsAction(req, res) {
           debug(imgschema);
 
           let imgApiPath =
-            process.env.LIFERAY_PATH +
+            req.body.config.serverURL +
             '/o/headless-commerce-admin-catalog/v1.0/products/' +
             productResponse.data.productId +
             '/images/by-url';
@@ -337,18 +337,18 @@ export default async function ProductsAction(req, res) {
     });
 }
 
-async function getExistingVocabID(name, globalSiteId) {
+async function getExistingVocabID(req, name, globalSiteId) {
   name = name.replaceAll("'", "''");
   let filter = "name eq '" + name + "'";
 
   let apiPath =
-    process.env.LIFERAY_PATH +
+    req.body.config.serverURL +
     '/o/headless-admin-taxonomy/v1.0/sites/' +
     globalSiteId +
     '/taxonomy-vocabularies?filter=' +
     encodeURI(filter);
 
-  let options = functions.getAPIOptions('GET', 'en-US');
+  let options = functions.getAPIOptions('GET', 'en-US', req.body.config.base64data);
 
   try {
     const vocabResponse = await axios.get(apiPath, options);
@@ -363,18 +363,18 @@ async function getExistingVocabID(name, globalSiteId) {
   }
 }
 
-async function getExistingCategoryID(name, vocabId) {
+async function getExistingCategoryID(req, name, vocabId) {
   name = name.replaceAll("'", "''");
   let filter = "name eq '" + name + "'";
 
   let apiPath =
-    process.env.LIFERAY_PATH +
+    req.body.config.serverURL +
     '/o/headless-admin-taxonomy/v1.0/taxonomy-vocabularies/' +
     vocabId +
     '/taxonomy-categories?filter=' +
     encodeURI(filter);
 
-  let options = functions.getAPIOptions('GET', 'en-US');
+  let options = functions.getAPIOptions('GET', 'en-US', req.body.config.base64data);
 
   try {
     const categoryResponse = await axios.get(apiPath, options);

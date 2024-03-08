@@ -16,16 +16,6 @@ const getAvailableLanguages = () => {
   ];
 };
 
-const getBase64data = () => {
-  const usernamePasswordBuffer = Buffer.from(
-    process.env.LIFERAY_ADMIN_EMAIL_ADDRESS +
-      ':' +
-      process.env.LIFERAY_ADMIN_PASSWORD
-  );
-
-  return usernamePasswordBuffer.toString('base64');
-};
-
 const functions = {
   getAIModelOptions: () => {
     return [
@@ -35,11 +25,11 @@ const functions = {
       { id: 'gpt-4-turbo-preview', name: 'GPT 4.0 Turbo Preview (u0125)' }
     ];
   },
-  getAPIOptions: (method, defaultLanguage) => {
+  getAPIOptions: (method, defaultLanguage, base64data) => {
     return {
       headers: {
         Accept: 'application/json',
-        Authorization: 'Basic ' + getBase64data(),
+        Authorization: 'Basic ' + base64data,
         'Content-Type': 'application/json',
         ...(defaultLanguage && { 'Accept-Language': defaultLanguage }),
       },
@@ -47,7 +37,6 @@ const functions = {
     };
   },
   getAvailableLanguages,
-  getBase64data,
   getD2ImageSizeOptions: () => {
     return [
       { cost: 0.02, id: '1024x1024-standard', name: '1024x1024' },
@@ -68,11 +57,11 @@ const functions = {
   getDefaultAIModel: () => {
     return "gpt-3.5-turbo-1106";
   },
-  getFilePostOptions: (apiPath, fileStream, fileKey) => {
-    let options = {
+  getFilePostOptions: (apiPath, fileStream, fileKey, base64data) => {
+      let options = {
         formData: {},
         headers: {
-          Authorization: 'Basic ' + getBase64data(),
+          Authorization: 'Basic ' + base64data,
           'Content-Type': 'multipart/form-data',
         },
         method: 'POST',

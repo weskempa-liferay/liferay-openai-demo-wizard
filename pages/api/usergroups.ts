@@ -4,14 +4,14 @@ import OpenAI from 'openai';
 import functions from '../../utils/functions';
 import { logger } from '../../utils/logger';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 const debug = logger('UserGroupAction');
 
 export default async function UserGroupsAction(req, res) {
   const start = new Date().getTime();
+
+  const openai = new OpenAI({
+    apiKey: req.body.config.openAIKey,
+  });
 
   debug(req.body);
 
@@ -70,7 +70,7 @@ export default async function UserGroupsAction(req, res) {
   for (let i = 0; i < usergroups.length; i++) {
     debug(usergroups[i]);
 
-    const userGroupId = await createUserGroup(usergroups[i], false);
+    const userGroupId = await createUserGroup(req, usergroups[i], false);
   }
 
   let end = new Date().getTime();
@@ -80,16 +80,16 @@ export default async function UserGroupsAction(req, res) {
   });
 }
 
-async function createUserGroup(usergroup, parentOrgId) {
-  debug('Creating ' + usergroup.name + ' with parent ' + parentOrgId);
+async function createUserGroup(req, usergroup, parentOrgId) {
+  debug('Creating ' + usergroup.name);
 
   const postBody = {
     name: usergroup.name,
   };
 
   const orgApiPath =
-    process.env.LIFERAY_PATH + '/o/headless-admin-user/v1.0/user-groups';
-  const options = functions.getAPIOptions('POST', 'en-US');
+    req.body.config.serverURL + '/o/headless-admin-user/v1.0/user-groups';
+  const options = functions.getAPIOptions('POST', 'en-US', req.body.config.base64data);
 
   let returnid = 0;
 

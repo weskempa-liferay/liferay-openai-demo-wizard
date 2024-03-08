@@ -6,14 +6,14 @@ import request from 'request';
 import functions from '../../utils/functions';
 import { logger } from '../../utils/logger';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 const debug = logger('Users AI - Action');
 
 export default async function UsersAIAction(req, res) {
   let start = new Date().getTime();
+
+  const openai = new OpenAI({
+    apiKey: req.body.config.openAIKey,
+  });
 
   debug(req.body);
 
@@ -114,17 +114,17 @@ export default async function UsersAIAction(req, res) {
     userlist[i].password = req.body.password;
 
     try {
-      const options = functions.getAPIOptions('POST', 'en-US');
+      const options = functions.getAPIOptions('POST', 'en-US', req.body.config.base64data);
 
       let userApiPath =
-        process.env.LIFERAY_PATH + '/o/headless-admin-user/v1.0/user-accounts';
+        req.body.config.serverURL + '/o/headless-admin-user/v1.0/user-accounts';
       const response = await axios.post(userApiPath, userlist[i], options);
       debug(
         'Created user:' + response.data.id + ', ' + response.data.alternateName
       );
 
       let userImageApiPath =
-        process.env.LIFERAY_PATH +
+        req.body.config.serverURL +
         '/o/headless-admin-user/v1.0/user-accounts/' +
         response.data.id +
         '/image';
@@ -140,7 +140,8 @@ export default async function UsersAIAction(req, res) {
       const imgoptions = functions.getFilePostOptions(
         userImageApiPath,
         fileStream,
-        'image'
+        'image',
+        req.body.config.base64data
       );
 
       request(imgoptions, function (err, res, body) {

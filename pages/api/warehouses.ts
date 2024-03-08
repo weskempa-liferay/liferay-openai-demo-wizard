@@ -4,14 +4,14 @@ import OpenAI from 'openai';
 import functions from '../../utils/functions';
 import { logger } from '../../utils/logger';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 const debug = logger('WarehousesAction');
 
 export default async function WarehousesAction(req, res) {
   const start = new Date().getTime();
+
+  const openai = new OpenAI({
+    apiKey: req.body.config.openAIKey,
+  });
 
   debug(req.body);
 
@@ -78,7 +78,7 @@ export default async function WarehousesAction(req, res) {
   for (let i = 0; i < warehouses.length; i++) {
     debug(warehouses[i]);
 
-    const warehouseId = await createWarehouse(warehouses[i]);
+    const warehouseId = await createWarehouse(req, warehouses[i]);
   }
 
   let end = new Date().getTime();
@@ -88,7 +88,7 @@ export default async function WarehousesAction(req, res) {
   });
 }
 
-async function createWarehouse(warehouse) {
+async function createWarehouse(req, warehouse) {
   debug(
     'Creating ' +
       warehouse.name +
@@ -107,9 +107,9 @@ async function createWarehouse(warehouse) {
   };
 
   const orgApiPath =
-    process.env.LIFERAY_PATH +
+    req.body.config.serverURL +
     '/o/headless-commerce-admin-inventory/v1.0/warehouses';
-  const options = functions.getAPIOptions('POST', 'en-US');
+  const options = functions.getAPIOptions('POST', 'en-US', req.body.config.base64data);
 
   let returnid = 0;
 

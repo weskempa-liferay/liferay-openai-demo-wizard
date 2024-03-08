@@ -4,16 +4,16 @@ import OpenAI from 'openai';
 import functions from '../../utils/functions';
 import { logger } from '../../utils/logger';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
-let options = functions.getAPIOptions('POST', 'en-US');
-
 const debug = logger('WikiAction');
 
 export default async function WikiAction(req, res) {
   let start = new Date().getTime();
+
+  const openai = new OpenAI({
+    apiKey: req.body.config.openAIKey,
+  });
+
+  let options = functions.getAPIOptions('POST', 'en-US', req.body.config.base64data);
 
   debug(req.body);
 
@@ -104,6 +104,7 @@ export default async function WikiAction(req, res) {
   debug(JSON.stringify(wikiPages));
 
   let nodeId = await createWikiNode(
+    req, 
     req.body.siteId,
     req.body.wikiNodeName,
     req.body.viewOptions
@@ -111,6 +112,7 @@ export default async function WikiAction(req, res) {
 
   for (let i = 0; wikiPages.length > i; i++) {
     let frontPageId = await createWikiPage(
+      req, 
       nodeId,
       wikiPages[i].title,
       wikiPages[i].pageBody,
@@ -121,6 +123,7 @@ export default async function WikiAction(req, res) {
     if (childPages) {
       for (let ii = 0; childPages.length > ii; ii++) {
         await createChildWikiPage(
+          req, 
           frontPageId,
           nodeId,
           childPages[ii].title,
@@ -137,7 +140,7 @@ export default async function WikiAction(req, res) {
   });
 }
 
-async function createWikiNode(groupId, name, viewableBy) {
+async function createWikiNode(req, groupId, name, viewableBy) {
   debug('Creating Wiki Node ' + name + ' with groupId ' + groupId);
 
   const postBody = {
@@ -146,11 +149,11 @@ async function createWikiNode(groupId, name, viewableBy) {
   };
 
   const apiPath =
-    process.env.LIFERAY_PATH +
+    req.body.config.serverURL +
     '/o/headless-delivery/v1.0/sites/' +
     groupId +
     '/wiki-nodes';
-  const options = functions.getAPIOptions('POST', 'en-US');
+  const options = functions.getAPIOptions('POST', 'en-US', req.body.config.base64data);
   let returnId = 0;
 
   try {
@@ -164,7 +167,7 @@ async function createWikiNode(groupId, name, viewableBy) {
   return returnId;
 }
 
-async function createWikiPage(nodeId, name, body, viewableBy) {
+async function createWikiPage(req, nodeId, name, body, viewableBy) {
   debug('Creating page for Wiki NodeId ' + nodeId + ' with name: ' + name);
 
   const postBody = {
@@ -175,11 +178,11 @@ async function createWikiPage(nodeId, name, body, viewableBy) {
   };
 
   const apiPath =
-    process.env.LIFERAY_PATH +
+    req.body.config.serverURL +
     '/o/headless-delivery/v1.0/wiki-nodes/' +
     nodeId +
     '/wiki-pages';
-  const options = functions.getAPIOptions('POST', 'en-US');
+  const options = functions.getAPIOptions('POST', 'en-US', req.body.config.base64data);
   let returnId = 0;
 
   try {
@@ -194,6 +197,7 @@ async function createWikiPage(nodeId, name, body, viewableBy) {
 }
 
 async function createChildWikiPage(
+  req, 
   parentPageId,
   nodeId,
   name,
@@ -217,11 +221,11 @@ async function createChildWikiPage(
   };
 
   const apiPath =
-    process.env.LIFERAY_PATH +
+    req.body.config.serverURL +
     '/o/headless-delivery/v1.0/wiki-pages/' +
     parentPageId +
     '/wiki-pages';
-  const options = functions.getAPIOptions('POST', 'en-US');
+  const options = functions.getAPIOptions('POST', 'en-US', req.body.config.base64data);
   let returnId = 0;
 
   try {

@@ -1,8 +1,8 @@
 import axios from 'axios';
 import OpenAI from 'openai';
 
-import functions from '../utils/functions';
-import { logger } from '../utils/logger';
+import functions from '../../utils/functions';
+import { logger } from '../../utils/logger';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -50,8 +50,7 @@ export default async function FaqsAction(req, res) {
     }
   }
 
-
-  debug("storedProperties");
+  debug('storedProperties');
   debug(storedProperties);
 
   const faqSchema = {
@@ -103,7 +102,7 @@ export default async function FaqsAction(req, res) {
       structuredContentFolderId: req.body.folderId,
       taxonomyCategoryIds: functions.returnArraySet(req.body.categoryIds),
       title: faqs[i].title,
-      viewableBy: req.body.viewOptions
+      viewableBy: req.body.viewOptions,
     };
 
     let setContentFields = [

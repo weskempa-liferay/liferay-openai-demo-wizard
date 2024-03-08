@@ -1,8 +1,8 @@
 import axios from 'axios';
 import OpenAI from 'openai';
 
-import functions from '../utils/functions';
-import { logger } from '../utils/logger';
+import functions from '../../utils/functions';
+import { logger } from '../../utils/logger';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -18,21 +18,22 @@ export default async function WarehousesAction(req, res) {
   const warehousesSchema = {
     properties: {
       locations: {
-        description:  'An array of ' +
-                      req.body.warehouseNumber +
-                      ' cities, regions, or counties within a region. ',
+        description:
+          'An array of ' +
+          req.body.warehouseNumber +
+          ' cities, regions, or counties within a region. ',
         items: {
           properties: {
-            name: {
-              description: 'The name of the location.',
-              type: 'string',
-            },
             latitude: {
               description: 'The latitude of the location.',
               type: 'string',
             },
             longitude: {
               description: 'The longitude of the location.',
+              type: 'string',
+            },
+            name: {
+              description: 'The name of the location.',
               type: 'string',
             },
           },
@@ -55,14 +56,17 @@ export default async function WarehousesAction(req, res) {
       },
       {
         content:
-          'Provide a list of ' +  req.body.warehouseNumber + ' cities, regions, or counties with latitude and longitude within the region of ' +
-          req.body.warehouseRegion + '. ',
+          'Provide a list of ' +
+          req.body.warehouseNumber +
+          ' cities, regions, or counties with latitude and longitude within the region of ' +
+          req.body.warehouseRegion +
+          '. ',
         role: 'user',
       },
     ],
     //model: req.body.config.model,
     // Default 3.5 model no longer appears to provide useful results. Forcing a newer model until this is corrected.
-    model: "gpt-4-turbo-preview",
+    model: 'gpt-4-turbo-preview',
     temperature: 0.6,
   });
 
@@ -71,12 +75,10 @@ export default async function WarehousesAction(req, res) {
   ).locations;
   debug(JSON.stringify(warehouses));
 
-
   for (let i = 0; i < warehouses.length; i++) {
     debug(warehouses[i]);
 
     const warehouseId = await createWarehouse(warehouses[i]);
-
   }
 
   let end = new Date().getTime();
@@ -87,19 +89,26 @@ export default async function WarehousesAction(req, res) {
 }
 
 async function createWarehouse(warehouse) {
-  debug('Creating ' + warehouse.name + ' with lat ' + warehouse.latitude + '  long ' + warehouse.longitude);
+  debug(
+    'Creating ' +
+      warehouse.name +
+      ' with lat ' +
+      warehouse.latitude +
+      '  long ' +
+      warehouse.longitude
+  );
 
-  
   const postBody = {
-    name: {
-      "en_US": warehouse.name,
-    },
     latitude: warehouse.latitude,
     longitude: warehouse.longitude,
+    name: {
+      en_US: warehouse.name,
+    },
   };
 
   const orgApiPath =
-    process.env.LIFERAY_PATH + '/o/headless-commerce-admin-inventory/v1.0/warehouses';
+    process.env.LIFERAY_PATH +
+    '/o/headless-commerce-admin-inventory/v1.0/warehouses';
   const options = functions.getAPIOptions('POST', 'en-US');
 
   let returnid = 0;
@@ -113,6 +122,6 @@ async function createWarehouse(warehouse) {
   } catch (error) {
     console.log(error);
   }
-  
+
   return returnid;
 }

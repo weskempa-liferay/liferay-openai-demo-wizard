@@ -1,8 +1,8 @@
 import axios from 'axios';
 import OpenAI from 'openai';
 
-import functions from '../utils/functions';
-import { logger } from '../utils/logger';
+import functions from '../../utils/functions';
+import { logger } from '../../utils/logger';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -17,9 +17,7 @@ export default async function SitesAction(req, res) {
 
   for (let i = 0; i < pages.length; i++) {
     debug(pages[i]);
-    await createSitePage(
-        req.body.siteId, pages[i], "home");
-
+    await createSitePage(req.body.siteId, pages[i], 'home');
   }
 
   let end = new Date().getTime();
@@ -30,33 +28,39 @@ export default async function SitesAction(req, res) {
 }
 
 async function createSitePage(groupId, page, parentPath) {
-  
-  let viewableBy = ("viewableBy" in page)? page["viewableBy"] : "Anyone";
-  
-  debug('Creating ' + page.name + ' with parent ' + parentPath + ' viewable by ' + viewableBy);
+  let viewableBy = 'viewableBy' in page ? page['viewableBy'] : 'Anyone';
+
+  debug(
+    'Creating ' +
+      page.name +
+      ' with parent ' +
+      parentPath +
+      ' viewable by ' +
+      viewableBy
+  );
 
   const postBody = getPageSchema(page.name, parentPath, viewableBy);
 
   const orgApiPath =
-    process.env.LIFERAY_PATH + '/o/headless-delivery/v1.0/sites/'+groupId+'/site-pages';
+    process.env.LIFERAY_PATH +
+    '/o/headless-delivery/v1.0/sites/' +
+    groupId +
+    '/site-pages';
   const options = functions.getAPIOptions('POST', 'en-US');
-  let returnPath = "";
+  let returnPath = '';
 
   try {
-
     const response = await axios.post(orgApiPath, postBody, options);
 
     returnPath = response.data.friendlyUrlPath;
 
     debug('returned friendlyUrlPath: ' + returnPath);
 
-    if(page.pages && page.pages.length>0){
-
-        for (let i = 0; i < page.pages.length; i++) {
-            createSitePage(groupId, page.pages[i], returnPath);
-        }
+    if (page.pages && page.pages.length > 0) {
+      for (let i = 0; i < page.pages.length; i++) {
+        createSitePage(groupId, page.pages[i], returnPath);
+      }
     }
-
   } catch (error) {
     console.log(error);
   }
@@ -64,81 +68,71 @@ async function createSitePage(groupId, page, parentPath) {
   return returnPath;
 }
 
-function getPageSchema(name, parentPath, viewableBy){
-
+function getPageSchema(name, parentPath, viewableBy) {
   let pageSchema = {
-    "pageDefinition": {
-      "pageElement": {
-        "pageElements": [
+    pageDefinition: {
+      pageElement: {
+        pageElements: [
           {
-            "definition": {
-              "indexed": true,
-              "layout": {
-                "widthType": "Fixed"
-              }
+            definition: {
+              indexed: true,
+              layout: {
+                widthType: 'Fixed',
+              },
             },
-            "pageElements": [
-              
-            ],
-            "type": "Section"
-          }
+            pageElements: [],
+            type: 'Section',
+          },
         ],
-        "type": "Root"
+        type: 'Root',
       },
-      "settings": {
-        "colorSchemeName": "01",
-        "themeName": "Classic"
+      settings: {
+        colorSchemeName: '01',
+        themeName: 'Classic',
       },
-      "version": 1.1
+      version: 1.1,
     },
-    "pagePermissions": [
+    pagePermissions: [
       {
-        "actionKeys": [
-          "UPDATE_DISCUSSION",
-          "PERMISSIONS",
-          "UPDATE_LAYOUT_ADVANCED_OPTIONS",
-          "UPDATE_LAYOUT_CONTENT",
-          "CUSTOMIZE",
-          "LAYOUT_RULE_BUILDER",
-          "ADD_LAYOUT",
-          "VIEW",
-          "DELETE",
-          "UPDATE_LAYOUT_BASIC",
-          "DELETE_DISCUSSION",
-          "CONFIGURE_PORTLETS",
-          "UPDATE",
-          "UPDATE_LAYOUT_LIMITED",
-          "ADD_DISCUSSION"
+        actionKeys: [
+          'UPDATE_DISCUSSION',
+          'PERMISSIONS',
+          'UPDATE_LAYOUT_ADVANCED_OPTIONS',
+          'UPDATE_LAYOUT_CONTENT',
+          'CUSTOMIZE',
+          'LAYOUT_RULE_BUILDER',
+          'ADD_LAYOUT',
+          'VIEW',
+          'DELETE',
+          'UPDATE_LAYOUT_BASIC',
+          'DELETE_DISCUSSION',
+          'CONFIGURE_PORTLETS',
+          'UPDATE',
+          'UPDATE_LAYOUT_LIMITED',
+          'ADD_DISCUSSION',
         ],
-        "roleKey": "Owner"
+        roleKey: 'Owner',
       },
       {
-        "actionKeys": [
-          "CUSTOMIZE",
-          "VIEW",
-          "ADD_DISCUSSION"
-        ],
-        "roleKey": "Site Member"
-      }
-      
+        actionKeys: ['CUSTOMIZE', 'VIEW', 'ADD_DISCUSSION'],
+        roleKey: 'Site Member',
+      },
     ],
-    "parentSitePage": {
-      "friendlyUrlPath": parentPath
+    parentSitePage: {
+      friendlyUrlPath: parentPath,
     },
-    "title": name,
-    "title_i18n": {
-      "en_US": name
-    },  
-    "viewableBy": viewableBy
+    title: name,
+    title_i18n: {
+      en_US: name,
+    },
+    viewableBy: viewableBy,
   };
 
-  if(viewableBy=="Anyone"){
+  if (viewableBy == 'Anyone') {
     pageSchema.pagePermissions.push({
-        "actionKeys": [
-          "VIEW"
-        ],
-        "roleKey": "Guest"
-      });
+      actionKeys: ['VIEW'],
+      roleKey: 'Guest',
+    });
   }
 
   return pageSchema;

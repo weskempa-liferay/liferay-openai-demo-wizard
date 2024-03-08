@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-import functions from '../utils/functions';
-import { logger } from '../utils/logger';
+import functions from '../../utils/functions';
+import { logger } from '../../utils/logger';
 
 const debug = logger('Environment - Action');
 

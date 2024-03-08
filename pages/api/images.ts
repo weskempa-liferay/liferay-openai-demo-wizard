@@ -3,8 +3,8 @@ import http from 'https';
 import OpenAI from 'openai';
 import request from 'request';
 
-import functions from '../utils/functions';
-import { logger } from '../utils/logger';
+import functions from '../../utils/functions';
+import { logger } from '../../utils/logger';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -40,8 +40,8 @@ export default async function ImagesAction(req, res) {
         model: imageGeneration,
         n: 1,
         prompt: pictureDescription,
-        size: req.body.imageGenerationSize,
         quality: req.body.imageGenerationQuality,
+        size: req.body.imageGenerationSize,
       });
 
       debug(imageResponse.data[0].url);

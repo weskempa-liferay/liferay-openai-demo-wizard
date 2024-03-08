@@ -1,8 +1,8 @@
 import axios from 'axios';
 import OpenAI from 'openai';
 
-import functions from '../utils/functions';
-import { logger } from '../utils/logger';
+import functions from '../../utils/functions';
+import { logger } from '../../utils/logger';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -18,7 +18,10 @@ export default async function UserGroupsAction(req, res) {
   const usergroupsSchema = {
     properties: {
       usergroups: {
-        description: 'An array of ' + req.body.userGroupNumber + ' categories of system users within a company',
+        description:
+          'An array of ' +
+          req.body.userGroupNumber +
+          ' categories of system users within a company',
         items: {
           properties: {
             name: {
@@ -46,7 +49,9 @@ export default async function UserGroupsAction(req, res) {
       },
       {
         content:
-          'Create a list of ' + req.body.userGroupNumber + ' types of users for a company that provides ' +
+          'Create a list of ' +
+          req.body.userGroupNumber +
+          ' types of users for a company that provides ' +
           req.body.userGroupTopic +
           '. ' +
           'Do not include double quotes in the response.',
@@ -79,7 +84,7 @@ async function createUserGroup(usergroup, parentOrgId) {
   debug('Creating ' + usergroup.name + ' with parent ' + parentOrgId);
 
   const postBody = {
-    name: usergroup.name
+    name: usergroup.name,
   };
 
   const orgApiPath =

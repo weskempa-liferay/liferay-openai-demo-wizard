@@ -1,4 +1,4 @@
-export default function FieldConfigSelect({ inputChange, label, name, optionMap, defaultValue }) {
+export default function FieldConfigSelect({ defaultValue, inputChange, label, name, optionMap }) {
   return (
     <label className="flex flex-col text-slate-200">
       {label}
@@ -6,10 +6,10 @@ export default function FieldConfigSelect({ inputChange, label, name, optionMap,
         className="bg-white border border-gray-200 
                     text-slate-700 text-sm rounded
                     block w-full p-2.5 h-10"
+        defaultValue={defaultValue}
         id={name}
         name={name}
         onChange={(e) => inputChange(e.target.value)}
-        defaultValue={defaultValue}
       >
         {optionMap.map((option) => {
           return (

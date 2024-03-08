@@ -8,7 +8,7 @@
     "perfectionist/sort-objects": [
       "error",
       {
-        "type": "natural",
+        "type": "natural"
       }
     ]
   }

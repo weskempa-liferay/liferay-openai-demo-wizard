@@ -1,8 +1,8 @@
 import axios from 'axios';
 import OpenAI from 'openai';
 
-import functions from '../utils/functions';
-import { logger } from '../utils/logger';
+import functions from '../../utils/functions';
+import { logger } from '../../utils/logger';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -110,7 +110,6 @@ export default async function ProductsAction(req, res) {
     'Category Vocab': req.body.vocabularyName,
   };
 
-
   debug(categoryDataStr);
 
   // check if vocabulary exists
@@ -122,18 +121,18 @@ export default async function ProductsAction(req, res) {
   let options = await functions.getAPIOptions('POST', 'en-US');
   let apiPath = '';
 
-  if(vocabId>0){
-    debug("Using existing vocabId: "+vocabId);
+  if (vocabId > 0) {
+    debug('Using existing vocabId: ' + vocabId);
   } else {
     apiPath =
       process.env.LIFERAY_PATH +
       '/o/headless-admin-taxonomy/v1.0/sites/' +
       globalSiteId +
       '/taxonomy-vocabularies';
-    let vocabPostObj = { 
-        name: req.body.vocabularyName,
-        viewableBy: "Anyone"
-      };
+    let vocabPostObj = {
+      name: req.body.vocabularyName,
+      viewableBy: 'Anyone',
+    };
 
     let options = functions.getAPIOptions('POST', 'en-US');
 
@@ -144,7 +143,7 @@ export default async function ProductsAction(req, res) {
       debug(vocabResponse.data);
       vocabId = vocabResponse.data.id;
     } catch (error) {
-      debug(error.response.data.status+":"+error.response.data.title);
+      debug(error.response.data.status + ':' + error.response.data.title);
     }
   }
 
@@ -154,7 +153,6 @@ export default async function ProductsAction(req, res) {
   let currCategory, currCategoryJson, categResponse;
 
   for (var i = 0; i < productCategories.length; i++) {
-
     currCategory = productCategories[i];
 
     // check if category exists
@@ -163,15 +161,14 @@ export default async function ProductsAction(req, res) {
 
     // create the categories for the vocabulary that was just generated
 
-    if(categoryId>0){
-      debug("Using existing categoryId: "+categoryId);
+    if (categoryId > 0) {
+      debug('Using existing categoryId: ' + categoryId);
       categMap.set(currCategory, categoryId);
     } else {
-
-      currCategoryJson = { 
+      currCategoryJson = {
         name: currCategory,
         taxonomyVocabularyId: vocabId,
-        viewableBy: "Anyone"
+        viewableBy: 'Anyone',
       };
 
       apiPath =
@@ -190,7 +187,7 @@ export default async function ProductsAction(req, res) {
         categMap.set(currCategory, categResponse.data.id);
       } catch (error) {
         debug(error);
-        debug(error.response.data.status+":"+error.response.data.title);
+        debug(error.response.data.status + ':' + error.response.data.title);
       }
     }
 
@@ -275,9 +272,14 @@ export default async function ProductsAction(req, res) {
 
         if (imageGeneration != 'none') {
           let imagePrompt =
-            'Create a "' + req.body.companyTheme + '" commerce product image for "' + productName + '", ' + shortDescription;
+            'Create a "' +
+            req.body.companyTheme +
+            '" commerce product image for "' +
+            productName +
+            '", ' +
+            shortDescription;
 
-          debug("Using image prompt: "+imagePrompt);
+          debug('Using image prompt: ' + imagePrompt);
 
           if (req.body.imageStyle) {
             imagePrompt =
@@ -317,70 +319,71 @@ export default async function ProductsAction(req, res) {
             imgschema,
             options
           );
-
         }
       } catch (productError) {
-        debug(
-          'error creating product ' + productName + ' -- ' + productError
-        );
+        debug('error creating product ' + productName + ' -- ' + productError);
       }
     }
   }
 
   let end = new Date().getTime();
 
-  res.status(200).json({ result: `Completed in ${functions.millisToMinutesAndSeconds(end - start)}` });
+  res
+    .status(200)
+    .json({
+      result: `Completed in ${functions.millisToMinutesAndSeconds(
+        end - start
+      )}`,
+    });
 }
 
 async function getExistingVocabID(name, globalSiteId) {
-  
-  name = name.replaceAll("'","''");
-  let filter = "name eq '"+name+"'";
+  name = name.replaceAll("'", "''");
+  let filter = "name eq '" + name + "'";
 
   let apiPath =
     process.env.LIFERAY_PATH +
     '/o/headless-admin-taxonomy/v1.0/sites/' +
     globalSiteId +
-    '/taxonomy-vocabularies?filter='+encodeURI(filter);
+    '/taxonomy-vocabularies?filter=' +
+    encodeURI(filter);
 
   let options = functions.getAPIOptions('GET', 'en-US');
 
   try {
     const vocabResponse = await axios.get(apiPath, options);
 
-    if(vocabResponse.data.items.length>0){
+    if (vocabResponse.data.items.length > 0) {
       return vocabResponse.data.items[0].id;
     } else {
       return -1;
     }
-    
   } catch (error) {
     debug(error);
   }
 }
 
 async function getExistingCategoryID(name, vocabId) {
-  
-  name = name.replaceAll("'","''");
-  let filter = "name eq '"+name+"'";
+  name = name.replaceAll("'", "''");
+  let filter = "name eq '" + name + "'";
 
   let apiPath =
     process.env.LIFERAY_PATH +
     '/o/headless-admin-taxonomy/v1.0/taxonomy-vocabularies/' +
     vocabId +
-    '/taxonomy-categories?filter='+encodeURI(filter);
+    '/taxonomy-categories?filter=' +
+    encodeURI(filter);
 
   let options = functions.getAPIOptions('GET', 'en-US');
 
   try {
     const categoryResponse = await axios.get(apiPath, options);
 
-    if(categoryResponse.data.items.length>0){
+    if (categoryResponse.data.items.length > 0) {
       return categoryResponse.data.items[0].id;
     } else {
       return -1;
     }
-    
   } catch (error) {
     debug(error);
   }

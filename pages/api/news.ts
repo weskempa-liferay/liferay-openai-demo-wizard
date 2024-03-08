@@ -4,8 +4,8 @@ import http from 'https';
 import OpenAI from 'openai';
 import request from 'request';
 
-import functions from '../utils/functions';
-import { logger } from '../utils/logger';
+import functions from '../../utils/functions';
+import { logger } from '../../utils/logger';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -337,7 +337,7 @@ async function postNewsToLiferay(req, newsJson, imageId) {
     taxonomyCategoryIds: functions.returnArraySet(req.body.categoryIds),
     title: newsJson.headline,
     title_i18n: titleValues,
-    viewableBy: req.body.viewOptions
+    viewableBy: req.body.viewOptions,
   };
 
   const apiPath =

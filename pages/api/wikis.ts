@@ -1,8 +1,8 @@
 import axios from 'axios';
 import OpenAI from 'openai';
 
-import functions from '../utils/functions';
-import { logger } from '../utils/logger';
+import functions from '../../utils/functions';
+import { logger } from '../../utils/logger';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -33,33 +33,32 @@ export default async function WikiAction(req, res) {
                 ' wiki child articles for each category',
               items: {
                 properties: {
-                  title: {
-                    description: 'The title of the wiki childarticle.',
-                    type: 'string'
-                  },
                   articleBody: {
                     description:
                       'The wiki child article. The wiki child article should be ' +
                       req.body.wikiArticleLength +
                       ' words or more.',
-                    type: 'string'
+                    type: 'string',
+                  },
+                  title: {
+                    description: 'The title of the wiki childarticle.',
+                    type: 'string',
                   },
                 },
                 required: ['title', 'articleBody'],
-                type: 'object'
+                type: 'object',
               },
               required: ['childarticles'],
-              type: 'array'
+              type: 'array',
+            },
+            pageBody: {
+              description: 'The wiki category page article or description.',
+              type: 'string',
             },
             title: {
               description: 'The title of the wiki page.',
-              type: 'string'
+              type: 'string',
             },
-            pageBody: {
-              description:
-                'The wiki category page article or description.',
-              type: 'string'
-            }
           },
           required: ['title', 'pageBody'],
           type: 'object',
@@ -71,11 +70,8 @@ export default async function WikiAction(req, res) {
     type: 'object',
   };
 
-
   const response = await openai.chat.completions.create({
-    functions: [
-      { name: 'get_wiki_content', parameters: wikiSchema },
-    ],
+    functions: [{ name: 'get_wiki_content', parameters: wikiSchema }],
     messages: [
       {
         content:
@@ -106,20 +102,31 @@ export default async function WikiAction(req, res) {
   ).wikipages;
 
   debug(JSON.stringify(wikiPages));
-  
-  let nodeId = await createWikiNode(req.body.siteId, req.body.wikiNodeName, req.body.viewOptions);
+
+  let nodeId = await createWikiNode(
+    req.body.siteId,
+    req.body.wikiNodeName,
+    req.body.viewOptions
+  );
 
   for (let i = 0; wikiPages.length > i; i++) {
-
     let frontPageId = await createWikiPage(
-        nodeId, wikiPages[i].title, wikiPages[i].pageBody, req.body.viewOptions);
+      nodeId,
+      wikiPages[i].title,
+      wikiPages[i].pageBody,
+      req.body.viewOptions
+    );
 
     let childPages = wikiPages[i].childarticles;
-    if(childPages){
+    if (childPages) {
       for (let ii = 0; childPages.length > ii; ii++) {
-
         await createChildWikiPage(
-          frontPageId, nodeId, childPages[ii].title, childPages[ii].articleBody, req.body.viewOptions);
+          frontPageId,
+          nodeId,
+          childPages[ii].title,
+          childPages[ii].articleBody,
+          req.body.viewOptions
+        );
       }
     }
   }
@@ -129,17 +136,20 @@ export default async function WikiAction(req, res) {
     result: 'Completed in ' + functions.millisToMinutesAndSeconds(end - start),
   });
 }
-  
+
 async function createWikiNode(groupId, name, viewableBy) {
   debug('Creating Wiki Node ' + name + ' with groupId ' + groupId);
-  
+
   const postBody = {
-    "name": name,
-    "viewableBy": viewableBy
-  }
-  
+    name: name,
+    viewableBy: viewableBy,
+  };
+
   const apiPath =
-    process.env.LIFERAY_PATH + '/o/headless-delivery/v1.0/sites/'+groupId+'/wiki-nodes';
+    process.env.LIFERAY_PATH +
+    '/o/headless-delivery/v1.0/sites/' +
+    groupId +
+    '/wiki-nodes';
   const options = functions.getAPIOptions('POST', 'en-US');
   let returnId = 0;
 
@@ -147,7 +157,6 @@ async function createWikiNode(groupId, name, viewableBy) {
     const response = await axios.post(apiPath, postBody, options);
     returnId = response.data.id;
     debug('Returned NodeId: ' + returnId);
-
   } catch (error) {
     console.log(error);
   }
@@ -156,17 +165,20 @@ async function createWikiNode(groupId, name, viewableBy) {
 }
 
 async function createWikiPage(nodeId, name, body, viewableBy) {
-  debug('Creating page for Wiki NodeId ' + nodeId + ' with name: ' + name  );
-  
+  debug('Creating page for Wiki NodeId ' + nodeId + ' with name: ' + name);
+
   const postBody = {
-    "headline": name,
-    "content": "<p>"+body+"</p>",
-    "encodingFormat": "text/html",
-    "viewableBy": viewableBy
-  }
+    content: '<p>' + body + '</p>',
+    encodingFormat: 'text/html',
+    headline: name,
+    viewableBy: viewableBy,
+  };
 
   const apiPath =
-    process.env.LIFERAY_PATH + '/o/headless-delivery/v1.0/wiki-nodes/'+nodeId+'/wiki-pages'
+    process.env.LIFERAY_PATH +
+    '/o/headless-delivery/v1.0/wiki-nodes/' +
+    nodeId +
+    '/wiki-pages';
   const options = functions.getAPIOptions('POST', 'en-US');
   let returnId = 0;
 
@@ -174,8 +186,6 @@ async function createWikiPage(nodeId, name, body, viewableBy) {
     const response = await axios.post(apiPath, postBody, options);
     returnId = response.data.id;
     debug('Returned PageId: ' + returnId);
-    
-
   } catch (error) {
     console.log(error);
   }
@@ -183,20 +193,34 @@ async function createWikiPage(nodeId, name, body, viewableBy) {
   return returnId;
 }
 
-async function createChildWikiPage(parentPageId, nodeId, name, body, viewableBy) {
-  debug('Creating child page for Wiki parentPageId ' + parentPageId + ' with name: ' + name  );
-  
+async function createChildWikiPage(
+  parentPageId,
+  nodeId,
+  name,
+  body,
+  viewableBy
+) {
+  debug(
+    'Creating child page for Wiki parentPageId ' +
+      parentPageId +
+      ' with name: ' +
+      name
+  );
+
   const postBody = {
-    "headline": name,
-    "content": "<p>"+body+"</p>",
-    "encodingFormat": "text/html",  
-    "parentWikiPageId": parentPageId,
-    "wikiNodeId": nodeId,
-    "viewableBy": viewableBy
-  }
-  
+    content: '<p>' + body + '</p>',
+    encodingFormat: 'text/html',
+    headline: name,
+    parentWikiPageId: parentPageId,
+    viewableBy: viewableBy,
+    wikiNodeId: nodeId,
+  };
+
   const apiPath =
-    process.env.LIFERAY_PATH + '/o/headless-delivery/v1.0/wiki-pages/'+parentPageId+'/wiki-pages';
+    process.env.LIFERAY_PATH +
+    '/o/headless-delivery/v1.0/wiki-pages/' +
+    parentPageId +
+    '/wiki-pages';
   const options = functions.getAPIOptions('POST', 'en-US');
   let returnId = 0;
 
@@ -204,7 +228,6 @@ async function createChildWikiPage(parentPageId, nodeId, name, body, viewableBy)
     const response = await axios.post(apiPath, postBody, options);
     returnId = response.data.id;
     debug('Returned WikiPageId: ' + returnId);
-
   } catch (error) {
     console.log(error);
   }

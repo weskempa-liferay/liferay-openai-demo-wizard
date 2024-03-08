@@ -2,17 +2,15 @@ import hljs from 'highlight.js';
 import { useState } from 'react';
 import React from 'react';
 
-import functions from './utils/functions';
-import AppFooter from './components/appfooter';
-import AppHead from './components/apphead';
-import AppHeader from './components/appheader';
-import TopNavItem from './components/apptopnavitem';
-import FieldString from './components/formfield-string';
-import FieldFile from './components/formfield-file';
-import FieldSubmit from './components/formfield-submit';
-import LoadingAnimation from './components/loadinganimation';
-import ResultDisplay from './components/resultdisplay';
-import { logger } from './utils/logger';
+import TopNavItem from '../components/apptopnavitem';
+import FieldFile from '../components/formfield-file';
+import FieldString from '../components/formfield-string';
+import FieldSubmit from '../components/formfield-submit';
+import Layout from '../components/layout';
+import LoadingAnimation from '../components/loadinganimation';
+import ResultDisplay from '../components/resultdisplay';
+import functions from '../utils/functions';
+import { logger } from '../utils/logger';
 
 const debug = logger('PagesFile');
 
@@ -23,7 +21,7 @@ export default function PagesFile() {
   const [siteIdInput, setSiteIdInput] = useState('');
 
   const [appConfig, setAppConfig] = useState({
-    model:functions.getDefaultAIModel()
+    model: functions.getDefaultAIModel(),
   });
 
   const handleOnChange = (file) => {
@@ -34,8 +32,8 @@ export default function PagesFile() {
     window.open('');
 
     downloadFile({
-        fileName: 'pages.json',
-        filePath: 'pages/pages.json',
+      fileName: 'pages.json',
+      filePath: 'pages/pages.json',
     });
   };
 
@@ -74,7 +72,7 @@ export default function PagesFile() {
       body: JSON.stringify({
         config: appConfig,
         fileoutput: fileOutput,
-        siteId:siteIdInput,
+        siteId: siteIdInput,
       }),
       headers: {
         'Content-Type': 'application/json',
@@ -91,50 +89,43 @@ export default function PagesFile() {
   }
 
   return (
-    <div>
-      <AppHead title="Page Generator" />
-
-      <main className="py-20 flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#0b1d67] to-[#204f79]">
-        <AppHeader
-          desc="Use the form below to create pages."
-          title="Liferay Page Generator"
+    <Layout
+      description="Use the form below to create pages."
+      setAppConfig={setAppConfig}
+      title="Liferay Page Generator"
+    >
+      <div className="fixed top-2 right-5 text-lg download-options p-5 rounded">
+        <TopNavItem
+          label="Example Pages JSON File"
+          onClick={handleExampleClick}
         />
+      </div>
 
-        <div className="fixed top-2 right-5 text-lg download-options p-5 rounded">
-          <TopNavItem
-            label="Example Pages JSON File"
-            onClick={handleExampleClick}
+      <form onSubmit={onSubmit}>
+        <div className="w-500 grid grid-cols-1 gap-2 sm:grid-cols-1 md:gap-4 mb-5">
+          <FieldString
+            defaultValue=""
+            inputChange={setSiteIdInput}
+            label="Site ID"
+            name="siteId"
+            placeholder="Enter id of the site that you would like to add pages to"
+          />
+          <FieldFile
+            accept=".json"
+            inputChange={handleOnChange}
+            label="Pages JSON File"
+            name="fileUpload"
           />
         </div>
 
-        <form onSubmit={onSubmit}>
-          <div className="w-500 grid grid-cols-1 gap-2 sm:grid-cols-1 md:gap-4 mb-5">
-            <FieldString
-                defaultValue=""
-                inputChange={setSiteIdInput}
-                label="Site ID"
-                name="siteId"
-                placeholder="Enter id of the site that you would like to add pages to"
-            />
-            <FieldFile
-              inputChange={handleOnChange}
-              label="Pages JSON File"
-              name="fileUpload"
-              accept=".json"
-            />
-          </div>
+        <FieldSubmit disabled={isLoading} label={'Import Pages'} />
+      </form>
 
-          <FieldSubmit disabled={isLoading} label={'Import Pages'} />
-        </form>
-
-        {isLoading ? (
-          <LoadingAnimation />
-        ) : (
-          result && <ResultDisplay result={result} />
-        )}
-      </main>
-
-      <AppFooter setConfig={setAppConfig}/>
-    </div>
+      {isLoading ? (
+        <LoadingAnimation />
+      ) : (
+        result && <ResultDisplay result={result} />
+      )}
+    </Layout>
   );
 }

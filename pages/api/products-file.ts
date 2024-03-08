@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-import functions from '../utils/functions';
-import { logger } from '../utils/logger';
+import functions from '../../utils/functions';
+import { logger } from '../../utils/logger';
 
 const debug = logger('Products File - Action');
 
@@ -39,14 +39,14 @@ export default async function UsersFileAction(req, res) {
   // check if vocabulary exists
 
   let vocabId = await getExistingVocabID(req.body.vocabularyName, globalSiteId);
-  
-  // Setup Vocabulary 
+
+  // Setup Vocabulary
 
   let options = await functions.getAPIOptions('POST', 'en-US');
-  let apiPath = "";
+  let apiPath = '';
 
-  if(vocabId>0){
-    debug("Using existing vocabId: "+vocabId);
+  if (vocabId > 0) {
+    debug('Using existing vocabId: ' + vocabId);
   } else {
     let apiPath =
       process.env.LIFERAY_PATH +
@@ -62,8 +62,8 @@ export default async function UsersFileAction(req, res) {
       debug(vocabResponse.data);
       vocabId = vocabResponse.data.id;
     } catch (error) {
-      debug(error.response.data.status+":"+error.response.data.title);
-      errorCount ++;
+      debug(error.response.data.status + ':' + error.response.data.title);
+      errorCount++;
     }
   }
 
@@ -74,7 +74,6 @@ export default async function UsersFileAction(req, res) {
   let currCategory, currCategoryJson, categResponse;
 
   for (var i = 0; i < productCategories.length; i++) {
-
     currCategory = productCategories[i];
 
     // check if category exists
@@ -83,11 +82,10 @@ export default async function UsersFileAction(req, res) {
 
     // create the categories for the vocabulary that was just generated
 
-    if(categoryId>0){
-      debug("Using existing categoryId: "+categoryId);
+    if (categoryId > 0) {
+      debug('Using existing categoryId: ' + categoryId);
       categMap.set(currCategory, categoryId);
     } else {
-
       currCategoryJson = { name: currCategory, taxonomyVocabularyId: vocabId };
 
       apiPath =
@@ -105,8 +103,8 @@ export default async function UsersFileAction(req, res) {
 
         categMap.set(currCategory, categResponse.data.id);
       } catch (error) {
-        debug(error.response.data.status+":"+error.response.data.title);
-        errorCount ++;
+        debug(error.response.data.status + ':' + error.response.data.title);
+        errorCount++;
       }
 
       debug(categMap);
@@ -115,12 +113,12 @@ export default async function UsersFileAction(req, res) {
 
   // add the products
   let shortDescription,
-      productName,
-      productPrice,
-      imageUrl,
-      inventoryCount,
-      productSku,
-      productJson;
+    productName,
+    productPrice,
+    imageUrl,
+    inventoryCount,
+    productSku,
+    productJson;
   let productResponse, productId, productCategoryJson;
 
   let currCategoryId;
@@ -134,7 +132,11 @@ export default async function UsersFileAction(req, res) {
     shortDescription = productslist[i].shortDescription;
     productPrice = productslist[i].price;
     inventoryCount = productslist[i].stock;
-    if(!productslist[i].sku || productslist[i].sku=="" || productslist[i].sku=="?"){
+    if (
+      !productslist[i].sku ||
+      productslist[i].sku == '' ||
+      productslist[i].sku == '?'
+    ) {
       productSku = productName.toLowerCase().replaceAll(' ', '-');
     } else {
       productSku = productslist[i].sku;
@@ -179,8 +181,8 @@ export default async function UsersFileAction(req, res) {
       productResponse = await axios.post(apiPath, productJson, options);
 
       productId = productResponse.data.productId;
-      
-      debug("----------------------------------");
+
+      debug('----------------------------------');
       debug(productName + ' created with id ' + productId);
 
       productCategoryJson = {
@@ -197,7 +199,7 @@ export default async function UsersFileAction(req, res) {
         title: { en_US: productName },
       });
 
-      debug("imgschema");
+      debug('imgschema');
       debug(imgschema);
 
       let imgApiPath =
@@ -211,12 +213,9 @@ export default async function UsersFileAction(req, res) {
         imgschema,
         options
       );
-
     } catch (productError) {
-      debug(
-        'error creating product ' + productName + ' -- ' + productError
-      );
-      errorCount ++;
+      debug('error creating product ' + productName + ' -- ' + productError);
+      errorCount++;
     }
   }
 
@@ -233,54 +232,52 @@ export default async function UsersFileAction(req, res) {
 }
 
 async function getExistingVocabID(name, globalSiteId) {
-  
-  name = name.replaceAll("'","''");
-  let filter = "name eq '"+name+"'";
+  name = name.replaceAll("'", "''");
+  let filter = "name eq '" + name + "'";
 
   let apiPath =
     process.env.LIFERAY_PATH +
     '/o/headless-admin-taxonomy/v1.0/sites/' +
     globalSiteId +
-    '/taxonomy-vocabularies?filter='+encodeURI(filter);
+    '/taxonomy-vocabularies?filter=' +
+    encodeURI(filter);
 
   let options = functions.getAPIOptions('GET', 'en-US');
 
   try {
     const vocabResponse = await axios.get(apiPath, options);
 
-    if(vocabResponse.data.items.length>0){
+    if (vocabResponse.data.items.length > 0) {
       return vocabResponse.data.items[0].id;
     } else {
       return -1;
     }
-    
   } catch (error) {
     debug(error);
   }
 }
 
 async function getExistingCategoryID(name, vocabId) {
-  
-  name = name.replaceAll("'","''");
-  let filter = "name eq '"+name+"'";
+  name = name.replaceAll("'", "''");
+  let filter = "name eq '" + name + "'";
 
   let apiPath =
     process.env.LIFERAY_PATH +
     '/o/headless-admin-taxonomy/v1.0/taxonomy-vocabularies/' +
     vocabId +
-    '/taxonomy-categories?filter='+encodeURI(filter);
+    '/taxonomy-categories?filter=' +
+    encodeURI(filter);
 
   let options = functions.getAPIOptions('GET', 'en-US');
 
   try {
     const categoryResponse = await axios.get(apiPath, options);
 
-    if(categoryResponse.data.items.length>0){
+    if (categoryResponse.data.items.length > 0) {
       return categoryResponse.data.items[0].id;
     } else {
       return -1;
     }
-    
   } catch (error) {
     debug(error);
   }

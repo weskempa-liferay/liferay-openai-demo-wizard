@@ -4,8 +4,8 @@ import http from 'https';
 import OpenAI from 'openai';
 import request from 'request';
 
-import functions from '../utils/functions';
-import { logger } from '../utils/logger';
+import functions from '../../utils/functions';
+import { logger } from '../../utils/logger';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -26,24 +26,26 @@ export default async function Action(req, res) {
   const schema = {
     properties: {
       articles: {
-        description:
-          'An array of ' + runCount + ' blog articles',
+        description: 'An array of ' + runCount + ' blog articles',
         items: {
           properties: {
-            headline: {
-              description: 'The title of the blog artcile translated into ' +
-              functions.getLanguageDisplayName(req.body.blogLanguage),
-              type: 'string',
-            },
             alternativeHeadline: {
-              description: 'A headline that is a summary of the blog article translated into ' +
-              functions.getLanguageDisplayName(req.body.blogLanguage),
+              description:
+                'A headline that is a summary of the blog article translated into ' +
+                functions.getLanguageDisplayName(req.body.blogLanguage),
               type: 'string',
             },
             articleBody: {
               description:
-                'The content of the blog article needs to be ' + req.body.blogLength +
+                'The content of the blog article needs to be ' +
+                req.body.blogLength +
                 ' words or more. Remove any double quotes and translate the article into ' +
+                functions.getLanguageDisplayName(req.body.blogLanguage),
+              type: 'string',
+            },
+            headline: {
+              description:
+                'The title of the blog artcile translated into ' +
                 functions.getLanguageDisplayName(req.body.blogLanguage),
               type: 'string',
             },
@@ -62,11 +64,11 @@ export default async function Action(req, res) {
           type: 'object',
         },
         required: ['articles'],
-        type: 'array'
-      }
+        type: 'array',
+      },
     },
-    type: 'object'
-  }
+    type: 'object',
+  };
 
   let response = await openai.chat.completions.create({
     function_call: { name: 'get_blog_content' },
@@ -88,10 +90,11 @@ export default async function Action(req, res) {
     temperature: 0.8,
   });
 
-  let blogJsonArticles = JSON.parse(response.choices[0].message.function_call.arguments).articles;
+  let blogJsonArticles = JSON.parse(
+    response.choices[0].message.function_call.arguments
+  ).articles;
 
   for (let i = 0; i < blogJsonArticles.length; i++) {
-
     let blogJson = blogJsonArticles[i];
 
     let pictureDescription = blogJson.picture_description;
@@ -185,7 +188,7 @@ async function postBlogToLiferay(req, blogJson, imageId) {
     };
   }
 
-  blogJson.viewableBy = req.body.viewOptions
+  blogJson.viewableBy = req.body.viewOptions;
 
   let apiPath =
     process.env.LIFERAY_PATH +

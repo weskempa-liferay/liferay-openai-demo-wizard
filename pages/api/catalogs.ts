@@ -14,8 +14,7 @@ export default async function Action(req, res) {
 async function getCatalogList(config) {
   console.log(config);
   const catalogApiPath =
-    config.serverURL +
-    '/o/headless-commerce-admin-catalog/v1.0/catalogs';
+    config.serverURL + '/o/headless-commerce-admin-catalog/v1.0/catalogs';
 
   let options = functions.getAPIOptions('GET', 'en-US', config.base64data);
 

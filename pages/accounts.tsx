@@ -40,12 +40,10 @@ export default function Accounts() {
     businessDescription,
     numberOfAccounts,
   }: AccountFormSchema) {
-    const response = await nextAxios.post('/api/accounts', {
+    const { data } = await nextAxios.post('/api/accounts', {
       accountNumber: numberOfAccounts,
       accountTopic: businessDescription,
     });
-
-    const data = response.data;
 
     const hljsResult = hljs.highlightAuto(data.result).value;
 

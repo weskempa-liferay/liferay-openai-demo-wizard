@@ -7,6 +7,8 @@ import FieldToggle from './formfield-toggle';
 
 const debug = logger('FieldLanguage');
 
+const languageOptions = functions.getAvailableLanguages();
+
 export default function FieldLanguage({
   defaultLanguageChange,
   languagesChange,
@@ -15,8 +17,6 @@ export default function FieldLanguage({
   const [manageLanguage, setManageLanguage] = useState(false);
   const [defaultLanguage, setDefaultLanguage] = useState('en-US');
   const [selectedLanguages, setSelectedLanguages] = useState([]);
-
-  const languageOptions = functions.getAvailableLanguages();
 
   const handleManageLanguageChange = (value) => {
     setManageLanguage(!manageLanguage);
@@ -62,26 +62,26 @@ export default function FieldLanguage({
   };
 
   return (
-    <div className="py-2 px-2 mb-5 bg-white/10">
-      <div className="grid grid-cols-3 gap-2 sm:grid-cols-3 md:gap-2 items-start">
+    <div className='py-2 px-2 mb-5 bg-white/10'>
+      <div className='grid grid-cols-3 gap-2 sm:grid-cols-3 md:gap-2 items-start'>
         <FieldToggle
           defaultValue={false}
-          fieldKey="manageLanguage"
+          fieldKey='manageLanguage'
           inputChange={handleManageLanguageChange}
-          name="Manage Languages"
+          name='Manage Languages'
         />
 
         {manageLanguage && (
           <>
             <FieldSelect
               inputChange={handleDefaultLanguageChange}
-              label="Site Default Language"
-              name="defaultLanguage"
+              label='Site Default Language'
+              name='defaultLanguage'
               optionMap={languageOptions}
             />
 
-            <div className="flex-col italic inline-flex items-center w-300">
-              <p className="text-slate-100 text-center text-md m-4 p-2 italic rounded bg-white/10 ">
+            <div className='flex-col italic inline-flex items-center w-300'>
+              <p className='text-slate-100 text-center text-md m-4 p-2 italic rounded bg-white/10 '>
                 Site default language needs to match the chosen site (Site ID).
               </p>
             </div>
@@ -90,8 +90,8 @@ export default function FieldLanguage({
       </div>
       {manageLanguage && (
         <>
-          <h1 className="text-white pl-4 font-extrabold">Add Translations</h1>
-          <div className="grid grid-cols-4 gap-1 sm:grid-cols-4 md:gap-1 mb-2">
+          <h1 className='text-white pl-4 font-extrabold'>Add Translations</h1>
+          <div className='grid grid-cols-4 gap-1 sm:grid-cols-4 md:gap-1 mb-2'>
             {languageOptions
               .filter((option) => option.id != defaultLanguage)
               .map((option) => (

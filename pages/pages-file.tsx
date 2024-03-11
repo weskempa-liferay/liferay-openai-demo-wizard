@@ -9,7 +9,8 @@ import FieldSubmit from '../components/formfield-submit';
 import Layout from '../components/layout';
 import LoadingAnimation from '../components/loadinganimation';
 import ResultDisplay from '../components/resultdisplay';
-import functions from '../utils/functions';
+import nextAxios from '../services/next';
+import { downloadFile } from '../utils/download';
 import { logger } from '../utils/logger';
 
 const debug = logger('PagesFile');
@@ -17,12 +18,8 @@ const debug = logger('PagesFile');
 export default function PagesFile() {
   const [file, setFile] = useState();
   const [isLoading, setIsLoading] = useState(false);
-  const [result, setResult] = useState(() => '');
+  const [result, setResult] = useState('');
   const [siteIdInput, setSiteIdInput] = useState('');
-
-  const [appConfig, setAppConfig] = useState({
-    model: functions.getDefaultAIModel(),
-  });
 
   const handleOnChange = (file) => {
     setFile(file.target.files[0]);
@@ -35,19 +32,6 @@ export default function PagesFile() {
       fileName: 'pages.json',
       filePath: 'pages/pages.json',
     });
-  };
-
-  const downloadFile = ({ fileName, filePath }) => {
-    const a = document.createElement('a');
-    a.download = fileName;
-    a.href = filePath;
-    const clickEvt = new MouseEvent('click', {
-      bubbles: true,
-      cancelable: true,
-      view: window,
-    });
-    a.dispatchEvent(clickEvt);
-    a.remove();
   };
 
   async function onSubmit(event) {
@@ -68,19 +52,10 @@ export default function PagesFile() {
     setIsLoading(true);
     console.log(fileOutput);
 
-    const response = await fetch('/api/pages-file', {
-      body: JSON.stringify({
-        config: appConfig,
-        fileoutput: fileOutput,
-        siteId: siteIdInput,
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      method: 'POST',
+    const { data } = await nextAxios.post('/api/pages-file', {
+      fileoutput: fileOutput,
+      siteId: siteIdInput,
     });
-    const data = await response.json();
-    debug('data', data);
 
     const hljsResult = hljs.highlightAuto(data.result).value;
     setResult(hljsResult);
@@ -91,7 +66,6 @@ export default function PagesFile() {
   return (
     <Layout
       description="Use the form below to create pages."
-      setAppConfig={setAppConfig}
       title="Liferay Page Generator"
     >
       <div className="fixed top-2 right-5 text-lg download-options p-5 rounded">
@@ -110,6 +84,7 @@ export default function PagesFile() {
             name="siteId"
             placeholder="Enter id of the site that you would like to add pages to"
           />
+
           <FieldFile
             accept=".json"
             inputChange={handleOnChange}

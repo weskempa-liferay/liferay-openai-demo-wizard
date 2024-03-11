@@ -1,90 +1,76 @@
 import hljs from 'highlight.js';
 import { useState } from 'react';
 import React from 'react';
+import { useForm } from 'react-hook-form';
 
-import FieldString from '../components/formfield-string';
 import FieldSubmit from '../components/formfield-submit';
+import Form from '../components/forms/form';
+import Input from '../components/forms/input';
 import Layout from '../components/layout';
 import LoadingAnimation from '../components/loadinganimation';
 import ResultDisplay from '../components/resultdisplay';
-import functions from '../utils/functions';
-import { logger } from '../utils/logger';
+import schema, { z, zodResolver } from '../schemas/zod';
+import nextAxios from '../services/next';
 
-const debug = logger('UsersAI');
+type UserAISchema = z.infer<typeof schema.userAI>;
 
 export default function UsersAI() {
-  const [userNumberInput, setUserNumberInput] = useState('5');
-  const [emailPrefixInput, setEmailPrefixInput] = useState('liferay.xyz');
-  const [passwordInput, setPasswordInput] = useState('password');
-
-  const [result, setResult] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-
-  const [appConfig, setAppConfig] = useState({
-    model: functions.getDefaultAIModel(),
+  const usersAIForm = useForm<UserAISchema>({
+    defaultValues: {
+      emailPrefix: 'liferay.xyz',
+      password: 'password',
+      userNumber: '5',
+    },
+    resolver: zodResolver(schema.userAI),
   });
 
-  async function onSubmit(event) {
-    event.preventDefault();
-    setIsLoading(true);
-    const response = await fetch('/api/users-ai', {
-      body: JSON.stringify({
-        config: appConfig,
-        emailPrefix: emailPrefixInput,
-        password: passwordInput,
-        userNumber: userNumberInput,
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      method: 'POST',
-    });
-    const data = await response.json();
-    debug('data', data);
+  const [result, setResult] = useState('');
+
+  async function onSubmit(payload: UserAISchema) {
+    const { data } = await nextAxios.post('/api/users-ai', payload);
 
     const hljsResult = hljs.highlightAuto(data.result).value;
-    setResult(hljsResult);
 
-    setIsLoading(false);
+    setResult(hljsResult);
   }
+
+  const {
+    formState: { isSubmitting },
+  } = usersAIForm;
 
   return (
     <Layout
       description="Use the form below to create users."
-      setAppConfig={setAppConfig}
       title="Liferay User Generator"
     >
-      <form onSubmit={onSubmit}>
+      <Form
+        formProviderProps={usersAIForm}
+        onSubmit={usersAIForm.handleSubmit(onSubmit)}
+      >
         <div className="w-500 grid grid-cols-1 gap-2 sm:grid-cols-2 md:gap-4 mb-5">
-          <FieldString
-            defaultValue="5"
-            inputChange={setUserNumberInput}
+          <Input
             label="Number of Users to Create"
             name="userNumber"
             placeholder="Number of users"
           />
 
-          <FieldString
-            defaultValue="liferay.xyz"
-            inputChange={setEmailPrefixInput}
+          <Input
             label="Email Domain (example.com)"
-            name="companyEmailPrefix"
+            name="emailPrefix"
             placeholder="liferay.xyz"
           />
 
-          <FieldString
-            defaultValue="password"
-            inputChange={setPasswordInput}
+          <Input
             label="User Default Password"
             name="password"
             placeholder="password"
           />
         </div>
 
-        <FieldSubmit disabled={isLoading} label="Generate Users" />
-      </form>
+        <FieldSubmit disabled={isSubmitting} label="Generate Users" />
+      </Form>
 
-      {isLoading ? (
+      {isSubmitting ? (
         <LoadingAnimation />
       ) : (
         result && <ResultDisplay result={result} />

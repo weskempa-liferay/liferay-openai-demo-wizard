@@ -1,7 +1,7 @@
 import { RocketLaunchIcon } from '@heroicons/react/24/solid';
 
-import AppFooter from '../components/footer';
 import AppHead from '../components/head';
+import AppFooter from '../components/layout/footer';
 import NavItem from '../components/navitem';
 
 const navItems = [
@@ -90,8 +90,6 @@ const navItems = [
 ];
 
 const HomePage = () => {
-  const setAppConfig = () => {};
-
   return (
     <>
       <AppHead title="" />
@@ -111,7 +109,7 @@ const HomePage = () => {
           </div>
         </div>
 
-        <AppFooter setConfig={setAppConfig} />
+        <AppFooter />
       </main>
     </>
   );

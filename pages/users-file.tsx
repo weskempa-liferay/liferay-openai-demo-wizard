@@ -8,6 +8,7 @@ import FieldSubmit from '../components/formfield-submit';
 import Layout from '../components/layout';
 import LoadingAnimation from '../components/loadinganimation';
 import ResultDisplay from '../components/resultdisplay';
+import nextAxios from '../services/next';
 import functions from '../utils/functions';
 import { logger } from '../utils/logger';
 
@@ -16,7 +17,7 @@ const debug = logger('UsersFile');
 export default function UsersFile() {
   const [file, setFile] = useState();
   const [isLoading, setIsLoading] = useState(false);
-  const [result, setResult] = useState(() => '');
+  const [result, setResult] = useState('');
 
   const [appConfig, setAppConfig] = useState({
     model: functions.getDefaultAIModel(),
@@ -66,18 +67,10 @@ export default function UsersFile() {
 
   async function postResult(csvOutput) {
     setIsLoading(true);
-    const response = await fetch('/api/users-file', {
-      body: JSON.stringify({
-        config: appConfig,
-        csvoutput: csvOutput,
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      method: 'POST',
+    const { data } = await nextAxios.post('/api/users-file', {
+      config: appConfig,
+      csvoutput: csvOutput,
     });
-    const data = await response.json();
-    debug('data', data);
 
     const hljsResult = hljs.highlightAuto(data.result).value;
     setResult(hljsResult);
@@ -88,7 +81,6 @@ export default function UsersFile() {
   return (
     <Layout
       description="Use the form below to create users."
-      setAppConfig={setAppConfig}
       title="Liferay User Generator"
     >
       <div className="fixed top-2 right-5 text-lg download-options p-5 rounded">

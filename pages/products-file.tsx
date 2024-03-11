@@ -10,7 +10,7 @@ import FieldSubmit from '../components/formfield-submit';
 import Layout from '../components/layout';
 import LoadingAnimation from '../components/loadinganimation';
 import ResultDisplay from '../components/resultdisplay';
-import functions from '../utils/functions';
+import nextAxios from '../services/next';
 import { logger } from '../utils/logger';
 
 const debug = logger('ProductsFile');
@@ -22,11 +22,7 @@ export default function ProductsFile() {
   const [vocabularyNameInput, setVocabularyNameInput] = useState('Furniture');
   const [productCatalogSelect, setProductCatalogSelect] = useState('');
   const [productCatalogOptions, setProductCatalogOptions] = useState([]);
-  const [result, setResult] = useState(() => '');
-
-  const [appConfig, setAppConfig] = useState({
-    model: functions.getDefaultAIModel(),
-  });
+  const [result, setResult] = useState('');
 
   useEffect(() => {
     debug('Load');
@@ -87,21 +83,12 @@ export default function ProductsFile() {
 
   async function postResult(csvOutput) {
     setIsLoading(true);
-    const response = await fetch('/api/products-file', {
-      body: JSON.stringify({
-        catalogId: productCatalogSelect,
-        config: appConfig,
-        csvoutput: csvOutput,
-        gloablSiteId: globalSiteIdInput,
-        vocabularyName: vocabularyNameInput,
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      method: 'POST',
+    const { data } = await nextAxios.post('/api/products-file', {
+      catalogId: productCatalogSelect,
+      csvoutput: csvOutput,
+      globalSiteId: globalSiteIdInput,
+      vocabularyName: vocabularyNameInput,
     });
-    const data = await response.json();
-    debug('data', data);
 
     const hljsResult = hljs.highlightAuto(data.result).value;
     setResult(hljsResult);
@@ -112,7 +99,6 @@ export default function ProductsFile() {
   return (
     <Layout
       description="Use the form below to create products."
-      setAppConfig={setAppConfig}
       title="Liferay Products Generator"
     >
       <div className="fixed top-2 right-5 text-lg download-options p-5 rounded">

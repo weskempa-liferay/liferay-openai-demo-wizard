@@ -1,80 +1,69 @@
 import hljs from 'highlight.js';
 import { useState } from 'react';
 import React from 'react';
+import { useForm } from 'react-hook-form';
 
-import FieldString from '../components/formfield-string';
 import FieldSubmit from '../components/formfield-submit';
+import Form from '../components/forms/form';
+import Input from '../components/forms/input';
 import Layout from '../components/layout';
 import LoadingAnimation from '../components/loadinganimation';
 import ResultDisplay from '../components/resultdisplay';
-import functions from '../utils/functions';
+import schema, { z, zodResolver } from '../schemas/zod';
+import nextAxios from '../services/next';
 
-export default function Review() {
-  const [userGroupTopicInput, setOrganizationTopicInput] = useState(
-    'Job Placement Services and Training'
-  );
-  const [userGroupNumberInput, setUserGroupNumberInput] = useState('10');
+type UserGroupsSchema = z.infer<typeof schema.userGroups>;
 
-  const [result, setResult] = useState(() => '');
-  const [isLoading, setIsLoading] = useState(false);
-
-  const [appConfig, setAppConfig] = useState({
-    model: functions.getDefaultAIModel(),
+export default function UserGroups() {
+  const userGroupsForm = useForm<UserGroupsSchema>({
+    defaultValues: {
+      userGroupNumber: '10',
+      userGroupTopic: 'Job Placement Services and Training',
+    },
+    resolver: zodResolver(schema.userGroups),
   });
 
-  async function onSubmit(event) {
-    event.preventDefault();
-    setIsLoading(true);
+  const [result, setResult] = useState('');
 
-    const response = await fetch('/api/usergroups', {
-      body: JSON.stringify({
-        config: appConfig,
-        userGroupNumber: userGroupNumberInput,
-        userGroupTopic: userGroupTopicInput,
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      method: 'POST',
-    });
-    const data = await response.json();
-    console.log('data', data);
+  async function onSubmit(payload: UserGroupsSchema) {
+    const { data } = await nextAxios.post('/api/usergroups', payload);
 
     const hljsResult = hljs.highlightAuto(data.result).value;
-    setResult(hljsResult);
 
-    setIsLoading(false);
+    setResult(hljsResult);
   }
+
+  const {
+    formState: { isSubmitting },
+  } = userGroupsForm;
 
   return (
     <Layout
       description='Type your business description in the field below and wait for your user groups to be generated. Examples of business descriptions are "higher education", "automotive manufacturing and engineering", or "healthcare specialists and patients".'
-      setAppConfig={setAppConfig}
       title="Liferay User Group Generator"
     >
-      <form onSubmit={onSubmit}>
+      <Form
+        formProviderProps={userGroupsForm}
+        onSubmit={userGroupsForm.handleSubmit(onSubmit)}
+      >
         <div className="w-700 grid grid-cols-2 gap-2 sm:grid-cols-2 md:gap-4 mb-5">
-          <FieldString
-            defaultValue="Job Placement Services and Training"
-            inputChange={setOrganizationTopicInput}
+          <Input
             label="Business Description"
-            name="companyTopic"
+            name="userGroupTopic"
             placeholder="Enter a business description"
           />
 
-          <FieldString
-            defaultValue="10"
-            inputChange={setUserGroupNumberInput}
+          <Input
             label="Number of User Groups"
-            name="numberOfUserGroups"
+            name="userGroupNumber"
             placeholder="Enter a the number of user groups to generate"
           />
         </div>
 
-        <FieldSubmit disabled={isLoading} label="Generate User Group" />
-      </form>
+        <FieldSubmit disabled={isSubmitting} label="Generate User Group" />
+      </Form>
 
-      {isLoading ? (
+      {isSubmitting ? (
         <LoadingAnimation />
       ) : (
         result && <ResultDisplay result={result} />

@@ -1,135 +1,109 @@
 import hljs from 'highlight.js';
 import { useState } from 'react';
 import React from 'react';
+import { useForm } from 'react-hook-form';
 
-import FieldSelect from '../components/formfield-select';
-import FieldString from '../components/formfield-string';
 import FieldSubmit from '../components/formfield-submit';
+import Form from '../components/forms/form';
+import Input from '../components/forms/input';
+import Select from '../components/forms/select';
 import Layout from '../components/layout';
 import LoadingAnimation from '../components/loadinganimation';
 import ResultDisplay from '../components/resultdisplay';
+import schema, { z, zodResolver } from '../schemas/zod';
+import nextAxios from '../services/next';
 import functions from '../utils/functions';
 
+type WikiSchema = z.infer<typeof schema.wiki>;
+
+const viewOptions = functions.getViewOptions();
+
 export default function Wikis() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [wikiArticleLengthInput, setWikiPageLengthInput] = useState('60');
-  const [wikiChildPageNumberInput, setWikiChildPageNumberInput] = useState('3');
-  const [wikiPageNumberInput, setWikiPageNumberInput] = useState('3');
-  const [wikiNodeNameInput, setWikiNodeNameInput] = useState('Healthy Living');
-  const [wikiTopicInput, setWikiTopicInput] = useState(
-    'Healthy Living Advice and Tips'
-  );
-  const [result, setResult] = useState(() => '');
-  const [siteIdInput, setSiteIdInput] = useState('');
-
-  const [viewOptionsInput, setViewOptionsSelect] = useState('Anyone');
-  const viewOptions = functions.getViewOptions();
-
-  const [appConfig, setAppConfig] = useState({
-    model: functions.getDefaultAIModel(),
+  const wikiForm = useForm<WikiSchema>({
+    defaultValues: {
+      siteId: '',
+      viewOptions: viewOptions[0].id,
+      wikiArticleLength: '60',
+      wikiChildPageNumber: '3',
+      wikiNodeName: 'Healthy Living',
+      wikiPageNumber: '3',
+      wikiTopic: 'Healthy Living Advice and Tips',
+    },
+    resolver: zodResolver(schema.wiki),
   });
 
-  async function onSubmit(event) {
-    event.preventDefault();
-    setIsLoading(true);
+  const [result, setResult] = useState('');
 
-    const response = await fetch('/api/wikis', {
-      body: JSON.stringify({
-        config: appConfig,
-        siteId: siteIdInput,
-        viewOptions: viewOptionsInput,
-        wikiArticleLength: wikiArticleLengthInput,
-        wikiChildPageNumber: wikiChildPageNumberInput,
-        wikiNodeName: wikiNodeNameInput,
-        wikiPageNumber: wikiPageNumberInput,
-        wikiTopic: wikiTopicInput,
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      method: 'POST',
-    });
-    const data = await response.json();
+  async function onSubmit(payload: WikiSchema) {
+    const { data } = await nextAxios.post('/api/wikis', payload);
 
     const hljsResult = hljs.highlightAuto(data.result).value;
-    setResult(hljsResult);
 
-    setIsLoading(false);
+    setResult(hljsResult);
   }
+
+  const {
+    formState: { isSubmitting },
+  } = wikiForm;
 
   return (
     <Layout
       description={
         'Type your topic in the field below and wait for your wiki pages. Examples of wiki topics are "company policies and procedures", "environmental issues and sustainability", or "economics and business".'
       }
-      setAppConfig={setAppConfig}
       title={'Liferay Wiki Content Generator'}
     >
-      <form onSubmit={onSubmit}>
+      <Form
+        formProviderProps={wikiForm}
+        onSubmit={wikiForm.handleSubmit(onSubmit)}
+      >
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 md:gap-4 mb-5">
-          <FieldString
-            defaultValue="Healthy Living Advice and Tips"
-            inputChange={setWikiTopicInput}
+          <Input
             label="Wiki Topic"
             name="wikiTopic"
             placeholder="Enter a wiki topic"
           />
 
-          <FieldString
-            defaultValue="Healthy Living"
-            inputChange={setWikiNodeNameInput}
+          <Input
             label="Wiki Node Name"
             name="wikiNodeName"
             placeholder="Enter a wiki node name"
           />
 
-          <FieldString
-            defaultValue=""
-            inputChange={setSiteIdInput}
-            label="Site ID"
-            name="siteId"
-            placeholder="Enter a site ID"
-          />
+          <Input label="Site ID" name="siteId" placeholder="Enter a site ID" />
 
-          <FieldString
-            defaultValue="60"
-            inputChange={setWikiPageLengthInput}
+          <Input
             label="Expected Page Length (in # of words)"
             name="wikiArticleLength"
             placeholder="Enter a wiki article length"
           />
 
-          <FieldString
-            defaultValue="3"
-            inputChange={setWikiPageNumberInput}
+          <Input
             label="Number of Pages to Create"
             name="wikiPageNumber"
             placeholder="Number of of wiki sections"
           />
 
-          <FieldString
-            defaultValue="3"
-            inputChange={setWikiChildPageNumberInput}
+          <Input
             label="Number of Child Pages per Page"
             name="wikiChildPageNumber"
             placeholder="Number of of wiki child pages"
           />
 
-          <FieldSelect
-            inputChange={setViewOptionsSelect}
+          <Select
             label="View Options"
-            name="viewOption"
+            name="viewOptions"
             optionMap={viewOptions}
           />
         </div>
 
         <FieldSubmit
-          disabled={isLoading}
+          disabled={isSubmitting}
           label="Generate Wiki Node and Pages"
         />
-      </form>
+      </Form>
 
-      {isLoading ? (
+      {isSubmitting ? (
         <LoadingAnimation />
       ) : (
         result && <ResultDisplay result={result} />

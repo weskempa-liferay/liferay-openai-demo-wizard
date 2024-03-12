@@ -1,130 +1,105 @@
 import hljs from 'highlight.js';
 import { useState } from 'react';
 import React from 'react';
+import { useForm } from 'react-hook-form';
 
 import FieldLanguage from '../components/formfield-language';
-import FieldString from '../components/formfield-string';
 import FieldSubmit from '../components/formfield-submit';
+import Form from '../components/forms/form';
+import Input from '../components/forms/input';
 import Layout from '../components/layout';
 import LoadingAnimation from '../components/loadinganimation';
 import ResultDisplay from '../components/resultdisplay';
-import functions from '../utils/functions';
-import { logger } from '../utils/logger';
+import schema, { z, zodResolver } from '../schemas/zod';
+import nextAxios from '../services/next';
 
-const debug = logger('Categories');
+type CategorySchema = z.infer<typeof schema.category>;
 
 export default function Categories() {
-  const [siteIdInput, setSiteIdInput] = useState('');
-  const [vocabularyDescriptionInput, setVocabularyDescriptionInput] = useState(
-    'Various categories of books'
-  );
-  const [vocabularyNameInput, setVocabularyNameInput] = useState('Books types');
-  const [categorytNumberInput, setCategorytNumberInput] = useState('5');
-  const [childCategorytNumberInput, setChildCategorytNumberInput] =
-    useState('3');
-  const [languagesInput, setLanguages] = useState([]);
-  const [manageLanguageInput, setManageLanguage] = useState(false);
-  const [defaultLanguageInput, setDefaultLanguage] = useState('en-US');
+  const [result, setResult] = useState('');
 
-  const [result, setResult] = useState(() => '');
-  const [isLoading, setIsLoading] = useState(false);
-
-  const [appConfig, setAppConfig] = useState({
-    model: functions.getDefaultAIModel(),
+  const categoriesForm = useForm<CategorySchema>({
+    defaultValues: {
+      categorytNumber: '5',
+      childCategorytNumber: '3',
+      defaultLanguage: 'en-US',
+      languages: [],
+      manageLanguage: false,
+      vocabularyDescription: 'Various categories of books',
+      vocabularyName: 'Books types',
+    },
+    resolver: zodResolver(schema.category),
   });
 
-  async function onSubmit(event) {
-    event.preventDefault();
-    setIsLoading(true);
-    debug('Posting!');
-
-    const response = await fetch('/api/categories', {
-      body: JSON.stringify({
-        categorytNumber: categorytNumberInput,
-        childCategorytNumber: childCategorytNumberInput,
-        config: appConfig,
-        defaultLanguage: defaultLanguageInput,
-        languages: languagesInput,
-        manageLanguage: manageLanguageInput,
-        siteId: siteIdInput,
-        vocabularyDescription: vocabularyDescriptionInput,
-        vocabularyName: vocabularyNameInput,
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      method: 'POST',
-    });
-
-    const data = await response.json();
-
-    debug('data', data);
+  async function onSubmit(payload: CategorySchema) {
+    const { data } = await nextAxios.post('/api/categories', payload);
 
     const hljsResult = hljs.highlightAuto(data.result).value;
 
     setResult(hljsResult);
-    setIsLoading(false);
   }
+
+  const {
+    formState: { isSubmitting },
+  } = categoriesForm;
 
   return (
     <Layout
       description={`Type your business description in the field below and wait for your categories. Examples of vocabulary themes are "various categories of books", "types of healthcare services", or "options for home furniture".`}
-      setAppConfig={setAppConfig}
       title="Liferay Category Generator"
     >
-      <form onSubmit={onSubmit}>
+      <Form
+        formProviderProps={categoriesForm}
+        onSubmit={categoriesForm.handleSubmit(onSubmit)}
+      >
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 md:gap-4 mb-5">
-          <FieldString
-            defaultValue="Various categories of books"
-            inputChange={setVocabularyDescriptionInput}
+          <Input
             label="Vocabulary Theme"
             name="vocabularyDescription"
             placeholder="Enter a vocabulary description"
           />
 
-          <FieldString
-            defaultValue="Book types"
-            inputChange={setVocabularyNameInput}
+          <Input
             label="Vocabulary Name"
-            name="vocabulary"
+            name="vocabularyName"
             placeholder="Enter a vocabulary name"
           />
 
-          <FieldString
-            defaultValue=""
-            inputChange={setSiteIdInput}
+          <Input
             label="Site ID or Asset Library Group ID"
             name="siteId"
             placeholder="Enter a site ID or asset library group ID"
           />
 
-          <FieldString
-            defaultValue="5"
-            inputChange={setCategorytNumberInput}
+          <Input
             label="Number of Categories"
-            name="numberOfCategories"
+            name="categorytNumber"
             placeholder="Enter a the number of categories to generate"
           />
 
-          <FieldString
-            defaultValue="3"
-            inputChange={setChildCategorytNumberInput}
+          <Input
             label="Number of Child Categories"
-            name="numberOfChildCategories"
+            name="childCategorytNumber"
             placeholder="Enter a the number of child categories to generate"
           />
         </div>
 
         <FieldLanguage
-          defaultLanguageChange={setDefaultLanguage}
-          languagesChange={setLanguages}
-          manageLanguageChange={setManageLanguage}
+          defaultLanguageChange={(value) =>
+            categoriesForm.setValue('defaultLanguage', value)
+          }
+          languagesChange={(value) =>
+            categoriesForm.setValue('languages', value)
+          }
+          manageLanguageChange={(value) =>
+            categoriesForm.setValue('manageLanguage', value)
+          }
         />
 
-        <FieldSubmit disabled={isLoading} label="Generate Categories" />
-      </form>
+        <FieldSubmit disabled={isSubmitting} label="Generate Categories" />
+      </Form>
 
-      {isLoading ? (
+      {isSubmitting ? (
         <LoadingAnimation />
       ) : (
         result && <ResultDisplay result={result} />

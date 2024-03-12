@@ -1,181 +1,139 @@
 import hljs from 'highlight.js';
 import { useState } from 'react';
 import React from 'react';
+import { useForm } from 'react-hook-form';
 
 import TopNavItem from '../components/apptopnavitem';
-import FieldLangauge from '../components/formfield-language';
-import FieldSelect from '../components/formfield-select';
-import FieldString from '../components/formfield-string';
+import FieldLanguage from '../components/formfield-language';
 import FieldSubmit from '../components/formfield-submit';
+import Form from '../components/forms/form';
+import Input from '../components/forms/input';
+import Select from '../components/forms/select';
 import Layout from '../components/layout';
 import LoadingAnimation from '../components/loadinganimation';
 import ResultDisplay from '../components/resultdisplay';
+import schema, { z, zodResolver } from '../schemas/zod';
+import nextAxios from '../services/next';
+import { downloadFile } from '../utils/download';
 import functions from '../utils/functions';
 import { logger } from '../utils/logger';
 
 const debug = logger('faqs');
 
+type FaqSchema = z.infer<typeof schema.faq>;
+
+const handleStructureClick = () => {
+  downloadFile({
+    fileName: 'Structure-Frequently_Asked_Question.json',
+    filePath: 'faqs/Structure-Frequently_Asked_Question.json',
+  });
+};
+
+const handleFragmentClick = () => {
+  location.href = 'faqs/Fragment-FAQ.zip';
+};
+
+const viewOptions = functions.getViewOptions();
+
 export default function Faqs() {
-  const [faqTopicInput, setFAQTopicInput] = useState('');
-  const [siteIdInput, setSiteIdInput] = useState('');
-  const [faqNumberInput, setFAQNumberInput] = useState('5');
-  const [faqFolderIdInput, setFAQFolderIdInput] = useState('0');
-  const [faqStructureIdInput, setFAQStructureIdInput] = useState('');
-  const [categoryIdsInput, setCategoryIdsInput] = useState('');
-
-  const [viewOptionsInput, setViewOptionsSelect] = useState('Anyone');
-  const viewOptions = functions.getViewOptions();
-
-  const [languagesInput, setLanguages] = useState([]);
-  const [manageLanguageInput, setManageLanguage] = useState(false);
-  const [defaultLanguageInput, setDefaultLanguage] = useState('en-US');
-
-  const [result, setResult] = useState(() => '');
-  const [isLoading, setIsLoading] = useState(false);
-
-  const [appConfig, setAppConfig] = useState({
-    model: functions.getDefaultAIModel(),
+  const faqForm = useForm<FaqSchema>({
+    defaultValues: {
+      defaultLanguage: 'en-US',
+      faqNumber: '5',
+      folderId: '0',
+      manageLanguage: false,
+      viewOptions: viewOptions[0].id,
+    },
+    resolver: zodResolver(schema.faq),
   });
 
-  async function onSubmit(event) {
-    event.preventDefault();
-    setIsLoading(true);
-    debug('Posting...');
+  const [result, setResult] = useState('');
+
+  async function onSubmit(payload: FaqSchema) {
     debug(
-      `languagesInput ${languagesInput}, manageLanguageInput ${manageLanguageInput}, defaultLaguagesInput ${defaultLanguageInput}`
+      `languagesInput ${payload.languages}, manageLanguageInput ${payload.manageLanguage}, defaultLaguagesInput ${payload.defaultLanguage}`
     );
 
-    const response = await fetch('/api/faqs', {
-      body: JSON.stringify({
-        categoryIds: categoryIdsInput,
-        config: appConfig,
-        defaultLanguage: defaultLanguageInput,
-        faqNumber: faqNumberInput,
-        faqTopic: faqTopicInput,
-        folderId: faqFolderIdInput,
-        languages: languagesInput,
-        manageLanguage: manageLanguageInput,
-        siteId: siteIdInput,
-        structureId: faqStructureIdInput,
-        viewOptions: viewOptionsInput,
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      method: 'POST',
-    });
-
-    const data = await response.json();
-    debug('data', data);
+    const { data } = await nextAxios.post('/api/faqs', payload);
 
     const hljsResult = hljs.highlightAuto(data.result).value;
     setResult(hljsResult);
-
-    setIsLoading(false);
   }
 
-  const handleStructureClick = () => {
-    downloadFile({
-      fileName: 'Structure-Frequently_Asked_Question.json',
-      filePath: 'faqs/Structure-Frequently_Asked_Question.json',
-    });
-  };
-
-  const downloadFile = ({ fileName, filePath }) => {
-    const a = document.createElement('a');
-    a.download = fileName;
-    a.href = filePath;
-    const clickEvt = new MouseEvent('click', {
-      bubbles: true,
-      cancelable: true,
-      view: window,
-    });
-    a.dispatchEvent(clickEvt);
-    a.remove();
-  };
-
-  const handleFragmentClick = () => {
-    location.href = 'faqs/Fragment-FAQ.zip';
-  };
+  const {
+    formState: { isSubmitting },
+  } = faqForm;
 
   return (
     <Layout
       description={`Type your topic in the field below and wait for your FAQs. Examples of FAQ topics are "budget planning", "starting a manufacturing company", or "practical uses of sodium bicarbonate".`}
-      setAppConfig={setAppConfig}
       title="Liferay FAQ Generator"
     >
       <div className="fixed top-2 right-5 p-5 text-lg download-options rounded">
         <TopNavItem label="FAQ Structure" onClick={handleStructureClick} />
-
         <TopNavItem label="FAQ Fragment" onClick={handleFragmentClick} />
       </div>
 
-      <form onSubmit={onSubmit}>
+      <Form
+        formProviderProps={faqForm}
+        onSubmit={faqForm.handleSubmit(onSubmit)}
+      >
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 md:gap-4 mb-5">
-          <FieldString
-            defaultValue=""
-            inputChange={setFAQTopicInput}
+          <Input
             label="FAQ Topic"
-            name="topic"
+            name="faqTopic"
             placeholder="Enter a FAQ Topic"
           />
 
-          <FieldString
-            defaultValue="5"
-            inputChange={setFAQNumberInput}
+          <Input
             label="Number of Q&A Pairs to Create"
             name="faqNumber"
             placeholder="Number of FAQs"
           />
 
-          <FieldString
-            defaultValue=""
-            inputChange={setSiteIdInput}
+          <Input
             label="Site ID or Asset Library Group ID"
             name="siteId"
             placeholder="Enter a site ID or asset library group ID"
           />
 
-          <FieldString
-            defaultValue=""
-            inputChange={setFAQStructureIdInput}
+          <Input
             label="FAQ Structure ID"
-            name="faqStructureID"
+            name="structureId"
             placeholder="Enter the FAQ structure ID"
           />
 
-          <FieldString
-            defaultValue="0"
-            inputChange={setFAQFolderIdInput}
+          <Input
             label="Web Content Folder ID (0 for Root)"
             name="folderId"
             placeholder="Enter a folder ID"
           />
 
-          <FieldSelect
-            inputChange={setViewOptionsSelect}
+          <Select
             label="View Options"
-            name="viewOption"
+            name="viewOptions"
             optionMap={viewOptions}
           />
 
-          <FieldString
-            defaultValue=""
-            inputChange={setCategoryIdsInput}
+          <Input
             label="Comma-Delimited Category IDs (Optional)"
             name="categoryIds"
             placeholder="List of comma-delimited category IDs"
           />
         </div>
 
-        <FieldLangauge
-          defaultLanguageChange={setDefaultLanguage}
-          languagesChange={setLanguages}
-          manageLanguageChange={setManageLanguage}
+        <FieldLanguage
+          defaultLanguageChange={(value) =>
+            faqForm.setValue('defaultLanguage', value)
+          }
+          languagesChange={(value) => faqForm.setValue('languages', value)}
+          manageLanguageChange={(value) =>
+            faqForm.setValue('manageLanguage', value)
+          }
         />
 
-        <FieldSubmit disabled={isLoading} label={'Generate FAQs'} />
-      </form>
+        <FieldSubmit disabled={isSubmitting} label="Generate FAQs" />
+      </Form>
 
       <p className="text-slate-100 text-center text-lg mb-3 rounded p-5 bg-white/10 w-1/2 italic">
         <b>Note:</b> FAQ generation requires a specific content structure.{' '}
@@ -183,7 +141,7 @@ export default function Faqs() {
         Please use the supplied FAQ Structure and Fragment supplied above.
       </p>
 
-      {isLoading ? (
+      {isSubmitting ? (
         <LoadingAnimation />
       ) : (
         result && <ResultDisplay result={result} />

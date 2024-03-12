@@ -11,7 +11,7 @@ export default async function UsersFileAction(req, res) {
   let errorCount = 0;
 
   let catalogId = req.body.catalogId;
-  let globalSiteId = req.body.gloablSiteId;
+  let globalSiteId = req.body.globalSiteId;
 
   let productslist = req.body.csvoutput;
 
@@ -38,11 +38,19 @@ export default async function UsersFileAction(req, res) {
 
   // check if vocabulary exists
 
-  let vocabId = await getExistingVocabID(req, req.body.vocabularyName, globalSiteId);
+  let vocabId = await getExistingVocabID(
+    req,
+    req.body.vocabularyName,
+    globalSiteId
+  );
 
   // Setup Vocabulary
 
-  let options = await functions.getAPIOptions('POST', 'en-US', req.body.config.base64data);
+  let options = await functions.getAPIOptions(
+    'POST',
+    'en-US',
+    req.body.config.base64data
+  );
   let apiPath = '';
 
   if (vocabId > 0) {
@@ -242,7 +250,11 @@ async function getExistingVocabID(req, name, globalSiteId) {
     '/taxonomy-vocabularies?filter=' +
     encodeURI(filter);
 
-  let options = functions.getAPIOptions('GET', 'en-US', req.body.config.base64data);
+  let options = functions.getAPIOptions(
+    'GET',
+    'en-US',
+    req.body.config.base64data
+  );
 
   try {
     const vocabResponse = await axios.get(apiPath, options);
@@ -268,7 +280,11 @@ async function getExistingCategoryID(req, name, vocabId) {
     '/taxonomy-categories?filter=' +
     encodeURI(filter);
 
-  let options = functions.getAPIOptions('GET', 'en-US', req.body.config.base64data);
+  let options = functions.getAPIOptions(
+    'GET',
+    'en-US',
+    req.body.config.base64data
+  );
 
   try {
     const categoryResponse = await axios.get(apiPath, options);

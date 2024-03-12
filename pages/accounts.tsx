@@ -1,84 +1,82 @@
+import { zodResolver } from '@hookform/resolvers/zod';
 import hljs from 'highlight.js';
 import { useState } from 'react';
 import React from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
-import FieldString from '../components/formfield-string';
 import FieldSubmit from '../components/formfield-submit';
+import Form from '../components/forms/form';
+import Input from '../components/forms/input';
 import Layout from '../components/layout';
 import LoadingAnimation from '../components/loadinganimation';
 import ResultDisplay from '../components/resultdisplay';
-import functions from '../utils/functions';
+import nextAxios from '../services/next';
 import { logger } from '../utils/logger';
 
-const debug = logger('Accounts');
+const accountFormSchema = z.object({
+  businessDescription: z.string().min(3),
+  numberOfAccounts: z.string().min(1),
+});
 
-export default function Review() {
-  const [accountNumberInput, setAccountNumberInput] = useState('');
-  const [accountTopicInput, setAccountTopicInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+type AccountFormSchema = z.infer<typeof accountFormSchema>;
+
+export default function Accounts() {
   const [result, setResult] = useState('');
 
-  const [appConfig, setAppConfig] = useState({
-    model: functions.getDefaultAIModel(),
+  const accountForm = useForm<AccountFormSchema>({
+    defaultValues: {
+      businessDescription: '',
+      numberOfAccounts: '1',
+    },
+    resolver: zodResolver(accountFormSchema),
   });
 
-  async function onSubmit(event) {
-    event.preventDefault();
-    setIsLoading(true);
+  const {
+    formState: { isSubmitting },
+  } = accountForm;
 
-    debug('Posting Accounts');
-
-    const response = await fetch('/api/accounts', {
-      body: JSON.stringify({
-        accountNumber: accountNumberInput,
-        accountTopic: accountTopicInput,
-        config: appConfig,
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      method: 'POST',
+  async function onSubmit({
+    businessDescription,
+    numberOfAccounts,
+  }: AccountFormSchema) {
+    const { data } = await nextAxios.post('/api/accounts', {
+      accountNumber: numberOfAccounts,
+      accountTopic: businessDescription,
     });
-
-    const data = await response.json();
-
-    debug('data', data);
 
     const hljsResult = hljs.highlightAuto(data.result).value;
 
     setResult(hljsResult);
-    setIsLoading(false);
   }
 
   return (
     <Layout
       description={`Type your business description in the field below and wait for your Accounts. Examples of business descriptions are "automotive supplies", "medical equipment", or "government services".`}
-      setAppConfig={setAppConfig}
       title="Liferay Account Generator"
     >
-      <form onSubmit={onSubmit}>
+      <Form
+        formProviderProps={accountForm}
+        onSubmit={accountForm.handleSubmit(onSubmit)}
+      >
         <div className="w-700 grid grid-cols-2 gap-2 sm:grid-cols-2 md:gap-4 mb-5">
-          <FieldString
-            defaultValue=""
-            inputChange={setAccountTopicInput}
+          <Input
             label="Business Description"
             name="businessDescription"
             placeholder="Enter a Business Description"
           />
 
-          <FieldString
-            defaultValue=""
-            inputChange={setAccountNumberInput}
+          <Input
             label="Number of Accounts"
             name="numberOfAccounts"
-            placeholder={'Enter a the number of accounts to generate'}
+            placeholder="Enter a the number of accounts to generate"
           />
         </div>
 
-        <FieldSubmit disabled={isLoading} label="Generate Accounts" />
-      </form>
+        <FieldSubmit disabled={isSubmitting} label="Generate Accounts" />
+      </Form>
 
-      {isLoading ? (
+      {isSubmitting ? (
         <LoadingAnimation />
       ) : (
         result && <ResultDisplay result={result} />

@@ -77,7 +77,11 @@ export default async function Action(req, res) {
       req.body.config.serverURL +
       '/o/headless-commerce-admin-account/v1.0/accounts';
 
-    const options = functions.getAPIOptions('POST', 'en-US', req.body.config.base64data);
+    const options = functions.getAPIOptions(
+      'POST',
+      'en-US',
+      req.body.config.base64data
+    );
 
     try {
       const response = await axios.post(faqApiPath, postBody, options);

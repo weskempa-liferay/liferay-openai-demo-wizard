@@ -1,144 +1,112 @@
 import hljs from 'highlight.js';
 import { useState } from 'react';
 import React from 'react';
+import { useForm } from 'react-hook-form';
 
-import FieldSelect from '../components/formfield-select';
-import FieldString from '../components/formfield-string';
 import FieldSubmit from '../components/formfield-submit';
+import Form from '../components/forms/form';
+import Input from '../components/forms/input';
+import Select from '../components/forms/select';
 import Layout from '../components/layout';
 import LoadingAnimation from '../components/loadinganimation';
 import ResultDisplay from '../components/resultdisplay';
+import schema, { z, zodResolver } from '../schemas/zod';
+import nextAxios from '../services/next';
 import functions from '../utils/functions';
 
+type MessageBoardSchema = z.infer<typeof schema.messageBoard>;
+
+const languageOptions = functions.getAvailableLanguages();
+const viewOptions = functions.getViewOptions();
+
 export default function MessageBoard() {
-  const [mbTopicInput, setMBTopicInput] = useState('');
-  const [mbThreadLengthInput, setMBThreadLengthInput] = useState('50');
-  const [siteIdInput, setSiteIdInput] = useState('');
-  const [mbSectionNumberInput, setMBSectionNumberInput] = useState('3');
-  const [mbThreadNumberInput, setMBThreadNumberInput] = useState('3');
-  const [mbMessageNumberInput, setMBMessageNumberInput] = useState('2');
-  const [mbLanguageInput, setMBLanguageInput] = useState('en-US');
-
-  const [viewOptionsInput, setViewOptionsSelect] = useState('Anyone');
-  const viewOptions = functions.getViewOptions();
-
-  const [result, setResult] = useState(() => '');
-  const [isLoading, setIsLoading] = useState(false);
-
-  const languageOptions = functions.getAvailableLanguages();
-
-  const [appConfig, setAppConfig] = useState({
-    model: functions.getDefaultAIModel(),
+  const messageBoardForm = useForm<MessageBoardSchema>({
+    defaultValues: {
+      mbLanguage: 'en-US',
+      mbMessageNumber: '2',
+      mbSectionNumber: '3',
+      mbThreadLength: '50',
+      mbThreadNumber: '3',
+      viewOptions: viewOptions[0].id,
+    },
+    resolver: zodResolver(schema.messageBoard),
   });
 
-  async function onSubmit(event) {
-    event.preventDefault();
-    setIsLoading(true);
+  const [result, setResult] = useState('');
 
-    const response = await fetch('/api/messageboard', {
-      body: JSON.stringify({
-        config: appConfig,
-        mbLanguage: mbLanguageInput,
-        mbMessageNumber: mbMessageNumberInput,
-        mbSectionNumber: mbSectionNumberInput,
-        mbThreadLength: mbThreadLengthInput,
-        mbThreadNumber: mbThreadNumberInput,
-        mbTopic: mbTopicInput,
-        siteId: siteIdInput,
-        viewOptions: viewOptionsInput,
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      method: 'POST',
-    });
-
-    const data = await response.json();
+  async function onSubmit(payload: MessageBoardSchema) {
+    const { data } = await nextAxios.post('/api/messageboard', payload);
 
     const hljsResult = hljs.highlightAuto(data.result).value;
     setResult(hljsResult);
-
-    setIsLoading(false);
   }
+
+  const {
+    formState: { isSubmitting },
+  } = messageBoardForm;
 
   return (
     <Layout
       description='Type your topic in the field below and wait for your Message Board Threads. Examples of message board topics are "healthy living", "travel advice and tips", or "running a successful dog grooming business".'
-      setAppConfig={setAppConfig}
       title="Liferay Message Board Content Generator"
     >
-      <form onSubmit={onSubmit}>
+      <Form
+        formProviderProps={messageBoardForm}
+        onSubmit={messageBoardForm.handleSubmit(onSubmit)}
+      >
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 md:gap-4 mb-5">
-          <FieldString
-            defaultValue=""
-            inputChange={setMBTopicInput}
+          <Input
             label="Message Board Topic"
-            name="topic"
+            name="mbTopic"
             placeholder="Enter a message board topic"
           />
 
-          <FieldString
-            defaultValue=""
-            inputChange={setSiteIdInput}
-            label="Site ID"
-            name="siteId"
-            placeholder="Enter a site ID"
-          />
+          <Input label="Site ID" name="siteId" placeholder="Enter a site ID" />
 
-          <FieldString
-            defaultValue="50"
-            inputChange={setMBThreadLengthInput}
+          <Input
             label="Expected Thread Length (in # of words)"
-            name="threadLength"
+            name="mbThreadLength"
             placeholder="Enter a message board thread length"
           />
 
-          <FieldString
-            defaultValue="3"
-            inputChange={setMBSectionNumberInput}
+          <Input
             label="Number of Sections to Create"
-            name="mbNumber"
+            name="mbSectionNumber"
             placeholder="Number of message board sections"
           />
 
-          <FieldString
-            defaultValue="3"
-            inputChange={setMBThreadNumberInput}
+          <Input
             label="Number of Threads to Create per Section"
             name="mbThreadNumber"
             placeholder="Message board threads per section"
           />
 
-          <FieldString
-            defaultValue="2"
-            inputChange={setMBMessageNumberInput}
+          <Input
             label="Number of Messages to Create per Thread"
-            name="mbMessagesNumber"
+            name="mbMessageNumber"
             placeholder="Message board messages per thread"
           />
 
-          <FieldSelect
-            inputChange={setMBLanguageInput}
+          <Select
             label="Message Board Language"
             name="mbLanguage"
             optionMap={languageOptions}
           />
 
-          <FieldSelect
-            inputChange={setViewOptionsSelect}
+          <Select
             label="View Options"
-            name="viewOption"
+            name="viewOptions"
             optionMap={viewOptions}
           />
         </div>
 
         <FieldSubmit
-          disabled={isLoading}
+          disabled={isSubmitting}
           label={'Generate Message Board Threads'}
         />
-      </form>
+      </Form>
 
-      {isLoading ? (
+      {isSubmitting ? (
         <LoadingAnimation />
       ) : (
         result && <ResultDisplay result={result} />

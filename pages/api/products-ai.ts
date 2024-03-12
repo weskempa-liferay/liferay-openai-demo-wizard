@@ -17,7 +17,7 @@ export default async function ProductsAction(req, res) {
 
   const imageGeneration = req.body.imageGeneration;
   let catalogId = req.body.catalogId;
-  let globalSiteId = req.body.gloablSiteId;
+  let globalSiteId = req.body.globalSiteId;
 
   /* Get OpenAI Content based on Theme */
 
@@ -114,11 +114,19 @@ export default async function ProductsAction(req, res) {
 
   // check if vocabulary exists
 
-  let vocabId = await getExistingVocabID(req, req.body.vocabularyName, globalSiteId);
+  let vocabId = await getExistingVocabID(
+    req,
+    req.body.vocabularyName,
+    globalSiteId
+  );
 
   /* Setup Vocabulary */
 
-  let options = await functions.getAPIOptions('POST', 'en-US', req.body.config.base64data);
+  let options = await functions.getAPIOptions(
+    'POST',
+    'en-US',
+    req.body.config.base64data
+  );
   let apiPath = '';
 
   if (vocabId > 0) {
@@ -134,7 +142,11 @@ export default async function ProductsAction(req, res) {
       viewableBy: 'Anyone',
     };
 
-    let options = functions.getAPIOptions('POST', 'en-US', req.body.config.base64data);
+    let options = functions.getAPIOptions(
+      'POST',
+      'en-US',
+      req.body.config.base64data
+    );
 
     // wait for the vocab to complete before adding categories
     try {
@@ -328,13 +340,9 @@ export default async function ProductsAction(req, res) {
 
   let end = new Date().getTime();
 
-  res
-    .status(200)
-    .json({
-      result: `Completed in ${functions.millisToMinutesAndSeconds(
-        end - start
-      )}`,
-    });
+  res.status(200).json({
+    result: `Completed in ${functions.millisToMinutesAndSeconds(end - start)}`,
+  });
 }
 
 async function getExistingVocabID(req, name, globalSiteId) {
@@ -348,7 +356,11 @@ async function getExistingVocabID(req, name, globalSiteId) {
     '/taxonomy-vocabularies?filter=' +
     encodeURI(filter);
 
-  let options = functions.getAPIOptions('GET', 'en-US', req.body.config.base64data);
+  let options = functions.getAPIOptions(
+    'GET',
+    'en-US',
+    req.body.config.base64data
+  );
 
   try {
     const vocabResponse = await axios.get(apiPath, options);
@@ -374,7 +386,11 @@ async function getExistingCategoryID(req, name, vocabId) {
     '/taxonomy-categories?filter=' +
     encodeURI(filter);
 
-  let options = functions.getAPIOptions('GET', 'en-US', req.body.config.base64data);
+  let options = functions.getAPIOptions(
+    'GET',
+    'en-US',
+    req.body.config.base64data
+  );
 
   try {
     const categoryResponse = await axios.get(apiPath, options);

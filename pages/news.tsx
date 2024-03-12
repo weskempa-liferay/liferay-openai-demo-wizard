@@ -1,141 +1,100 @@
 import hljs from 'highlight.js';
-import { useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
+import { useForm } from 'react-hook-form';
 
 import TopNavItem from '../components/apptopnavitem';
-import FieldImageType from '../components/formfield-imagetype';
 import FieldLanguage from '../components/formfield-language';
-import FieldSelect from '../components/formfield-select';
-import FieldString from '../components/formfield-string';
 import FieldSubmit from '../components/formfield-submit';
+import Form from '../components/forms/form';
+import Input from '../components/forms/input';
+import Select from '../components/forms/select';
 import ImageStyle from '../components/imagestyle';
 import Layout from '../components/layout';
 import LoadingAnimation from '../components/loadinganimation';
 import ResultDisplay from '../components/resultdisplay';
+import schema, { z, zodResolver } from '../schemas/zod';
+import nextAxios from '../services/next';
+import { USDollar } from '../utils/currency';
+import { downloadFile } from '../utils/download';
 import functions from '../utils/functions';
 
+type NewsSchema = z.infer<typeof schema.news>;
+
+const viewOptions = functions.getViewOptions();
+
+const handleStructureClick = () => {
+  downloadFile({
+    fileName: 'Structure-News_Article',
+    filePath: 'news/Structure-News_Article.json',
+  });
+};
+
+const handleFragmentClick = () => {
+  location.href = 'news/Fragment-News.zip';
+};
+
 export default function News() {
-  const [categoryIdsInput, setCategoryIdsInput] = useState('');
-  const [defaultLanguageInput, setDefaultLanguage] = useState('en-US');
-  const [folderIdInput, setFolderIdInput] = useState('');
-  const [imageFolderIdInput, setImageFolderIdInput] = useState('0');
-  const [imageGenerationType, setImageGenerationType] = useState('none');
-  const [imageStyleInput, setImageStyleInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [languagesInput, setLanguages] = useState([]);
-  const [viewOptionsInput, setViewOptionsSelect] = useState('Anyone');
-  const viewOptions = functions.getViewOptions();
-  const [manageLanguageInput, setManageLanguage] = useState(false);
-  const [newsLengthInput, setNewsLengthInput] = useState('75');
-  const [newsNumberInput, setNewsNumberInput] = useState('3');
-  const [newsTopicInput, setNewsTopicInput] = useState('');
-  const [result, setResult] = useState(() => '');
-  const [showImageFolder, showImageFolderInput] = useState(false);
-  const [showStyleInput, setShowImageStyleInput] = useState(false);
-  const [siteIdInput, setSiteIdInput] = useState('');
-  const [structureIdInput, setStructureIdInput] = useState('');
-  const [submitLabel, setSubmitLabel] = useState('');
-
-  const [appConfig, setAppConfig] = useState({
-    model: functions.getDefaultAIModel(),
+  const newsForm = useForm<NewsSchema>({
+    defaultValues: {
+      defaultLanguage: 'en-US',
+      imageFolderId: '0',
+      imageGeneration: 'none',
+      imageStyle: '',
+      languages: [],
+      manageLanguage: false,
+      newsLength: '75',
+      newsNumber: '3',
+      viewOptions: 'Anyone',
+    },
+    resolver: zodResolver(schema.news),
   });
 
-  const onImageStyleInputChange = (value) => {
-    setImageStyleInput(value);
-  };
+  const [result, setResult] = useState('');
 
-  let USDollar = new Intl.NumberFormat('en-US', {
-    currency: 'USD',
-    style: 'currency',
-  });
+  const {
+    formState: { isSubmitting },
+    watch,
+  } = newsForm;
 
-  useEffect(() => {
+  const imageGeneration = watch('imageGeneration');
+  const newsNumber = watch('newsNumber');
 
-    const updateCost = () => {
-      setShowImageStyleInput(false);
-      let cost = '';
+  const { showImageFolder, showImageStyle, submitLabel } = useMemo(() => {
+    let cost = '';
+    let showImageStyle = false;
+    let showImageFolder = false;
 
-      showImageFolderInput(false);
-      if (isNaN(parseInt(newsNumberInput))) {
-        cost = '$0.00';
-      } else if (imageGenerationType == 'dall-e-3') {
-        setShowImageStyleInput(true);
-        cost = USDollar.format(parseInt(newsNumberInput) * 0.04);
-        showImageFolderInput(true);
-      } else if (imageGenerationType == 'dall-e-2') {
-        cost = USDollar.format(parseInt(newsNumberInput) * 0.02);
-        showImageFolderInput(true);
-      } else {
-        cost = '<$0.01';
-      }
+    if (isNaN(parseInt(newsNumber))) {
+      cost = '$0.00';
+    } else if (imageGeneration == 'dall-e-3') {
+      showImageStyle = true;
+      showImageFolder = true;
+      cost = USDollar.format(parseInt(newsNumber) * 0.04);
+    } else if (imageGeneration == 'dall-e-2') {
+      cost = USDollar.format(parseInt(newsNumber) * 0.02);
+      showImageFolder = true;
+    } else {
+      cost = '<$0.01';
+    }
 
-      setSubmitLabel('Generate News - Estimated cost: ' + cost);
+    return {
+      showImageFolder,
+      showImageStyle,
+      submitLabel: 'Generate News - Estimated cost: ' + cost,
     };
-    
-    updateCost();
-  }, [newsNumberInput, imageGenerationType]);
+  }, [newsNumber, imageGeneration]);
 
-  const handleStructureClick = () => {
-    downloadFile({
-      fileName: 'Structure-News_Article',
-      filePath: 'news/Structure-News_Article.json',
-    });
-  };
-
-  const downloadFile = ({ fileName, filePath }) => {
-    const a = document.createElement('a');
-    a.download = fileName;
-    a.href = filePath;
-    const clickEvt = new MouseEvent('click', {
-      bubbles: true,
-      cancelable: true,
-      view: window,
-    });
-    a.dispatchEvent(clickEvt);
-    a.remove();
-  };
-
-  const handleFragmentClick = () => {
-    location.href = 'news/Fragment-News.zip';
-  };
-
-  async function onSubmit(event) {
-    event.preventDefault();
-    setIsLoading(true);
-    const response = await fetch('/api/news', {
-      body: JSON.stringify({
-        categoryIds: categoryIdsInput,
-        config: appConfig,
-        defaultLanguage: defaultLanguageInput,
-        folderId: folderIdInput,
-        imageFolderId: imageFolderIdInput,
-        imageGeneration: imageGenerationType,
-        imageStyle: imageStyleInput,
-        languages: languagesInput,
-        manageLanguage: manageLanguageInput,
-        newsLength: newsLengthInput,
-        newsNumber: newsNumberInput,
-        newsTopic: newsTopicInput,
-        siteId: siteIdInput,
-        structureId: structureIdInput,
-        viewOptions: viewOptionsInput,
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      method: 'POST',
-    });
-    const data = await response.json();
+  async function onSubmit(payload: NewsSchema) {
+    const { data } = await nextAxios.post('/api/news', payload);
 
     const hljsResult = hljs.highlightAuto(data.result).value;
-    setResult(hljsResult);
 
-    setIsLoading(false);
+    setResult(hljsResult);
   }
 
   return (
     <Layout
       description='Type your topic in the field below and wait for your News. Examples of news topics are "technological advancements in healthcare", "new years resolutions", or "successful leadership approaches and goals".'
-      setAppConfig={setAppConfig}
       title="Liferay News Generator"
     >
       <div className="fixed top-2 right-5 text-lg download-options p-5 rounded">
@@ -144,99 +103,98 @@ export default function News() {
         <TopNavItem label="News Fragment" onClick={handleFragmentClick} />
       </div>
 
-      <form onSubmit={onSubmit}>
+      <Form
+        formProviderProps={newsForm}
+        onSubmit={newsForm.handleSubmit(onSubmit)}
+      >
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 md:gap-4 mb-5">
-          <FieldString
-            defaultValue=""
-            inputChange={setNewsTopicInput}
+          <Input
             label="News Topic"
-            name="topic"
+            name="newsTopic"
             placeholder="Enter a News topic"
           />
 
-          <FieldString
-            defaultValue="3"
-            inputChange={setNewsNumberInput}
+          <Input
             label="Number of Articles to Create (Max 10)"
             name="newsNumber"
             placeholder="Number of News posts"
           />
 
-          <FieldString
-            defaultValue="75"
-            inputChange={setNewsLengthInput}
+          <Input
             label="Expected News Post Length (in # of words)"
             name="newsLength"
             placeholder="Expected News Post Length"
           />
 
-          <FieldString
-            defaultValue=""
-            inputChange={setSiteIdInput}
+          <Input
             label="Site ID or Asset Library Group ID"
             name="siteId"
             placeholder="Enter a site ID or asset library group ID"
           />
 
-          <FieldString
-            defaultValue="0"
-            inputChange={setFolderIdInput}
+          <Input
             label="Web Content Folder ID (0 for Root)"
-            name="webContentFolderId"
+            name="folderId"
             placeholder="Enter a Web Content Folder ID"
           />
 
-          <FieldString
-            defaultValue=""
-            inputChange={setStructureIdInput}
+          <Input
             label="Structure ID"
             name="structureId"
             placeholder="Enter a Structure ID"
           />
 
-          <FieldString
-            defaultValue=""
-            inputChange={setCategoryIdsInput}
+          <Input
             label="Comma-Delimited Category IDs (Optional)"
             name="categoryIds"
             placeholder="List of Comma-Delimited Category IDs"
           />
 
-          <FieldSelect
-            inputChange={setViewOptionsSelect}
+          <Select
             label="View Options"
-            name="viewOption"
+            name="viewOptions"
             optionMap={viewOptions}
           />
 
-          <FieldImageType
-            includeNone={true}
-            inputChange={setImageGenerationType}
+          <Select
+            label="Image Generation"
+            name="imageGeneration"
+            optionMap={[
+              { id: 'none', name: 'None' },
+              { id: 'dall-e-3', name: 'DALL·E 3 (Highest-Quality Images)' },
+              { id: 'dall-e-2', name: 'DALL·E 2 (Basic Images)' },
+            ]}
           />
 
           {showImageFolder && (
-            <FieldString
-              defaultValue="0"
-              inputChange={setImageFolderIdInput}
+            <Input
               label="Image Folder ID (0 for Doc Lib Root)"
               name="imageFolderId"
               placeholder="Enter a Document Library Folder ID"
             />
           )}
 
-          {showStyleInput && (
-            <ImageStyle styleInputChange={onImageStyleInputChange} />
+          {showImageStyle && (
+            <ImageStyle
+              styleInputChange={(value) =>
+                newsForm.setValue('imageStyle', value)
+              }
+            />
           )}
         </div>
 
         <FieldLanguage
-          defaultLanguageChange={setDefaultLanguage}
-          languagesChange={setLanguages}
-          manageLanguageChange={setManageLanguage}
+          defaultLanguageChange={(value) =>
+            newsForm.setValue('defaultLanguage', value)
+          }
+          languagesChange={(value) => newsForm.setValue('languages', value)}
+          manageLanguageChange={(value) =>
+            newsForm.setValue('manageLanguage', value)
+          }
         />
 
-        <FieldSubmit disabled={isLoading} label={submitLabel} />
-      </form>
+        <FieldSubmit disabled={isSubmitting} label={submitLabel} />
+      </Form>
 
       <p className="text-slate-100 text-center text-lg mb-3 rounded p-5 bg-white/10 w-1/2 italic">
         <b>Note:</b> News Article generation requires a specific content
@@ -244,7 +202,7 @@ export default function News() {
         Please use the supplied News Structure supplied above.
       </p>
 
-      {isLoading ? (
+      {isSubmitting ? (
         <LoadingAnimation />
       ) : (
         result && <ResultDisplay result={result} />

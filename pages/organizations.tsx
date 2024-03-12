@@ -1,91 +1,76 @@
 import hljs from 'highlight.js';
 import { useState } from 'react';
 import React from 'react';
+import { useForm } from 'react-hook-form';
 
-import FieldString from '../components/formfield-string';
 import FieldSubmit from '../components/formfield-submit';
+import Form from '../components/forms/form';
+import Input from '../components/forms/input';
 import Layout from '../components/layout';
 import LoadingAnimation from '../components/loadinganimation';
 import ResultDisplay from '../components/resultdisplay';
-import functions from '../utils/functions';
+import schema, { z, zodResolver } from '../schemas/zod';
+import nextAxios from '../services/next';
+
+type OrganizationSchema = z.infer<typeof schema.organizations>;
 
 export default function Organizations() {
-  const [organizationTopicInput, setOrganizationTopicInput] = useState(
-    'National Internet, Phone, and Cable'
-  );
-  const [childOrganizationtNumberInput, setChildOrganizationtNumberInput] =
-    useState('3');
-  const [departmentNumberInput, setDepartmentNumberInput] = useState('3');
-
-  const [result, setResult] = useState(() => '');
-  const [isLoading, setIsLoading] = useState(false);
-
-  const [appConfig, setAppConfig] = useState({
-    model: functions.getDefaultAIModel(),
+  const organizationsForm = useForm<OrganizationSchema>({
+    defaultValues: {
+      childOrganizationtNumber: '3',
+      departmentNumber: '3',
+      organizationTopic: 'National Internet, Phone, and Cable',
+    },
+    resolver: zodResolver(schema.organizations),
   });
 
-  async function onSubmit(event) {
-    event.preventDefault();
-    setIsLoading(true);
+  const [result, setResult] = useState('');
 
-    const response = await fetch('/api/organizations', {
-      body: JSON.stringify({
-        childOrganizationtNumber: childOrganizationtNumberInput,
-        config: appConfig,
-        departmentNumber: departmentNumberInput,
-        organizationTopic: organizationTopicInput,
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      method: 'POST',
-    });
-    const data = await response.json();
-    console.log('data', data);
+  async function onSubmit(payload: OrganizationSchema) {
+    const { data } = await nextAxios.post('/api/organizations', payload);
 
     const hljsResult = hljs.highlightAuto(data.result).value;
-    setResult(hljsResult);
 
-    setIsLoading(false);
+    setResult(hljsResult);
   }
+
+  const {
+    formState: { isSubmitting },
+  } = organizationsForm;
 
   return (
     <Layout
       description='Type your business description in the field below and wait for your organization. Examples of business descriptions are "automotive supplies", "medical equipment", or "government services".'
-      setAppConfig={setAppConfig}
       title="Liferay Organization Generator"
     >
-      <form onSubmit={onSubmit}>
+      <Form
+        formProviderProps={organizationsForm}
+        onSubmit={organizationsForm.handleSubmit(onSubmit)}
+      >
         <div className="w-700 grid grid-cols-2 gap-2 sm:grid-cols-2 md:gap-4 mb-5">
-          <FieldString
-            defaultValue="National Internet, Phone, and Cable"
-            inputChange={setOrganizationTopicInput}
+          <Input
             label="Business Description"
-            name="businessDescription"
+            name="organizationTopic"
             placeholder="Enter a business description"
           />
 
-          <FieldString
-            defaultValue="3"
-            inputChange={setChildOrganizationtNumberInput}
+          <Input
             label="Number of Child Organizations"
-            name="numberOfChildOrganizations"
+            name="childOrganizationtNumber"
             placeholder="Enter a the number of child organizations to generate"
           />
 
-          <FieldString
-            defaultValue="3"
-            inputChange={setDepartmentNumberInput}
+          <Input
             label="Number of Departments"
-            name="numberOfDepartments"
+            name="departmentNumber"
             placeholder="Enter a the number of departments to generate"
           />
         </div>
 
-        <FieldSubmit disabled={isLoading} label="Generate Organization" />
-      </form>
+        <FieldSubmit disabled={isSubmitting} label="Generate Organization" />
+      </Form>
 
-      {isLoading ? (
+      {isSubmitting ? (
         <LoadingAnimation />
       ) : (
         result && <ResultDisplay result={result} />

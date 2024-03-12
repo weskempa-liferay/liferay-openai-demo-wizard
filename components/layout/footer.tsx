@@ -64,8 +64,10 @@ export default function AppFooter() {
       let appConfig = cookies.get(APP_CONFIG);
 
       console.log('Using existing appConfig');
+      console.log(appConfig);
 
       setAppConfig(appConfig);
+      checkConfig(appConfig);
     } else {
       checkConfig(appConfig);
     }

@@ -1,14 +1,14 @@
 import { XCircleIcon } from '@heroicons/react/24/solid';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
+import FieldSelect from '../components/formfield-select';
 import functions from '../utils/functions';
 import Form from './forms/form';
 import Input from './forms/input';
 import Select from './forms/select';
-import FieldSelect from '../components/formfield-select';
 
 const configFormSchema = z.object({
   clientId: z.string(),

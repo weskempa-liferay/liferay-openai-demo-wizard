@@ -1,12 +1,14 @@
 import { XCircleIcon } from '@heroicons/react/24/solid';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
+import { useState } from 'react';
 import { z } from 'zod';
 
 import functions from '../utils/functions';
 import Form from './forms/form';
 import Input from './forms/input';
 import Select from './forms/select';
+import FieldSelect from '../components/formfield-select';
 
 const configFormSchema = z.object({
   clientId: z.string(),
@@ -17,6 +19,11 @@ const configFormSchema = z.object({
   password: z.string(),
   serverURL: z.string(),
 });
+
+const authenticationTypes = [
+  { id: 'basic', name: 'Basic Authentiction' },
+  { id: 'oauth', name: 'OAuth2' }
+]
 
 const aiModelOptions = functions.getAIModelOptions();
 
@@ -29,6 +36,8 @@ export default function ConfigModal({
     defaultValues: appConfig,
     resolver: zodResolver(configFormSchema),
   });
+
+  const [authMethod, setAuthMethod] = useState("basic");
 
   return (
     <Form
@@ -48,10 +57,10 @@ export default function ConfigModal({
               />
             </div>
 
-            <div className="relative p-6 flex-auto">
-              <div className="mb-5">
-                <div className="mb-2 p-3 bg-blue-500/20 rounded-lg font-normal">
-                  <div className="mb-2">
+            <div className="relative p-4 flex-auto">
+              <div className="mb-2">
+                <div className="mb-2 p-2 bg-blue-500/20 rounded-lg font-normal">
+                  <div className="mb-1">
                     <Input
                       label="OpenAI Key"
                       name="openAIKey"
@@ -64,7 +73,7 @@ export default function ConfigModal({
                       optionMap={aiModelOptions}
                     />
 
-                    <p className="text-xs text-black/60 pt-2 mt-4 p-2 bg-sky-400/20 rounded-lg font-normal">
+                    <p className="text-xs text-black/60 pt-2 mt-2 p-2 bg-sky-400/20 rounded-lg font-normal">
                       OpenAI{' '}
                       <a
                         className="text-sky-500"
@@ -85,13 +94,28 @@ export default function ConfigModal({
                   </div>
                 </div>
 
-                <div className="p-3 bg-green-600/30 rounded-lg">
+                <div className="p-2 mb-2 bg-green-600/20 rounded-lg">
                   <Input
                     label="Set Server URL"
                     name="serverURL"
                     placeholder="Enter server url"
                   />
+                </div>
 
+                <div className="mb-2 p-2 bg-blue-600/20 rounded-lg">
+
+                  <FieldSelect
+                    inputChange={setAuthMethod}
+                    label="Select Authentication Type"
+                    name="authenticationType"
+                    optionMap={authenticationTypes}
+                  />
+
+                </div>
+
+              {authMethod == 'basic' ? (
+
+                <div className="mb-2 p-2 bg-blue-600/30 rounded-lg">
                   <Input
                     label="User Login"
                     name="login"
@@ -104,6 +128,13 @@ export default function ConfigModal({
                     placeholder="Enter password (Password is never saved directly)"
                     type="password"
                   />
+
+                </div>
+            
+              ) : (
+
+                <div className="mb-2 p-2 bg-blue-600/30 rounded-lg">
+
                   <Input
                     label="OAuth2 - Client ID"
                     name="clientId"
@@ -116,10 +147,13 @@ export default function ConfigModal({
                     placeholder="Enter Client Secret (Secrets are never saved directly)"
                   />
                 </div>
+
+              )}
+
               </div>
             </div>
 
-            <div className="flex items-center justify-end p-6 border-t border-solid border-blueGray-200 rounded-b">
+            <div className="flex items-center justify-center p-2 border-t border-solid border-blueGray-200 rounded-b">
               <button
                 className="bg-blue-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                 type="submit"

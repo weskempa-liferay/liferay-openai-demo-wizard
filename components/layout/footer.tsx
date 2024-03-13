@@ -56,6 +56,7 @@ export default function AppFooter() {
 
     setShowModal(false);
 
+    setEnvStatus('connected');
     setEnvMsg("Validating config...");
     checkConfig(newConfig);
   };

@@ -69,19 +69,10 @@ export default function Products() {
     };
   }, [imageGeneration, numberOfCategories, numberOfProducts]);
 
-  useEffect(() => {
-    // only fetch is signed-in
-    const fetchData = async () => {
-      const { data: catalogs } = await nextAxios.post('/api/catalogs', {
-        method: 'POST',
-      });
-
-      setProductCatalogOptions(catalogs);
-      setValue('catalogId', catalogs[0].id);
-    };
-  }, [setValue]);
-
   async function onSubmit(payload: ProductAISchema) {
+
+    console.log(payload);
+
     const { data } = await nextAxios.post('/api/products-ai', payload);
 
     const hljsResult = hljs.highlightAuto(data.result).value;
@@ -128,10 +119,10 @@ export default function Products() {
             placeholder="Enter the number of products per category"
           />
 
-          <Select
+          <Input
             label="Product Catalog"
             name="catalogId"
-            optionMap={productCatalogOptions}
+            optioplaceholdernMap="Enter the Catalog ID"
           />
 
           <Select

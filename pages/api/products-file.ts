@@ -1,11 +1,15 @@
-import axios from 'axios';
+import axios from "axios";
+import { NextApiRequest, NextApiResponse } from "next";
 
-import functions from '../../utils/functions';
-import { logger } from '../../utils/logger';
+import functions from "../../utils/functions";
+import { logger } from "../../utils/logger";
 
-const debug = logger('Products File - Action');
+const debug = logger("Products File - Action");
 
-export default async function UsersFileAction(req, res) {
+export default async function UsersFileAction(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
   let start = new Date().getTime();
   let successCount = 0;
   let errorCount = 0;
@@ -30,8 +34,8 @@ export default async function UsersFileAction(req, res) {
   }
 
   let categoryDataStr = {
-    'Category Names': productCategories,
-    'Category Vocab': req.body.vocabularyName,
+    "Category Names": productCategories,
+    "Category Vocab": req.body.vocabularyName,
   };
 
   debug(categoryDataStr);
@@ -41,26 +45,26 @@ export default async function UsersFileAction(req, res) {
   let vocabId = await getExistingVocabID(
     req,
     req.body.vocabularyName,
-    globalSiteId
+    globalSiteId,
   );
 
   // Setup Vocabulary
 
   let options = await functions.getAPIOptions(
-    'POST',
-    'en-US',
-    req.body.config.base64data
+    "POST",
+    "en-US",
+    req.body.config.base64data,
   );
-  let apiPath = '';
+  let apiPath = "";
 
   if (vocabId > 0) {
-    debug('Using existing vocabId: ' + vocabId);
+    debug("Using existing vocabId: " + vocabId);
   } else {
     let apiPath =
       req.body.config.serverURL +
-      '/o/headless-admin-taxonomy/v1.0/sites/' +
+      "/o/headless-admin-taxonomy/v1.0/sites/" +
       globalSiteId +
-      '/taxonomy-vocabularies';
+      "/taxonomy-vocabularies";
     let vocabPostObj = { name: req.body.vocabularyName };
 
     // wait for the vocab to complete before adding categories
@@ -70,14 +74,14 @@ export default async function UsersFileAction(req, res) {
       debug(vocabResponse.data);
       vocabId = vocabResponse.data.id;
     } catch (error) {
-      debug(error.response.data.status + ':' + error.response.data.title);
+      debug(error.response.data.status + ":" + error.response.data.title);
       errorCount++;
     }
   }
 
   const categMap = new Map();
 
-  debug('Returned vocab id is ' + vocabId);
+  debug("Returned vocab id is " + vocabId);
 
   let currCategory, currCategoryJson, categResponse;
 
@@ -91,27 +95,27 @@ export default async function UsersFileAction(req, res) {
     // create the categories for the vocabulary that was just generated
 
     if (categoryId > 0) {
-      debug('Using existing categoryId: ' + categoryId);
+      debug("Using existing categoryId: " + categoryId);
       categMap.set(currCategory, categoryId);
     } else {
       currCategoryJson = { name: currCategory, taxonomyVocabularyId: vocabId };
 
       apiPath =
         req.body.config.serverURL +
-        '/o/headless-admin-taxonomy/v1.0/taxonomy-vocabularies/' +
+        "/o/headless-admin-taxonomy/v1.0/taxonomy-vocabularies/" +
         vocabId +
-        '/taxonomy-categories';
-      debug('creating category');
+        "/taxonomy-categories";
+      debug("creating category");
       debug(currCategoryJson);
 
       try {
         categResponse = await axios.post(apiPath, currCategoryJson, options);
 
-        debug(categResponse.data.id + ' is the id for ' + currCategory);
+        debug(categResponse.data.id + " is the id for " + currCategory);
 
         categMap.set(currCategory, categResponse.data.id);
       } catch (error) {
-        debug(error.response.data.status + ':' + error.response.data.title);
+        debug(error.response.data.status + ":" + error.response.data.title);
         errorCount++;
       }
 
@@ -142,10 +146,10 @@ export default async function UsersFileAction(req, res) {
     inventoryCount = productslist[i].stock;
     if (
       !productslist[i].sku ||
-      productslist[i].sku == '' ||
-      productslist[i].sku == '?'
+      productslist[i].sku == "" ||
+      productslist[i].sku == "?"
     ) {
-      productSku = productName.toLowerCase().replaceAll(' ', '-');
+      productSku = productName.toLowerCase().replaceAll(" ", "-");
     } else {
       productSku = productslist[i].sku;
     }
@@ -165,7 +169,7 @@ export default async function UsersFileAction(req, res) {
         en_US: productName,
       },
       productStatus: 0,
-      productType: 'simple',
+      productType: "simple",
       shortDescription: {
         en_US: shortDescription,
       },
@@ -173,7 +177,7 @@ export default async function UsersFileAction(req, res) {
       skus: [
         {
           neverExpire: true,
-          price: parseFloat(productPrice.replaceAll('$', '')),
+          price: parseFloat(productPrice.replaceAll("$", "")),
           published: true,
           purchasable: true,
           sku: productSku,
@@ -184,14 +188,14 @@ export default async function UsersFileAction(req, res) {
     try {
       apiPath =
         req.body.config.serverURL +
-        '/o/headless-commerce-admin-catalog/v1.0/products';
+        "/o/headless-commerce-admin-catalog/v1.0/products";
 
       productResponse = await axios.post(apiPath, productJson, options);
 
       productId = productResponse.data.productId;
 
-      debug('----------------------------------');
-      debug(productName + ' created with id ' + productId);
+      debug("----------------------------------");
+      debug(productName + " created with id " + productId);
 
       productCategoryJson = {
         id: currCategoryId,
@@ -200,29 +204,29 @@ export default async function UsersFileAction(req, res) {
       };
 
       let imgschema = JSON.stringify({
-        externalReferenceCode: 'product-' + productResponse.data.productId,
+        externalReferenceCode: "product-" + productResponse.data.productId,
         neverExpire: true,
         priority: 1,
         src: imageUrl,
         title: { en_US: productName },
       });
 
-      debug('imgschema');
+      debug("imgschema");
       debug(imgschema);
 
       let imgApiPath =
         req.body.config.serverURL +
-        '/o/headless-commerce-admin-catalog/v1.0/products/' +
+        "/o/headless-commerce-admin-catalog/v1.0/products/" +
         productResponse.data.productId +
-        '/images/by-url';
+        "/images/by-url";
 
       let productImageResponse = await axios.post(
         imgApiPath,
         imgschema,
-        options
+        options,
       );
     } catch (productError) {
-      debug('error creating product ' + productName + ' -- ' + productError);
+      debug("error creating product " + productName + " -- " + productError);
       errorCount++;
     }
   }
@@ -232,9 +236,9 @@ export default async function UsersFileAction(req, res) {
   res.status(200).json({
     result:
       successCount +
-      ' products added, ' +
+      " products added, " +
       errorCount +
-      ' errors in ' +
+      " errors in " +
       functions.millisToMinutesAndSeconds(end - start),
   });
 }
@@ -245,15 +249,15 @@ async function getExistingVocabID(req, name, globalSiteId) {
 
   let apiPath =
     req.body.config.serverURL +
-    '/o/headless-admin-taxonomy/v1.0/sites/' +
+    "/o/headless-admin-taxonomy/v1.0/sites/" +
     globalSiteId +
-    '/taxonomy-vocabularies?filter=' +
+    "/taxonomy-vocabularies?filter=" +
     encodeURI(filter);
 
   let options = functions.getAPIOptions(
-    'GET',
-    'en-US',
-    req.body.config.base64data
+    "GET",
+    "en-US",
+    req.body.config.base64data,
   );
 
   try {
@@ -275,15 +279,15 @@ async function getExistingCategoryID(req, name, vocabId) {
 
   let apiPath =
     req.body.config.serverURL +
-    '/o/headless-admin-taxonomy/v1.0/taxonomy-vocabularies/' +
+    "/o/headless-admin-taxonomy/v1.0/taxonomy-vocabularies/" +
     vocabId +
-    '/taxonomy-categories?filter=' +
+    "/taxonomy-categories?filter=" +
     encodeURI(filter);
 
   let options = functions.getAPIOptions(
-    'GET',
-    'en-US',
-    req.body.config.base64data
+    "GET",
+    "en-US",
+    req.body.config.base64data,
   );
 
   try {

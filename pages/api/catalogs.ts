@@ -1,24 +1,16 @@
-import axios from 'axios';
+import { NextApiRequest, NextApiResponse } from "next";
 
-import functions from '../../utils/functions';
+import { axiosInstance } from "../../services/liferay";
 
-export default async function Action(req, res) {
-  const config = JSON.parse(req.body);
-  const response = await getCatalogList(config);
+export default async function Action(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
+  const axios = axiosInstance(req, res);
 
-  console.log(config);
+  const { data } = await axios.get(
+    "/o/headless-commerce-admin-catalog/v1.0/catalogs",
+  );
 
-  res.status(200).json(response);
-}
-
-async function getCatalogList(config) {
-  console.log(config);
-  const catalogApiPath =
-    config.serverURL + '/o/headless-commerce-admin-catalog/v1.0/catalogs';
-
-  let options = functions.getAPIOptions('GET', 'en-US', config.base64data);
-
-  const response = await axios.get(catalogApiPath, options);
-
-  return response.data.items;
+  res.status(200).json(data.items);
 }

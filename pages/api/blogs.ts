@@ -1,52 +1,56 @@
-import axios from 'axios';
-import fs from 'fs';
-import http from 'https';
+import baseAxios, { AxiosInstance } from 'axios';
+import { NextApiRequest, NextApiResponse } from 'next';
 import OpenAI from 'openai';
-import request from 'request';
 
+import schema, { z } from '../../schemas/zod';
+import { axiosInstance } from '../../services/liferay';
+import { getDownloadFormData } from '../../utils/download';
 import functions from '../../utils/functions';
 import { logger } from '../../utils/logger';
 
 const debug = logger('Blogs - Action');
 
-export default async function Action(req, res) {
-  let start = new Date().getTime();
-  debug(req.body);
+type BlogPayload = z.infer<typeof schema.blog>;
+
+export default async function Action(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  const blogPayload = req.body as BlogPayload;
+
+  const { blogLanguage, blogLength, blogNumber, imageGeneration } = blogPayload;
 
   const openai = new OpenAI({
     apiKey: req.body.config.openAIKey,
   });
 
-  const runCount = req.body.blogNumber;
-  const imageGeneration = req.body.imageGeneration;
-
   const runCountMax = 10;
   const blogContentSet = [];
 
-  const schema = {
+  const parameters = {
     properties: {
       articles: {
-        description: 'An array of ' + runCount + ' blog articles',
+        description: `An array of ${blogNumber} blog articles`,
         items: {
           properties: {
             alternativeHeadline: {
               description:
                 'A headline that is a summary of the blog article translated into ' +
-                functions.getLanguageDisplayName(req.body.blogLanguage),
+                functions.getLanguageDisplayName(blogLanguage),
               type: 'string',
             },
             articleBody: {
               description:
                 'The content of the blog article needs to be ' +
-                req.body.blogLength +
+                blogLength +
                 ' words or more. Remove any double quotes and translate the article into ' +
-                functions.getLanguageDisplayName(req.body.blogLanguage),
+                functions.getLanguageDisplayName(blogLanguage),
               type: 'string',
             },
             headline: {
               description:
                 'The title of the blog artcile translated into ' +
-                functions.getLanguageDisplayName(req.body.blogLanguage),
+                functions.getLanguageDisplayName(blogLanguage),
               type: 'string',
             },
             picture_description: {
@@ -70,9 +74,9 @@ export default async function Action(req, res) {
     type: 'object',
   };
 
-  let response = await openai.chat.completions.create({
+  const response = await openai.chat.completions.create({
     function_call: { name: 'get_blog_content' },
-    functions: [{ name: 'get_blog_content', parameters: schema }],
+    functions: [{ name: 'get_blog_content', parameters }],
     messages: [
       { content: 'You are a blog author.', role: 'system' },
       {
@@ -90,9 +94,11 @@ export default async function Action(req, res) {
     temperature: 0.8,
   });
 
-  let blogJsonArticles = JSON.parse(
+  const blogJsonArticles = JSON.parse(
     response.choices[0].message.function_call.arguments
   ).articles;
+
+  const axios = axiosInstance(req, res);
 
   for (let i = 0; i < blogJsonArticles.length; i++) {
     let blogJson = blogJsonArticles[i];
@@ -112,7 +118,8 @@ export default async function Action(req, res) {
     debug(`pictureDescription: ${pictureDescription}`);
 
     try {
-      if (imageGeneration != 'none') {
+      let imageId = 0;
+      if (imageGeneration !== 'none') {
         const imageResponse = await openai.images.generate({
           model: imageGeneration,
           n: 1,
@@ -120,26 +127,18 @@ export default async function Action(req, res) {
           size: '1024x1024',
         });
 
-        debug(imageResponse.data[0].url);
+        const formData = await getDownloadFormData(imageResponse.data[0].url);
 
-        const timestamp = new Date().getTime();
-        const file = fs.createWriteStream(
-          'generatedimages/img' + timestamp + '-' + i + '.jpg'
-        );
-
-        debug('In Exports, getGeneratedImage:' + imageResponse);
-
-        http.get(imageResponse.data[0].url, function (response) {
-          response.pipe(file);
-
-          file.on('finish', () => {
-            file.close();
-            postImageToLiferay(file, req, blogJson);
-          });
-        });
-      } else {
-        postBlogToLiferay(req, blogJson, 0);
+        imageId = await postImageToLiferay(formData, axios, req.body.siteId);
       }
+
+      if (imageId) {
+        blogJson.image = {
+          imageId,
+        };
+      }
+
+      await postBlogToLiferay(axios, blogPayload, blogJson);
     } catch (error) {
       if (error.response) {
         debug(error.response.status);
@@ -150,61 +149,46 @@ export default async function Action(req, res) {
 
     blogContentSet.push(blogJson);
 
-    if (i >= runCountMax) break;
+    if (i >= runCountMax) {
+      break;
+    }
   }
 
   res.status(200).json({ result: JSON.stringify(blogContentSet) });
 }
 
-function postImageToLiferay(file, req, blogJson) {
-  let blogImageApiPath =
-    req.body.config.serverURL +
-    '/o/headless-delivery/v1.0/sites/' +
-    req.body.siteId +
-    '/blog-posting-images';
-
-  debug(blogImageApiPath);
-
-  let fileStream = fs.createReadStream(process.cwd() + '/' + file.path);
-  const options = functions.getFilePostOptions(
-    blogImageApiPath,
-    fileStream,
-    'file',
-    req.body.config.base64data
-  );
-
-  setTimeout(function () {
-    request(options, function (err, res, body) {
-      if (err) debug(err);
-
-      postBlogToLiferay(req, blogJson, JSON.parse(body).id);
-    });
-  }, 100);
-}
-
-async function postBlogToLiferay(req, blogJson, imageId) {
-  if (imageId) {
-    blogJson.image = {
-      imageId: imageId,
-    };
-  }
-
-  blogJson.viewableBy = req.body.viewOptions;
-
-  let apiPath =
-    req.body.config.serverURL +
-    '/o/headless-delivery/v1.0/sites/' +
-    req.body.siteId +
-    '/blog-postings';
-
-  let options = functions.getAPIOptions('POST', 'en-US', req.body.config.base64data);
-
+async function postBlogToLiferay(
+  axios: AxiosInstance,
+  blogPayload: BlogPayload,
+  blogJson
+) {
   try {
-    const response = await axios.post(apiPath, blogJson, options);
+    const response = await axios.post(
+      `/o/headless-delivery/v1.0/sites/${blogPayload.siteId}/blog-postings`,
+      blogJson
+    );
 
     debug('Blog added with ID:' + response.data.id);
     debug('Blog Import Process Complete.');
   } catch (error) {
     debug(error);
   }
+}
+
+async function postImageToLiferay(
+  formData: FormData,
+  axios: AxiosInstance,
+  siteId
+) {
+  const { data } = await axios.post(
+    `/o/headless-delivery/v1.0/sites/${siteId}/blog-posting-images`,
+    formData,
+    {
+      headers: {
+        'Content-Type': 'application/form-data',
+      },
+    }
+  );
+
+  return data.id;
 }

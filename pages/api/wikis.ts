@@ -1,96 +1,102 @@
-import axios from 'axios';
-import OpenAI from 'openai';
+import { AxiosInstance } from "axios";
+import { NextApiRequest, NextApiResponse } from "next";
+import OpenAI from "openai";
 
-import functions from '../../utils/functions';
-import { logger } from '../../utils/logger';
+import schema, { z } from "../../schemas/zod";
+import { axiosInstance } from "../../services/liferay";
+import functions from "../../utils/functions";
+import { logger } from "../../utils/logger";
 
-const debug = logger('WikiAction');
+const debug = logger("WikiAction");
 
-export default async function WikiAction(req, res) {
-  let start = new Date().getTime();
+type WikiPayload = z.infer<typeof schema.wiki>;
+
+export default async function WikiAction(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
+  const start = new Date().getTime();
+
+  const wikiPayload = req.body as WikiPayload;
 
   const openai = new OpenAI({
     apiKey: req.body.config.openAIKey,
   });
 
-  let options = functions.getAPIOptions('POST', 'en-US', req.body.config.base64data);
-
-  debug(req.body);
-
   const wikiSchema = {
     properties: {
       wikipages: {
         description:
-          'An array of ' +
-          req.body.wikiPageNumber +
-          ' or more wiki category pages.',
+          "An array of " +
+          wikiPayload.wikiPageNumber +
+          " or more wiki category pages.",
         items: {
           properties: {
             childarticles: {
               description:
-                'An array of ' +
-                req.body.wikiChildPageNumber +
-                ' wiki child articles for each category',
+                "An array of " +
+                wikiPayload.wikiChildPageNumber +
+                " wiki child articles for each category",
               items: {
                 properties: {
                   articleBody: {
                     description:
-                      'The wiki child article. The wiki child article should be ' +
-                      req.body.wikiArticleLength +
-                      ' words or more.',
-                    type: 'string',
+                      "The wiki child article. The wiki child article should be " +
+                      wikiPayload.wikiArticleLength +
+                      " words or more.",
+                    type: "string",
                   },
                   title: {
-                    description: 'The title of the wiki childarticle.',
-                    type: 'string',
+                    description: "The title of the wiki childarticle.",
+                    type: "string",
                   },
                 },
-                required: ['title', 'articleBody'],
-                type: 'object',
+                required: ["title", "articleBody"],
+                type: "object",
               },
-              required: ['childarticles'],
-              type: 'array',
+              required: ["childarticles"],
+              type: "array",
             },
             pageBody: {
-              description: 'The wiki category page article or description.',
-              type: 'string',
+              description: "The wiki category page article or description.",
+              type: "string",
             },
             title: {
-              description: 'The title of the wiki page.',
-              type: 'string',
+              description: "The title of the wiki page.",
+              type: "string",
             },
           },
-          required: ['title', 'pageBody'],
-          type: 'object',
+          required: ["title", "pageBody"],
+          type: "object",
         },
-        required: ['wikipages'],
-        type: 'array',
+        required: ["wikipages"],
+        type: "array",
       },
     },
-    type: 'object',
+    type: "object",
   };
 
   const response = await openai.chat.completions.create({
-    functions: [{ name: 'get_wiki_content', parameters: wikiSchema }],
+    functions: [{ name: "get_wiki_content", parameters: wikiSchema }],
     messages: [
       {
         content:
-          'You are a wiki administrator responsible for managing the wiki for your company.',
-        role: 'system',
+          "You are a wiki administrator responsible for managing the wiki for your company.",
+        role: "system",
       },
       {
         content:
           "Create a list of wiki category pages and child articles on the subject of '" +
-          req.body.wikiTopic +
+          wikiPayload.wikiTopic +
           "'. It is important to include " +
-          req.body.wikiPageNumber +
-          ' wiki category pages and ' +
-          req.body.wikiChildPageNumber +
-          ' wiki child articles for each page. ' +
-          'Each wiki article should be ' +
-          req.body.wikiArticleLength +
-          ' words or more.',
-        role: 'user',
+          wikiPayload.wikiPageNumber +
+          " wiki category pages and " +
+          wikiPayload.wikiChildPageNumber +
+          " wiki child articles for each page. " +
+          "Each wiki article should be " +
+          wikiPayload.wikiArticleLength +
+          " words or more.",
+        role: "user",
       },
     ],
     model: req.body.config.model,
@@ -98,143 +104,121 @@ export default async function WikiAction(req, res) {
   });
 
   const wikiPages = JSON.parse(
-    response.choices[0].message.function_call.arguments
+    response.choices[0].message.function_call.arguments,
   ).wikipages;
 
   debug(JSON.stringify(wikiPages));
 
-  let nodeId = await createWikiNode(
-    req, 
-    req.body.siteId,
-    req.body.wikiNodeName,
-    req.body.viewOptions
-  );
+  const axios = axiosInstance(req, res);
 
-  for (let i = 0; wikiPages.length > i; i++) {
-    let frontPageId = await createWikiPage(
-      req, 
+  const nodeId = await createWikiNode(axios, wikiPayload);
+
+  for (const wikiPage of wikiPages) {
+    const frontPageId = await createWikiPage(
+      axios,
       nodeId,
-      wikiPages[i].title,
-      wikiPages[i].pageBody,
-      req.body.viewOptions
+      wikiPage,
+      wikiPayload,
     );
 
-    let childPages = wikiPages[i].childarticles;
+    const childPages = wikiPage.childarticles;
+
     if (childPages) {
-      for (let ii = 0; childPages.length > ii; ii++) {
+      for (const childPage of childPages) {
         await createChildWikiPage(
-          req, 
+          axios,
           frontPageId,
           nodeId,
-          childPages[ii].title,
-          childPages[ii].articleBody,
-          req.body.viewOptions
+          childPage,
+          wikiPayload,
         );
       }
     }
   }
 
-  let end = new Date().getTime();
+  const end = new Date().getTime();
+
   res.status(200).json({
-    result: 'Completed in ' + functions.millisToMinutesAndSeconds(end - start),
+    result: "Completed in " + functions.millisToMinutesAndSeconds(end - start),
   });
 }
 
-async function createWikiNode(req, groupId, name, viewableBy) {
-  debug('Creating Wiki Node ' + name + ' with groupId ' + groupId);
-
-  const postBody = {
-    name: name,
-    viewableBy: viewableBy,
-  };
-
-  const apiPath =
-    req.body.config.serverURL +
-    '/o/headless-delivery/v1.0/sites/' +
-    groupId +
-    '/wiki-nodes';
-  const options = functions.getAPIOptions('POST', 'en-US', req.body.config.base64data);
-  let returnId = 0;
+async function createWikiNode(axios: AxiosInstance, wikiPayload: WikiPayload) {
+  debug(
+    `Creating Wiki Node ${wikiPayload.wikiNodeName} with siteId ${wikiPayload.siteId}`,
+  );
 
   try {
-    const response = await axios.post(apiPath, postBody, options);
-    returnId = response.data.id;
-    debug('Returned NodeId: ' + returnId);
+    const response = await axios.post(
+      `/o/headless-delivery/v1.0/sites/${wikiPayload.siteId}/wiki-nodes`,
+      {
+        name: wikiPayload.wikiNodeName,
+        viewableBy: wikiPayload.viewOptions,
+      },
+    );
+
+    return response.data.id;
   } catch (error) {
     console.log(error);
   }
 
-  return returnId;
+  return 0;
 }
 
-async function createWikiPage(req, nodeId, name, body, viewableBy) {
-  debug('Creating page for Wiki NodeId ' + nodeId + ' with name: ' + name);
-
-  const postBody = {
-    content: '<p>' + body + '</p>',
-    encodingFormat: 'text/html',
-    headline: name,
-    viewableBy: viewableBy,
-  };
-
-  const apiPath =
-    req.body.config.serverURL +
-    '/o/headless-delivery/v1.0/wiki-nodes/' +
-    nodeId +
-    '/wiki-pages';
-  const options = functions.getAPIOptions('POST', 'en-US', req.body.config.base64data);
-  let returnId = 0;
+async function createWikiPage(
+  axios: AxiosInstance,
+  nodeId: string,
+  wikiPage,
+  wikiPayload: WikiPayload,
+) {
+  debug(`Creating page for Wiki NodeId ${nodeId} with name: ${wikiPage.name}`);
 
   try {
-    const response = await axios.post(apiPath, postBody, options);
-    returnId = response.data.id;
-    debug('Returned PageId: ' + returnId);
+    const response = await axios.post(
+      `/o/headless-delivery/v1.0/wiki-nodes/${nodeId}/wiki-pages`,
+      {
+        content: `<p>${wikiPage.body}</p>`,
+        encodingFormat: "text/html",
+        headline: wikiPage.name,
+        viewableBy: wikiPayload.viewOptions,
+      },
+    );
+
+    return response.data.id;
   } catch (error) {
     console.log(error);
   }
 
-  return returnId;
+  return 0;
 }
 
 async function createChildWikiPage(
-  req, 
-  parentPageId,
-  nodeId,
-  name,
-  body,
-  viewableBy
+  axios: AxiosInstance,
+  parentPageId: string,
+  nodeId: string,
+  childPage,
+  wikiPayload: WikiPayload,
 ) {
   debug(
-    'Creating child page for Wiki parentPageId ' +
-      parentPageId +
-      ' with name: ' +
-      name
+    `Creating child page for Wiki parentPageId ${parentPageId} with name: ${childPage.title}`,
   );
 
-  const postBody = {
-    content: '<p>' + body + '</p>',
-    encodingFormat: 'text/html',
-    headline: name,
-    parentWikiPageId: parentPageId,
-    viewableBy: viewableBy,
-    wikiNodeId: nodeId,
-  };
-
-  const apiPath =
-    req.body.config.serverURL +
-    '/o/headless-delivery/v1.0/wiki-pages/' +
-    parentPageId +
-    '/wiki-pages';
-  const options = functions.getAPIOptions('POST', 'en-US', req.body.config.base64data);
-  let returnId = 0;
-
   try {
-    const response = await axios.post(apiPath, postBody, options);
-    returnId = response.data.id;
-    debug('Returned WikiPageId: ' + returnId);
+    const response = await axios.post(
+      "/o/headless-delivery/v1.0/wiki-pages/" + parentPageId + "/wiki-pages",
+      {
+        content: `<p>${childPage.articleBody}</p>`,
+        encodingFormat: "text/html",
+        headline: childPage.title,
+        parentWikiPageId: parentPageId,
+        viewableBy: wikiPayload.viewOptions,
+        wikiNodeId: nodeId,
+      },
+    );
+    return response.data.id;
   } catch (error) {
     console.log(error);
   }
 
-  return returnId;
+  return 0;
 }

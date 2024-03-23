@@ -62,7 +62,9 @@ export default function Images() {
     let showImageStyle = false;
 
     if (imageGeneration == 'dall-e-2') {
-      dalliOptions = functions.getD2ImageSizeOptions();
+      dalliOptions = functions
+        .getD2ImageSizeOptions()
+        .map((image) => ({ ...image, id: image.id.replace('-standard', '') }));
     } else if (imageGeneration == 'dall-e-3') {
       dalliOptions = functions.getD3ImageSizeOptions();
       showImageStyle = true;

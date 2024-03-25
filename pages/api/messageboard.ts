@@ -11,7 +11,7 @@ export default async function MessageBoardAction(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  let start = new Date().getTime();
+  const start = new Date().getTime();
 
   const openai = new OpenAI({
     apiKey: req.body.config.openAIKey,
@@ -172,7 +172,7 @@ export default async function MessageBoardAction(
 
         const messageId = mbMessageThreadResponse.data.id;
 
-        debug("M:" + messages[m].message + " created with id " + messageId);
+        debug("M:" + message.message + " created with id " + messageId);
       }
     }
   }

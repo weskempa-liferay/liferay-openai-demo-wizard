@@ -1,5 +1,5 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 
 const schema = {
   blog: z.object({
@@ -37,9 +37,9 @@ const schema = {
     categoryIds: z.string(),
     defaultLanguage: z.string(),
     faqNumber: z.string(),
-    faqTopic: z.string(),
+    faqTopic: z.string().min(3),
     folderId: z.string(),
-    languages: z.string(),
+    languages: z.array(z.string()),
     manageLanguage: z.boolean(),
     siteId: z.string(),
     structureId: z.string(),
@@ -84,7 +84,7 @@ const schema = {
     manageLanguage: z.boolean(),
     newsLength: z.string(),
     newsNumber: z.string(),
-    newsTopic: z.string(),
+    newsTopic: z.string().min(3),
     siteId: z.string(),
     structureId: z.string(),
     viewOptions: z.string(),
@@ -98,7 +98,7 @@ const schema = {
         fieldDescription: z.string(),
         fieldName: z.string(),
         fieldType: z.string(),
-      })
+      }),
     ),
   }),
   organizations: z.object({
@@ -114,14 +114,14 @@ const schema = {
     siteId: z.string(),
   }),
   productsAI: z.object({
-    catalogId: z.string(),
-    companyTheme: z.string(),
-    globalSiteId: z.string(),
+    catalogId: z.string().min(0),
+    companyTheme: z.string().min(3),
+    globalSiteId: z.string().min(1),
     imageGeneration: z.string(),
     imageStyle: z.string(),
     numberOfCategories: z.string(),
     numberOfProducts: z.string(),
-    vocabularyName: z.string(),
+    vocabularyName: z.string().min(3),
   }),
   userAI: z.object({
     emailPrefix: z.string(),

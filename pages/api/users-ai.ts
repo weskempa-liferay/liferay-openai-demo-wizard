@@ -1,12 +1,12 @@
 import fs from "fs";
 import { NextApiRequest, NextApiResponse } from "next";
 import OpenAI from "openai";
-import request from "request";
 
+import schema, { z } from "../../schemas/zod";
 import { axiosInstance } from "../../services/liferay";
-import nextAxios from "../../services/next";
 import functions from "../../utils/functions";
 import { logger } from "../../utils/logger";
+import { getImageList } from "./userimages";
 
 const debug = logger("Users AI - Action");
 
@@ -19,6 +19,8 @@ export default async function UsersAIAction(
   const openai = new OpenAI({
     apiKey: req.body.config.openAIKey,
   });
+
+  const userAIPayload = req.body as z.infer<typeof schema.userAI>;
 
   const axios = axiosInstance(req, res);
 
@@ -95,101 +97,85 @@ export default async function UsersAIAction(
     temperature: 0.6,
   });
 
-  let userlist = JSON.parse(
-    response.choices[0].message.function_call.arguments,
-  ).users;
-  let genderCount = {
+  const users =
+    JSON.parse(response.choices[0].message.function_call.arguments).users || [];
+
+  const genderCount = {
     female: 0,
     male: 0,
   };
 
-  for (let i = 0; i < userlist.length; i++) {
-    debug(userlist[i].gender);
+  for (const user of users) {
+    const gender = user.gender;
 
-    let gender = userlist[i].gender;
     genderCount[gender] = genderCount[gender] + 1;
-    delete userlist[i].gender;
 
-    userlist[i].alternateName =
-      userlist[i].givenName + "." + userlist[i].familyName;
+    delete user.gender;
 
-    userlist[i].emailAddress =
-      userlist[i].givenName +
-      "." +
-      userlist[i].familyName +
-      "@" +
-      req.body.emailPrefix;
-
-    userlist[i].password = req.body.password;
+    user.alternateName = `${user.givenName}.${user.familyName}.${new Date().getTime()}`;
+    user.emailAddress = `${user.givenName}.${new Date().getTime()}-${user.familyName}@${userAIPayload.emailPrefix}`;
+    user.password = userAIPayload.password;
 
     try {
       const response = await axios.post(
         "/o/headless-admin-user/v1.0/user-accounts",
-        userlist[i],
+        user,
       );
 
       debug(
-        "Created user:" + response.data.id + ", " + response.data.alternateName,
+        `Created user: ${response.data.id}, ${response.data.alternateName}`,
       );
 
-      let userImageApiPath =
-        req.body.config.serverURL +
-        "/o/headless-admin-user/v1.0/user-accounts/" +
-        response.data.id +
-        "/image";
+      const userImagePath = await getImagePath(gender, 0);
 
-      let userImagePath = await getImagePath(gender, genderCount[gender]);
+      console.log(userImagePath);
 
-      debug("userImageApiPath:" + userImageApiPath);
-      debug("userImagePath:" + userImagePath);
       debug(process.cwd() + "/public/users/user-images/" + userImagePath);
 
-      let fileStream = fs.createReadStream(
+      const data = fs.readFileSync(
         process.cwd() + "/public/users/user-images/" + userImagePath,
       );
-      const imgoptions = functions.getFilePostOptions(
-        userImageApiPath,
-        fileStream,
-        "image",
-        req.body.config.base64data,
+
+      const uint8Array = new Uint8Array(data);
+      const blob = new Blob([uint8Array]);
+
+      const formData = new FormData();
+
+      formData.append("image", blob);
+
+      console.log("Start Upload");
+
+      await axios.post(
+        `/o/headless-admin-user/v1.0/user-accounts/${response.data.id}/image`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        },
       );
 
-      request(imgoptions, function (err, res, body) {
-        if (err) console.log(err);
-
-        debug("Image Upload Complete");
-      });
+      debug("Image Upload Complete");
 
       successCount++;
     } catch (error) {
       errorCount++;
+      console.log(error.response?.data);
       console.log(
-        error.code +
-          " for user " +
-          userlist[i].alternateName +
-          " | " +
-          userlist[i].emailAddress,
+        `${error.message} for user ${user.alternateName} | ${user.emailAddress}`,
       );
     }
   }
 
-  let end = new Date().getTime();
+  const end = new Date().getTime();
 
   res.status(200).json({
-    result:
-      successCount +
-      " users added, " +
-      errorCount +
-      " errors in " +
-      functions.millisToMinutesAndSeconds(end - start),
+    result: `${successCount} users added, ${errorCount} errors in ${functions.millisToMinutesAndSeconds(end - start)}`,
   });
 }
 
-async function getImagePath(gender, index) {
-  const response = await nextAxios.post("/api/userimages", {
-    gender: gender,
-    index: index,
-  });
+async function getImagePath(gender: string, index: number) {
+  const result = await getImageList(gender);
 
-  return response.data.result;
+  return result[index % 6];
 }

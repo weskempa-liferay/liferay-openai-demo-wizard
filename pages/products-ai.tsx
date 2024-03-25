@@ -120,7 +120,7 @@ export default function Products() {
           />
 
           <Input
-            label="Product Catalog"
+            label="Product Catalog ID"
             name="catalogId"
             optioplaceholdernMap="Enter the Catalog ID"
           />

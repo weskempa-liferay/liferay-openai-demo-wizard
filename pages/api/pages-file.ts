@@ -1,7 +1,7 @@
-import axios from "axios";
+import { AxiosInstance } from "axios";
 import { NextApiRequest, NextApiResponse } from "next";
-import OpenAI from "openai";
 
+import { axiosInstance } from "../../services/liferay";
 import functions from "../../utils/functions";
 import { logger } from "../../utils/logger";
 
@@ -13,15 +13,13 @@ export default async function SitesAction(
 ) {
   const start = new Date().getTime();
 
-  const openai = new OpenAI({
-    apiKey: req.body.config.openAIKey,
-  });
+  const axios = axiosInstance(req, res);
 
-  let pages = JSON.parse(req.body.fileoutput).pages;
+  const pages = JSON.parse(req.body.fileoutput).pages;
 
   for (let i = 0; i < pages.length; i++) {
     debug(pages[i]);
-    await createSitePage(req, req.body.siteId, pages[i], "home");
+    await createSitePage(axios, req.body.siteId, pages[i], "home");
   }
 
   const end = new Date().getTime();
@@ -31,34 +29,25 @@ export default async function SitesAction(
   });
 }
 
-async function createSitePage(req, groupId, page, parentPath) {
-  let viewableBy = "viewableBy" in page ? page["viewableBy"] : "Anyone";
+async function createSitePage(
+  axios: AxiosInstance,
+  groupId: string,
+  page: any,
+  parentPath: string,
+) {
+  const viewableBy = "viewableBy" in page ? page["viewableBy"] : "Anyone";
 
   debug(
-    "Creating " +
-      page.name +
-      " with parent " +
-      parentPath +
-      " viewable by " +
-      viewableBy,
+    `Creating ${page.name} with parent ${parentPath} viewable by ${viewableBy}`,
   );
 
-  const postBody = getPageSchema(req, page.name, parentPath, viewableBy);
-
-  const orgApiPath =
-    req.body.config.serverURL +
-    "/o/headless-delivery/v1.0/sites/" +
-    groupId +
-    "/site-pages";
-  const options = functions.getAPIOptions(
-    "POST",
-    "en-US",
-    req.body.config.base64data,
-  );
   let returnPath = "";
 
   try {
-    const response = await axios.post(orgApiPath, postBody, options);
+    const response = await axios.post(
+      `/o/headless-delivery/v1.0/sites/${groupId}/site-pages`,
+      getPageSchema(page.name, parentPath, viewableBy),
+    );
 
     returnPath = response.data.friendlyUrlPath;
 
@@ -66,7 +55,7 @@ async function createSitePage(req, groupId, page, parentPath) {
 
     if (page.pages && page.pages.length > 0) {
       for (let i = 0; i < page.pages.length; i++) {
-        createSitePage(req, groupId, page.pages[i], returnPath);
+        await createSitePage(axios, groupId, page.pages[i], returnPath);
       }
     }
   } catch (error) {
@@ -76,8 +65,8 @@ async function createSitePage(req, groupId, page, parentPath) {
   return returnPath;
 }
 
-function getPageSchema(req, name, parentPath, viewableBy) {
-  let pageSchema = {
+function getPageSchema(name: string, parentPath: string, viewableBy: string) {
+  const pageSchema = {
     pageDefinition: {
       pageElement: {
         pageElements: [
@@ -136,7 +125,7 @@ function getPageSchema(req, name, parentPath, viewableBy) {
     viewableBy: viewableBy,
   };
 
-  if (viewableBy == "Anyone") {
+  if (viewableBy === "Anyone") {
     pageSchema.pagePermissions.push({
       actionKeys: ["VIEW"],
       roleKey: "Guest",

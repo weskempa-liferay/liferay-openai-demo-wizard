@@ -142,7 +142,7 @@ export default async function Action(
 
     const childcategories = category.childcategories;
 
-    debug(categoryId + " has " + childcategories.length + " child category.");
+    debug(`${categoryId} has ${childcategories.length} child category.`);
 
     for (const childCategory of childcategories) {
       await createChildCategory(
@@ -154,7 +154,7 @@ export default async function Action(
     }
   }
 
-  let end = new Date().getTime();
+  const end = new Date().getTime();
 
   res.status(200).json({
     result: "Completed in " + functions.millisToMinutesAndSeconds(end - start),

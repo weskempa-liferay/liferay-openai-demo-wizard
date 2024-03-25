@@ -1,7 +1,6 @@
 import { AxiosInstance } from "axios";
 import fs from "fs";
 import { NextApiRequest, NextApiResponse } from "next";
-import request from "request";
 
 import { axiosInstance } from "../../services/liferay";
 import functions from "../../utils/functions";
@@ -59,28 +58,31 @@ export default async function UsersFileAction(
       if (userImagePath.length > 0) {
         debug(process.cwd() + "/public/users/user-images/" + userImagePath);
 
-        let fileStream = fs.createReadStream(
+        const data = fs.readFileSync(
           process.cwd() + "/public/users/user-images/" + userImagePath,
         );
 
-        const imgoptions = functions.getFilePostOptions(
-          req.body.config.serverURL +
-            "/o/headless-admin-user/v1.0/user-accounts/" +
-            response.data.id +
-            "/image",
-          fileStream,
-          "image",
-          req.body.config.base64data,
+        const uint8Array = new Uint8Array(data);
+        const blob = new Blob([uint8Array]);
+
+        const formData = new FormData();
+
+        formData.append("image", blob);
+
+        await axios.post(
+          `/o/headless-admin-user/v1.0/user-accounts/${response.data.id}/image`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          },
         );
 
-        request(imgoptions, function (err, res, body) {
-          if (err) debug(err);
+        debug("Image Upload Complete");
 
-          debug("Image Upload Complete");
-        });
+        successCount++;
       }
-
-      successCount++;
     } catch (error) {
       errorCount++;
 

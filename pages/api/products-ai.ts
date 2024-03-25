@@ -19,9 +19,8 @@ export default async function ProductsAction(
     apiKey: req.body.config.openAIKey,
   });
 
-  const { catalogId, globalSiteId, imageGeneration } = req.body as z.infer<
-    typeof schema.productsAI
-  >;
+  const { catalogId, globalSiteId, imageGeneration, vocabularyName } =
+    req.body as z.infer<typeof schema.productsAI>;
 
   /* Get OpenAI Content based on Theme */
 
@@ -112,40 +111,37 @@ export default async function ProductsAction(
 
   const categoryDataStr = {
     "Category Names": productCategories,
-    "Category Vocab": req.body.vocabularyName,
+    "Category Vocab": vocabularyName,
   };
 
   debug(categoryDataStr);
 
-  // check if vocabulary exists
-  //
-
   const axios = axiosInstance(req, res);
 
-  let vocabId = await getExistingVocabID(
+  let vocabularyId = await getExistingVocabID(
     axios,
-    req.body.vocabularyName,
+    vocabularyName,
     globalSiteId,
   );
 
   /* Setup Vocabulary */
 
-  if (vocabId > 0) {
-    debug("Using existing vocabId: " + vocabId);
+  if (vocabularyId > 0) {
+    debug("Using existing vocabularyId: " + vocabularyId);
   } else {
     // wait for the vocab to complete before adding categories
     try {
-      const vocabResponse = await axios.post(
+      const vocabularyResponse = await axios.post(
         `/o/headless-admin-taxonomy/v1.0/sites/${globalSiteId}/taxonomy-vocabularies`,
         {
-          name: req.body.vocabularyName,
+          name: vocabularyName,
           viewableBy: "Anyone",
         },
       );
 
-      debug(vocabResponse.data);
+      debug(vocabularyResponse.data);
 
-      vocabId = vocabResponse.data.id;
+      vocabularyId = vocabularyResponse.data.id;
     } catch (error) {
       debug(error.response.data.status + ":" + error.response.data.title);
     }
@@ -153,15 +149,18 @@ export default async function ProductsAction(
 
   const categMap = new Map();
 
-  debug("returned vocab key is " + vocabId);
-  let currCategoryJson, categResponse;
+  debug("returned vocab key is " + vocabularyId);
 
   for (var i = 0; i < productCategories.length; i++) {
     const currCategory = productCategories[i];
 
     // check if category exists
 
-    let categoryId = await getExistingCategoryID(axios, currCategory, vocabId);
+    let categoryId = await getExistingCategoryID(
+      axios,
+      currCategory,
+      vocabularyId,
+    );
 
     // create the categories for the vocabulary that was just generated
 
@@ -172,11 +171,11 @@ export default async function ProductsAction(
       debug("creating category");
 
       try {
-        categResponse = await axios.post(
-          `/o/headless-admin-taxonomy/v1.0/taxonomy-vocabularies/${vocabId}/taxonomy-categories`,
+        const categResponse = await axios.post(
+          `/o/headless-admin-taxonomy/v1.0/taxonomy-vocabularies/${vocabularyId}/taxonomy-categories`,
           {
             name: currCategory,
-            taxonomyVocabularyId: vocabId,
+            taxonomyVocabularyId: vocabularyId,
             viewableBy: "Anyone",
           },
         );
@@ -193,24 +192,18 @@ export default async function ProductsAction(
     debug(categMap);
   }
 
-  // add the products
-  let j;
-  let productDataList;
-  let productName, shortDescription, productPrice, inventoryCount, productSku;
-
   for (i = 0; categories.length > i; i++) {
     const currCategory = categories[i].category;
     const currCategoryId = categMap.get(currCategory);
     debug("category -- " + currCategory + ":" + currCategoryId);
 
-    productDataList = categories[i].products;
-
-    for (j = 0; j < productDataList.length; j++) {
-      productName = productDataList[j].productName;
-      shortDescription = productDataList[j].shortDescription;
-      productPrice = productDataList[j].price;
-      inventoryCount = productDataList[j].stock;
-      productSku = productName.toLowerCase().replaceAll(" ", "-");
+    for (const {
+      price: productPrice,
+      productName,
+      shortDescription,
+      stock: inventoryCount,
+    } of categories[i].products) {
+      const productSku = productName.toLowerCase().replaceAll(" ", "-");
 
       const product = {
         active: true,
@@ -252,12 +245,6 @@ export default async function ProductsAction(
         const productId = productResponse.data.productId;
 
         debug(productName + " created with id " + productId);
-
-        // const productCategoryJson = {
-        //   id: currCategoryId,
-        //   name: currCategory,
-        //   siteId: globalSiteId,
-        // };
 
         debug("includeImages:" + imageGeneration);
 

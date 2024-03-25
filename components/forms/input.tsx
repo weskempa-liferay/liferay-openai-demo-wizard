@@ -1,5 +1,7 @@
 import { useFormContext } from 'react-hook-form';
 
+import { ErrorMessage } from './error-message';
+
 export default function Input({ label, name, placeholder = '', ...props }) {
   const { register } = useFormContext();
 
@@ -14,6 +16,8 @@ export default function Input({ label, name, placeholder = '', ...props }) {
         {...props}
         {...register(name)}
       />
+
+      <ErrorMessage field={name} />
     </label>
   );
 }

@@ -1,15 +1,23 @@
-import fs from 'fs';
+import fs from "fs";
+import { promisify } from "util";
+
+const readdir = promisify(fs.readdir);
+
+export async function getImageList(gender: string) {
+  try {
+    const folder = process.cwd() + "/public/users/user-images/";
+    const files = await readdir(folder);
+
+    const imgList = files.filter((file) => file.startsWith(gender));
+
+    return imgList;
+  } catch (error) {
+    throw error;
+  }
+}
 
 export default async function UserImagesAction(req, res) {
-  const folder = process.cwd() + '/public/users/user-images/';
+  const images = await getImageList(req.query.gender);
 
-  let imgList = [];
-
-  fs.readdir(folder, (err, files) => {
-    files.forEach((file) => {
-      if (file.startsWith(req.body.gender)) imgList.push(file);
-    });
-
-    res.status(200).json({ result: imgList[req.body.index % 6] });
-  });
+  res.status(200).json({ result: images });
 }

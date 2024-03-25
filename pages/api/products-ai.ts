@@ -1,23 +1,26 @@
-import axios from 'axios';
-import OpenAI from 'openai';
+import axios, { AxiosInstance } from "axios";
+import { NextApiRequest, NextApiResponse } from "next";
+import OpenAI from "openai";
 
-import functions from '../../utils/functions';
-import { logger } from '../../utils/logger';
+import schema, { z } from "../../schemas/zod";
+import { axiosInstance } from "../../services/liferay";
+import functions from "../../utils/functions";
+import { logger } from "../../utils/logger";
 
-const debug = logger('ProductsAction');
+const debug = logger("ProductsAction");
 
-export default async function ProductsAction(req, res) {
+export default async function ProductsAction(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
   let start = new Date().getTime();
 
   const openai = new OpenAI({
     apiKey: req.body.config.openAIKey,
   });
 
-  debug(req.body);
-
-  const imageGeneration = req.body.imageGeneration;
-  let catalogId = req.body.catalogId;
-  let globalSiteId = req.body.globalSiteId;
+  const { catalogId, globalSiteId, imageGeneration, vocabularyName } =
+    req.body as z.infer<typeof schema.productsAI>;
 
   /* Get OpenAI Content based on Theme */
 
@@ -25,69 +28,69 @@ export default async function ProductsAction(req, res) {
     properties: {
       categories: {
         description:
-          'An array of ' + req.body.numberOfCategories + ' product categories',
+          "An array of " + req.body.numberOfCategories + " product categories",
         items: {
           properties: {
             category: {
-              description: 'Name of the product category',
-              type: 'string',
+              description: "Name of the product category",
+              type: "string",
             },
             products: {
               description:
-                'An array of ' +
+                "An array of " +
                 req.body.numberOfProducts +
-                ' products within the suggested category',
+                " products within the suggested category",
               items: {
                 properties: {
                   price: {
-                    description: 'Cost of this product in USD',
-                    type: 'string',
+                    description: "Cost of this product in USD",
+                    type: "string",
                   },
                   productName: {
                     description:
-                      'The name of a product that exists in the given category',
-                    type: 'string',
+                      "The name of a product that exists in the given category",
+                    type: "string",
                   },
                   shortDescription: {
-                    description: 'A short description of this product',
-                    type: 'string',
+                    description: "A short description of this product",
+                    type: "string",
                   },
                   stock: {
                     description:
-                      'Number of product items that are currently in stock.',
-                    type: 'integer',
+                      "Number of product items that are currently in stock.",
+                    type: "integer",
                   },
                 },
-                type: 'object',
+                type: "object",
               },
-              required: ['product', 'shortDescription', 'price', 'stock'],
-              type: 'array',
+              required: ["product", "shortDescription", "price", "stock"],
+              type: "array",
             },
           },
-          type: 'object',
+          type: "object",
         },
-        required: ['categories'],
-        type: 'array',
+        required: ["categories"],
+        type: "array",
       },
     },
-    type: 'object',
+    type: "object",
   };
 
   const response = await openai.chat.completions.create({
     functions: [
-      { name: 'get_commerce_categories', parameters: categorySchema },
+      { name: "get_commerce_categories", parameters: categorySchema },
     ],
     messages: [
       {
         content:
-          'You are a commerce administrator responsible for defining product categories for your company.',
-        role: 'system',
+          "You are a commerce administrator responsible for defining product categories for your company.",
+        role: "system",
       },
       {
         content:
-          'Create a list of products and categories on the subject of: ' +
+          "Create a list of products and categories on the subject of: " +
           req.body.companyTheme,
-        role: 'user',
+        role: "user",
       },
     ],
     model: req.body.config.model,
@@ -95,8 +98,9 @@ export default async function ProductsAction(req, res) {
   });
 
   let categories = JSON.parse(
-    response.choices[0].message.function_call.arguments
+    response.choices[0].message.function_call.arguments,
   ).categories;
+
   debug(JSON.stringify(categories));
 
   let productCategories = [];
@@ -105,134 +109,103 @@ export default async function ProductsAction(req, res) {
     productCategories.push(categories[i].category);
   }
 
-  let categoryDataStr = {
-    'Category Names': productCategories,
-    'Category Vocab': req.body.vocabularyName,
+  const categoryDataStr = {
+    "Category Names": productCategories,
+    "Category Vocab": vocabularyName,
   };
 
   debug(categoryDataStr);
 
-  // check if vocabulary exists
+  const axios = axiosInstance(req, res);
 
-  let vocabId = await getExistingVocabID(
-    req,
-    req.body.vocabularyName,
-    globalSiteId
+  let vocabularyId = await getExistingVocabID(
+    axios,
+    vocabularyName,
+    globalSiteId,
   );
 
   /* Setup Vocabulary */
 
-  let options = await functions.getAPIOptions(
-    'POST',
-    'en-US',
-    req.body.config.base64data
-  );
-  let apiPath = '';
-
-  if (vocabId > 0) {
-    debug('Using existing vocabId: ' + vocabId);
+  if (vocabularyId > 0) {
+    debug("Using existing vocabularyId: " + vocabularyId);
   } else {
-    apiPath =
-      req.body.config.serverURL +
-      '/o/headless-admin-taxonomy/v1.0/sites/' +
-      globalSiteId +
-      '/taxonomy-vocabularies';
-    let vocabPostObj = {
-      name: req.body.vocabularyName,
-      viewableBy: 'Anyone',
-    };
-
-    let options = functions.getAPIOptions(
-      'POST',
-      'en-US',
-      req.body.config.base64data
-    );
-
     // wait for the vocab to complete before adding categories
     try {
-      const vocabResponse = await axios.post(apiPath, vocabPostObj, options);
+      const vocabularyResponse = await axios.post(
+        `/o/headless-admin-taxonomy/v1.0/sites/${globalSiteId}/taxonomy-vocabularies`,
+        {
+          name: vocabularyName,
+          viewableBy: "Anyone",
+        },
+      );
 
-      debug(vocabResponse.data);
-      vocabId = vocabResponse.data.id;
+      debug(vocabularyResponse.data);
+
+      vocabularyId = vocabularyResponse.data.id;
     } catch (error) {
-      debug(error.response.data.status + ':' + error.response.data.title);
+      debug(error.response.data.status + ":" + error.response.data.title);
     }
   }
 
   const categMap = new Map();
 
-  debug('returned vocab key is ' + vocabId);
-  let currCategory, currCategoryJson, categResponse;
+  debug("returned vocab key is " + vocabularyId);
 
   for (var i = 0; i < productCategories.length; i++) {
-    currCategory = productCategories[i];
+    const currCategory = productCategories[i];
 
     // check if category exists
 
-    let categoryId = await getExistingCategoryID(req, currCategory, vocabId);
+    let categoryId = await getExistingCategoryID(
+      axios,
+      currCategory,
+      vocabularyId,
+    );
 
     // create the categories for the vocabulary that was just generated
 
     if (categoryId > 0) {
-      debug('Using existing categoryId: ' + categoryId);
+      debug("Using existing categoryId: " + categoryId);
       categMap.set(currCategory, categoryId);
     } else {
-      currCategoryJson = {
-        name: currCategory,
-        taxonomyVocabularyId: vocabId,
-        viewableBy: 'Anyone',
-      };
-
-      apiPath =
-        req.body.config.serverURL +
-        '/o/headless-admin-taxonomy/v1.0/taxonomy-vocabularies/' +
-        vocabId +
-        '/taxonomy-categories';
-      debug('creating category');
-      debug(currCategoryJson);
+      debug("creating category");
 
       try {
-        categResponse = await axios.post(apiPath, currCategoryJson, options);
+        const categResponse = await axios.post(
+          `/o/headless-admin-taxonomy/v1.0/taxonomy-vocabularies/${vocabularyId}/taxonomy-categories`,
+          {
+            name: currCategory,
+            taxonomyVocabularyId: vocabularyId,
+            viewableBy: "Anyone",
+          },
+        );
 
-        debug(categResponse.data.id + ' is the id for ' + currCategory);
+        debug(categResponse.data.id + " is the id for " + currCategory);
 
         categMap.set(currCategory, categResponse.data.id);
       } catch (error) {
         debug(error);
-        debug(error.response.data.status + ':' + error.response.data.title);
+        debug(error.response.data.status + ":" + error.response.data.title);
       }
     }
 
     debug(categMap);
   }
 
-  // add the products
-  let j;
-  let productDataList;
-  let productName,
-    shortDescription,
-    productPrice,
-    inventoryCount,
-    productSku,
-    productJson;
-  let productResponse, productId, productCategoryJson;
-
-  let currCategoryId;
   for (i = 0; categories.length > i; i++) {
-    currCategory = categories[i].category;
-    currCategoryId = categMap.get(currCategory);
-    debug('category -- ' + currCategory + ':' + currCategoryId);
+    const currCategory = categories[i].category;
+    const currCategoryId = categMap.get(currCategory);
+    debug("category -- " + currCategory + ":" + currCategoryId);
 
-    productDataList = categories[i].products;
+    for (const {
+      price: productPrice,
+      productName,
+      shortDescription,
+      stock: inventoryCount,
+    } of categories[i].products) {
+      const productSku = productName.toLowerCase().replaceAll(" ", "-");
 
-    for (j = 0; j < productDataList.length; j++) {
-      productName = productDataList[j].productName;
-      shortDescription = productDataList[j].shortDescription;
-      productPrice = productDataList[j].price;
-      inventoryCount = productDataList[j].stock;
-      productSku = productName.toLowerCase().replaceAll(' ', '-');
-
-      productJson = {
+      const product = {
         active: true,
         catalogId: catalogId,
         categories: [
@@ -247,7 +220,7 @@ export default async function ProductsAction(req, res) {
           en_US: productName,
         },
         productStatus: 0,
-        productType: 'simple',
+        productType: "simple",
         shortDescription: {
           en_US: shortDescription,
         },
@@ -255,7 +228,7 @@ export default async function ProductsAction(req, res) {
         skus: [
           {
             neverExpire: true,
-            price: parseFloat(productPrice.replaceAll('$', '')),
+            price: parseFloat(productPrice.replaceAll("$", "")),
             published: true,
             purchasable: true,
             sku: productSku,
@@ -264,76 +237,51 @@ export default async function ProductsAction(req, res) {
       };
 
       try {
-        apiPath =
-          req.body.config.serverURL +
-          '/o/headless-commerce-admin-catalog/v1.0/products';
+        const productResponse = await axios.post(
+          "/o/headless-commerce-admin-catalog/v1.0/products",
+          product,
+        );
 
-        debug(productJson);
+        const productId = productResponse.data.productId;
 
-        productResponse = await axios.post(apiPath, productJson, options);
+        debug(productName + " created with id " + productId);
 
-        productId = productResponse.data.productId;
-        debug(productName + ' created with id ' + productId);
-        productCategoryJson = {
-          id: currCategoryId,
-          name: currCategory,
-          siteId: globalSiteId,
-        };
+        debug("includeImages:" + imageGeneration);
 
-        debug('includeImages:' + imageGeneration);
+        if (imageGeneration !== "none") {
+          let imagePrompt = `Create a "${req.body.companyTheme}" commerce product image for "${productName}", ${shortDescription}`;
 
-        if (imageGeneration != 'none') {
-          let imagePrompt =
-            'Create a "' +
-            req.body.companyTheme +
-            '" commerce product image for "' +
-            productName +
-            '", ' +
-            shortDescription;
-
-          debug('Using image prompt: ' + imagePrompt);
+          debug("Using image prompt: " + imagePrompt);
 
           if (req.body.imageStyle) {
-            imagePrompt =
-              'Create an image in the style of ' +
-              req.body.imageStyle +
-              '. ' +
-              imagePrompt;
+            imagePrompt = `Create an image in the style of ${req.body.imageStyle}. ${imagePrompt}`;
           }
 
           const imageResponse = await openai.images.generate({
             model: imageGeneration,
             n: 1,
             prompt: imagePrompt,
-            size: '1024x1024',
+            size: "1024x1024",
           });
 
           debug(imageResponse.data[0].url);
 
-          let imgschema = JSON.stringify({
-            externalReferenceCode: 'product-' + productResponse.data.productId,
-            neverExpire: true,
-            priority: 1,
-            src: imageResponse.data[0].url,
-            title: { en_US: productName },
-          });
-
-          debug(imgschema);
-
-          let imgApiPath =
-            req.body.config.serverURL +
-            '/o/headless-commerce-admin-catalog/v1.0/products/' +
-            productResponse.data.productId +
-            '/images/by-url';
-
-          let productImageResponse = await axios.post(
-            imgApiPath,
-            imgschema,
-            options
+          await axios.post(
+            "/o/headless-commerce-admin-catalog/v1.0/products/" +
+              productResponse.data.productId +
+              "/images/by-url",
+            {
+              externalReferenceCode:
+                "product-" + productResponse.data.productId,
+              neverExpire: true,
+              priority: 1,
+              src: imageResponse.data[0].url,
+              title: { en_US: productName },
+            },
           );
         }
       } catch (productError) {
-        debug('error creating product ' + productName + ' -- ' + productError);
+        debug("error creating product " + productName + " -- " + productError);
       }
     }
   }
@@ -345,25 +293,19 @@ export default async function ProductsAction(req, res) {
   });
 }
 
-async function getExistingVocabID(req, name, globalSiteId) {
+async function getExistingVocabID(
+  axios: AxiosInstance,
+  name: string,
+  globalSiteId: number | string,
+) {
   name = name.replaceAll("'", "''");
+
   let filter = "name eq '" + name + "'";
 
-  let apiPath =
-    req.body.config.serverURL +
-    '/o/headless-admin-taxonomy/v1.0/sites/' +
-    globalSiteId +
-    '/taxonomy-vocabularies?filter=' +
-    encodeURI(filter);
-
-  let options = functions.getAPIOptions(
-    'GET',
-    'en-US',
-    req.body.config.base64data
-  );
-
   try {
-    const vocabResponse = await axios.get(apiPath, options);
+    const vocabResponse = await axios.get(
+      `/o/headless-admin-taxonomy/v1.0/sites/${globalSiteId}/taxonomy-vocabularies?filter=${encodeURI(filter)}`,
+    );
 
     if (vocabResponse.data.items.length > 0) {
       return vocabResponse.data.items[0].id;
@@ -375,25 +317,21 @@ async function getExistingVocabID(req, name, globalSiteId) {
   }
 }
 
-async function getExistingCategoryID(req, name, vocabId) {
+async function getExistingCategoryID(
+  axios: AxiosInstance,
+  name: string,
+  vocabId: any,
+) {
   name = name.replaceAll("'", "''");
   let filter = "name eq '" + name + "'";
 
-  let apiPath =
-    req.body.config.serverURL +
-    '/o/headless-admin-taxonomy/v1.0/taxonomy-vocabularies/' +
-    vocabId +
-    '/taxonomy-categories?filter=' +
-    encodeURI(filter);
-
-  let options = functions.getAPIOptions(
-    'GET',
-    'en-US',
-    req.body.config.base64data
-  );
-
   try {
-    const categoryResponse = await axios.get(apiPath, options);
+    const categoryResponse = await axios.get(
+      "/o/headless-admin-taxonomy/v1.0/taxonomy-vocabularies/" +
+        vocabId +
+        "/taxonomy-categories?filter=" +
+        encodeURI(filter),
+    );
 
     if (categoryResponse.data.items.length > 0) {
       return categoryResponse.data.items[0].id;

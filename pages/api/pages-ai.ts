@@ -1,12 +1,17 @@
-import axios from 'axios';
-import OpenAI from 'openai';
+import { AxiosInstance } from "axios";
+import { NextApiRequest, NextApiResponse } from "next";
+import OpenAI from "openai";
 
-import functions from '../../utils/functions';
-import { logger } from '../../utils/logger';
+import { axiosInstance } from "../../services/liferay";
+import functions from "../../utils/functions";
+import { logger } from "../../utils/logger";
 
-const debug = logger('Pages Action');
+const debug = logger("Pages Action");
 
-export default async function SitesAction(req, res) {
+export default async function SitesAction(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
   const start = new Date().getTime();
 
   const openai = new OpenAI({
@@ -18,182 +23,173 @@ export default async function SitesAction(req, res) {
   const siteMapSchema = {
     properties: {
       sitepages: {
-        description: 'An array of ' + req.body.pageNumber + ' site pages',
+        description: `An array of ${req.body.pageNumber} site pages`,
         items: {
           properties: {
             childpages: {
-              description:
-                'An array of ' +
-                req.body.childPageNumber +
-                ' pages that are children the parent page',
+              description: `An array of ${req.body.childPageNumber} pages that are children the parent page`,
               items: {
                 properties: {
                   childPageComponentList: {
                     description:
-                      'A comma-delimited list of expected page components, not including not include Header, Footer, or Sidebar. Provide more than 1 if possible.',
-                    type: 'string',
+                      "A comma-delimited list of expected page components, not including not include Header, Footer, or Sidebar. Provide more than 1 if possible.",
+                    type: "string",
                   },
                   childPageContentDescription: {
                     description:
-                      'A description of the types of content and features that would be available on this page.',
-                    type: 'string',
+                      "A description of the types of content and features that would be available on this page.",
+                    type: "string",
                   },
                   childPageName: {
-                    description: 'A creative name of the business',
-                    type: 'string',
+                    description: "A creative name of the business",
+                    type: "string",
                   },
                   /*
                   "unit": {
                     "type": "string",
                     "enum": ["login", "form", "product list"],
-                    "description": "Types of page components" 
+                    "description": "Types of page components"
                   },
                   */
                 },
-                required: ['name', 'contentDescription', 'pageComponentList'],
-                type: 'object',
+                required: ["name", "contentDescription", "pageComponentList"],
+                type: "object",
               },
-              required: ['childpages'],
-              type: 'array',
+              required: ["childpages"],
+              type: "array",
             },
             contentDescription: {
               description:
-                'A description of the types of content and features that would be available on this page.',
-              type: 'string',
+                "A description of the types of content and features that would be available on this page.",
+              type: "string",
             },
             name: {
-              description: 'The name of the page.',
-              type: 'string',
+              description: "The name of the page.",
+              type: "string",
             },
             pageComponentList: {
               description:
-                'A comma-delimited list of expected page components, not including not include Header, Footer, or Sidebar. Provide more than 1 if possible.',
-              type: 'string',
+                "A comma-delimited list of expected page components, not including not include Header, Footer, or Sidebar. Provide more than 1 if possible.",
+              type: "string",
             },
           },
-          required: ['name', 'contentDescription', 'pageComponentList'],
-          type: 'object',
+          required: ["name", "contentDescription", "pageComponentList"],
+          type: "object",
         },
-        required: ['sitepages'],
-        type: 'array',
+        required: ["sitepages"],
+        type: "array",
       },
     },
-    type: 'object',
+    type: "object",
   };
 
   const response = await openai.chat.completions.create({
-    functions: [{ name: 'get_sitemap', parameters: siteMapSchema }],
+    functions: [{ name: "get_sitemap", parameters: siteMapSchema }],
     messages: [
       {
         content:
           "You are an site manager responsible for planning the website navigation for your company's site.",
-        role: 'system',
+        role: "system",
       },
       {
         content:
           "Create a site map of the expected website pages and related child pages with a company's " +
           req.body.pageTopic +
-          ' website site. ',
-        role: 'user',
+          " website site. ",
+        role: "user",
       },
     ],
+
     // TODO - gpt-3.5 models provide inconsistant result. Need to explore options.
     // Forcing newer model
     // model: req.body.config.model,
-    model: 'gpt-4',
+
+    model: "gpt-4",
     temperature: 0.8,
   });
 
   debug(JSON.parse(response.choices[0].message.function_call.arguments));
 
   let pages = JSON.parse(
-    response.choices[0].message.function_call.arguments
+    response.choices[0].message.function_call.arguments,
   ).sitepages;
 
   debug(JSON.stringify(pages));
 
-  if (pages) {
-    for (let i = 0; i < pages.length; i++) {
-      debug(pages[i]);
-
-      const pagePath = await createSitePage(
-        req, 
-        req.body.siteId,
-        pages[i].name,
-        pages[i].contentDescription,
-        pages[i].pageComponentList,
-        req.body.addPageContent,
-        'home'
-      );
-
-      const childpages = pages[i].childpages;
-      if (childpages) {
-        for (let j = 0; j < childpages.length; j++) {
-          let childPageId = await createSitePage(
-            req, 
-            req.body.siteId,
-            childpages[j].childPageName,
-            childpages[j].childPageContentDescription,
-            childpages[j].childPageComponentList,
-            req.body.addPageContent,
-            pagePath
-          );
-        }
-      }
-    }
-  } else {
-    res.status(200).json({
-      result: 'Error: No results returned.',
+  if (!pages) {
+    return res.status(200).json({
+      result: "Error: No results returned.",
     });
+  }
 
-    return;
+  const axios = axiosInstance(req, res);
+
+  for (const page of pages) {
+    const pagePath = await createSitePage(
+      axios,
+      req.body.siteId,
+      page.name,
+      page.contentDescription,
+      page.pageComponentList,
+      req.body.addPageContent,
+      "home",
+    );
+
+    const childPages = page.childpages || [];
+
+    for (const childPage of childPages) {
+      await createSitePage(
+        axios,
+        req.body.siteId,
+        childPage.childPageName,
+        childPage.childPageContentDescription,
+        childPage.childPageComponentList,
+        req.body.addPageContent,
+        pagePath,
+      );
+    }
   }
 
   let end = new Date().getTime();
 
   res.status(200).json({
-    result: 'Completed in ' + functions.millisToMinutesAndSeconds(end - start),
+    result: "Completed in " + functions.millisToMinutesAndSeconds(end - start),
   });
 }
 
 async function createSitePage(
-  req, 
+  axios: AxiosInstance,
   groupId,
   name,
   contentDescription,
   pageComponentList,
   addPageContent,
-  parentPath
+  parentPath,
 ) {
-  debug('Creating ' + name + ' with parent ' + parentPath);
-
-  const postBody = getPageSchema(
-    name,
-    contentDescription,
-    pageComponentList,
-    addPageContent,
-    parentPath
-  );
-
-  const orgApiPath =
-    req.body.config.serverURL +
-    '/o/headless-delivery/v1.0/sites/' +
-    groupId +
-    '/site-pages';
-  const options = functions.getAPIOptions('POST', 'en-US', req.body.config.base64data);
-  let returnPath = '';
+  debug("Creating " + name + " with parent " + parentPath);
 
   try {
-    const response = await axios.post(orgApiPath, postBody, options);
+    const response = await axios.post(
+      `/o/headless-delivery/v1.0/sites/${groupId}/site-pages`,
+      getPageSchema(
+        name,
+        contentDescription,
+        pageComponentList,
+        addPageContent,
+        parentPath,
+      ),
+    );
 
-    returnPath = response.data.friendlyUrlPath;
+    const returnPath = response.data.friendlyUrlPath;
 
-    debug('returned friendlyUrlPath: ' + returnPath);
+    debug("returned friendlyUrlPath: " + returnPath);
+
+    return returnPath;
   } catch (error) {
     console.log(error);
   }
 
-  return returnPath;
+  return "";
 }
 
 function getPageSchema(
@@ -201,7 +197,7 @@ function getPageSchema(
   contentDescription,
   pageComponentList,
   addPageContent,
-  parentPath
+  parentPath,
 ) {
   let pageSchema = {
     pageDefinition: {
@@ -211,49 +207,49 @@ function getPageSchema(
             definition: {
               indexed: true,
               layout: {
-                widthType: 'Fixed',
+                widthType: "Fixed",
               },
             },
             pageElements: [],
-            type: 'Section',
+            type: "Section",
           },
         ],
-        type: 'Root',
+        type: "Root",
       },
       settings: {
-        colorSchemeName: '01',
-        themeName: 'Classic',
+        colorSchemeName: "01",
+        themeName: "Classic",
       },
       version: 1.1,
     },
     pagePermissions: [
       {
         actionKeys: [
-          'UPDATE_DISCUSSION',
-          'PERMISSIONS',
-          'UPDATE_LAYOUT_ADVANCED_OPTIONS',
-          'UPDATE_LAYOUT_CONTENT',
-          'CUSTOMIZE',
-          'LAYOUT_RULE_BUILDER',
-          'ADD_LAYOUT',
-          'VIEW',
-          'DELETE',
-          'UPDATE_LAYOUT_BASIC',
-          'DELETE_DISCUSSION',
-          'CONFIGURE_PORTLETS',
-          'UPDATE',
-          'UPDATE_LAYOUT_LIMITED',
-          'ADD_DISCUSSION',
+          "UPDATE_DISCUSSION",
+          "PERMISSIONS",
+          "UPDATE_LAYOUT_ADVANCED_OPTIONS",
+          "UPDATE_LAYOUT_CONTENT",
+          "CUSTOMIZE",
+          "LAYOUT_RULE_BUILDER",
+          "ADD_LAYOUT",
+          "VIEW",
+          "DELETE",
+          "UPDATE_LAYOUT_BASIC",
+          "DELETE_DISCUSSION",
+          "CONFIGURE_PORTLETS",
+          "UPDATE",
+          "UPDATE_LAYOUT_LIMITED",
+          "ADD_DISCUSSION",
         ],
-        roleKey: 'Owner',
+        roleKey: "Owner",
       },
       {
-        actionKeys: ['CUSTOMIZE', 'VIEW', 'ADD_DISCUSSION'],
-        roleKey: 'Site Member',
+        actionKeys: ["CUSTOMIZE", "VIEW", "ADD_DISCUSSION"],
+        roleKey: "Site Member",
       },
       {
-        actionKeys: ['VIEW'],
-        roleKey: 'Guest',
+        actionKeys: ["VIEW"],
+        roleKey: "Guest",
       },
     ],
     parentSitePage: {
@@ -263,27 +259,27 @@ function getPageSchema(
     title_i18n: {
       en_US: name,
     },
-    viewableBy: 'Anyone',
+    viewableBy: "Anyone",
   };
 
   pageSchema.pageDefinition.pageElement.pageElements[0].pageElements.push(
-    getParagraph(contentDescription)
+    getParagraph(contentDescription),
   );
 
   if (addPageContent) {
-    let contentArray = pageComponentList.split(',');
+    let contentArray = pageComponentList.split(",");
 
     for (let i = 0; i < contentArray.length; i++) {
       let type = contentArray[i].trim();
       if (
-        type != 'Header' &&
-        type != 'Footer' &&
-        type != 'Sidebar' &&
-        type != 'Search bar' &&
-        type != 'Filters'
+        type !== "Header" &&
+        type !== "Footer" &&
+        type !== "Sidebar" &&
+        type !== "Search bar" &&
+        type !== "Filters"
       )
         pageSchema.pageDefinition.pageElement.pageElements[0].pageElements.push(
-          getContent(type)
+          getContent(type),
         );
     }
   }
@@ -295,20 +291,20 @@ function getContent(contentType) {
   let appliedContent = {};
   let seed = contentType.toLowerCase();
 
-  if (seed.indexOf('blog') > -1) {
+  if (seed.indexOf("blog") > -1) {
     //TODO Option to call Blog API
     appliedContent = getBlog();
-  } else if (seed.indexOf('faq') > -1) {
+  } else if (seed.indexOf("faq") > -1) {
     //TODO Option to call FAQ API
     appliedContent = getCollectionDisplay();
-  } else if (seed.indexOf('order history') > -1) {
+  } else if (seed.indexOf("order history") > -1) {
     appliedContent = getOrderHistory();
-  } else if (seed.indexOf('form') > -1) {
+  } else if (seed.indexOf("form") > -1) {
     //TODO Explore Object Schema Creation using AI Prompts
     appliedContent = getFormContainer();
-  } else if (seed.indexOf('login') > -1 || seed.indexOf('sign in') > -1) {
+  } else if (seed.indexOf("login") > -1 || seed.indexOf("sign in") > -1) {
     appliedContent = getLogin();
-  } else if (seed.indexOf('calendar') > -1) {
+  } else if (seed.indexOf("calendar") > -1) {
     appliedContent = getCalendar();
   } else {
     appliedContent = getParagraph(contentType);
@@ -322,10 +318,10 @@ function getCalendar() {
     definition: {
       widgetInstance: {
         widgetConfig: {},
-        widgetName: 'com_liferay_calendar_web_portlet_CalendarPortlet',
+        widgetName: "com_liferay_calendar_web_portlet_CalendarPortlet",
       },
     },
-    type: 'Widget',
+    type: "Widget",
   };
 }
 
@@ -334,10 +330,10 @@ function getLogin() {
     definition: {
       widgetInstance: {
         widgetConfig: {},
-        widgetName: 'com_liferay_login_web_portlet_LoginPortlet',
+        widgetName: "com_liferay_login_web_portlet_LoginPortlet",
       },
     },
-    type: 'Widget',
+    type: "Widget",
   };
 }
 
@@ -346,13 +342,13 @@ function getFormContainer() {
     definition: {
       formConfig: {
         formReference: {
-          contextSource: 'DisplayPageItem',
+          contextSource: "DisplayPageItem",
         },
       },
       indexed: true,
       layout: {},
     },
-    type: 'Form',
+    type: "Form",
   };
 }
 
@@ -362,10 +358,10 @@ function getOrderHistory() {
       widgetInstance: {
         widgetConfig: {},
         widgetName:
-          'com_liferay_commerce_order_content_web_internal_portlet_CommerceOrderContentPortlet',
+          "com_liferay_commerce_order_content_web_internal_portlet_CommerceOrderContentPortlet",
       },
     },
-    type: 'Widget',
+    type: "Widget",
   };
 }
 
@@ -377,15 +373,15 @@ function getCollectionDisplay() {
           collectionViewportDefinition: {
             numberOfColumns: 1,
           },
-          id: 'landscapeMobile',
+          id: "landscapeMobile",
         },
         {
           collectionViewportDefinition: {},
-          id: 'portraitMobile',
+          id: "portraitMobile",
         },
         {
           collectionViewportDefinition: {},
-          id: 'tablet',
+          id: "tablet",
         },
       ],
       displayAllItems: false,
@@ -394,7 +390,7 @@ function getCollectionDisplay() {
       numberOfItems: 5,
       numberOfItemsPerPage: 20,
       numberOfPages: 5,
-      paginationType: 'Numeric',
+      paginationType: "Numeric",
       showAllItems: false,
     },
     pageElements: [
@@ -402,10 +398,10 @@ function getCollectionDisplay() {
         definition: {
           collectionItemConfig: {},
         },
-        type: 'CollectionItem',
+        type: "CollectionItem",
       },
     ],
-    type: 'Collection',
+    type: "Collection",
   };
 }
 
@@ -414,10 +410,10 @@ function getBlog() {
     definition: {
       widgetInstance: {
         widgetConfig: {},
-        widgetName: 'com_liferay_blogs_web_portlet_BlogsPortlet',
+        widgetName: "com_liferay_blogs_web_portlet_BlogsPortlet",
       },
     },
-    type: 'Widget',
+    type: "Widget",
   };
 }
 
@@ -425,12 +421,12 @@ function getParagraph(content) {
   return {
     definition: {
       fragment: {
-        key: 'BASIC_COMPONENT-paragraph',
+        key: "BASIC_COMPONENT-paragraph",
       },
       fragmentConfig: {},
       fragmentFields: [
         {
-          id: 'element-text',
+          id: "element-text",
           value: {
             fragmentLink: {},
             text: {
@@ -443,6 +439,6 @@ function getParagraph(content) {
       ],
       indexed: true,
     },
-    type: 'Fragment',
+    type: "Fragment",
   };
 }

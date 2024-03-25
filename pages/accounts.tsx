@@ -1,18 +1,17 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import hljs from 'highlight.js';
-import { useState } from 'react';
-import React from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+import { zodResolver } from "@hookform/resolvers/zod";
+import hljs from "highlight.js";
+import { useState } from "react";
+import React from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
-import FieldSubmit from '../components/formfield-submit';
-import Form from '../components/forms/form';
-import Input from '../components/forms/input';
-import Layout from '../components/layout';
-import LoadingAnimation from '../components/loadinganimation';
-import ResultDisplay from '../components/resultdisplay';
-import nextAxios from '../services/next';
-import { logger } from '../utils/logger';
+import FieldSubmit from "../components/formfield-submit";
+import Form from "../components/forms/form";
+import Input from "../components/forms/input";
+import Layout from "../components/layout";
+import LoadingAnimation from "../components/loadinganimation";
+import ResultDisplay from "../components/resultdisplay";
+import nextAxios from "../services/next";
 
 const accountFormSchema = z.object({
   businessDescription: z.string().min(3),
@@ -22,12 +21,12 @@ const accountFormSchema = z.object({
 type AccountFormSchema = z.infer<typeof accountFormSchema>;
 
 export default function Accounts() {
-  const [result, setResult] = useState('');
+  const [result, setResult] = useState("");
 
   const accountForm = useForm<AccountFormSchema>({
     defaultValues: {
-      businessDescription: '',
-      numberOfAccounts: '1',
+      businessDescription: "",
+      numberOfAccounts: "1",
     },
     resolver: zodResolver(accountFormSchema),
   });
@@ -40,7 +39,7 @@ export default function Accounts() {
     businessDescription,
     numberOfAccounts,
   }: AccountFormSchema) {
-    const { data } = await nextAxios.post('/api/accounts', {
+    const { data } = await nextAxios.post("/api/accounts", {
       accountNumber: numberOfAccounts,
       accountTopic: businessDescription,
     });
@@ -59,7 +58,7 @@ export default function Accounts() {
         formProviderProps={accountForm}
         onSubmit={accountForm.handleSubmit(onSubmit)}
       >
-        <div className="w-700 grid grid-cols-2 gap-2 sm:grid-cols-2 md:gap-4 mb-5">
+        <div className="w-700 mb-5 grid grid-cols-2 gap-2 sm:grid-cols-2 md:gap-4">
           <Input
             label="Business Description"
             name="businessDescription"
@@ -73,7 +72,10 @@ export default function Accounts() {
           />
         </div>
 
-        <FieldSubmit disabled={isSubmitting} label="Generate Accounts" />
+        <FieldSubmit
+          disabled={!accountForm.formState.isValid || isSubmitting}
+          label="Generate Accounts"
+        />
       </Form>
 
       {isSubmitting ? (

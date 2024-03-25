@@ -1,119 +1,131 @@
-import axios from 'axios';
-import OpenAI from 'openai';
+import { Axios } from "axios";
+import { NextApiRequest, NextApiResponse } from "next";
+import OpenAI from "openai";
 
-import functions from '../../utils/functions';
-import { logger } from '../../utils/logger';
+import { axiosInstance } from "../../services/liferay";
+import functions from "../../utils/functions";
+import { logger } from "../../utils/logger";
 
-const debug = logger('OrganizationsAction');
+const debug = logger("OrganizationsAction");
 
-export default async function OrganizationsAction(req, res) {
+export default async function OrganizationsAction(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
   const start = new Date().getTime();
 
   const openai = new OpenAI({
     apiKey: req.body.config.openAIKey,
   });
 
-  debug(req.body);
+  const axios = axiosInstance(req, res);
 
   const organizationsSchema = {
     properties: {
       organizations: {
-        description: 'An array of business organization company names',
+        description: "An array of business organization company names",
         items: {
           properties: {
             childbusinesses: {
               description:
-                'An array of ' +
+                "An array of " +
                 req.body.childOrganizationtNumber +
-                ' businesses within the organization',
+                " businesses within the organization",
               items: {
                 properties: {
                   departments: {
                     description:
-                      'An array of ' +
+                      "An array of " +
                       req.body.departmentNumber +
-                      ' departments within the business',
+                      " departments within the business",
                     items: {
                       properties: {
                         name: {
-                          description: 'Name of the department',
-                          type: 'string',
+                          description: "Name of the department",
+                          type: "string",
                         },
                       },
-                      type: 'object',
+                      type: "object",
                     },
-                    required: ['name', 'departments'],
-                    type: 'array',
+                    required: ["name", "departments"],
+                    type: "array",
                   },
                   name: {
-                    description: 'A creative name of the business',
-                    type: 'string',
+                    description: "A creative name of the business",
+                    type: "string",
                   },
                 },
-                type: 'object',
+                type: "object",
               },
-              required: ['name'],
-              type: 'array',
+              required: ["name"],
+              type: "array",
             },
             name: {
-              description: 'A creative name of the business organization.',
-              type: 'string',
+              description: "A creative name of the business organization.",
+              type: "string",
             },
           },
-          required: ['name', 'childbusinesses'],
-          type: 'object',
+          required: ["name", "childbusinesses"],
+          type: "object",
         },
-        required: ['organizations'],
-        type: 'array',
+        required: ["organizations"],
+        type: "array",
       },
     },
-    type: 'object',
+    type: "object",
   };
 
   const response = await openai.chat.completions.create({
-    functions: [{ name: 'get_organizations', parameters: organizationsSchema }],
+    functions: [{ name: "get_organizations", parameters: organizationsSchema }],
     messages: [
       {
         content:
-          'You are an organization manager responsible for listing the business organizations for your company.',
-        role: 'system',
+          "You are an organization manager responsible for listing the business organizations for your company.",
+        role: "system",
       },
       {
         content:
-          'Create a list of expected organizations, child businesses, and departments for a company that provides ' +
+          "Create a list of expected organizations, child businesses, and departments for a company that provides " +
           req.body.organizationTopic +
-          '. ' +
-          'Do not include double quotes in the response.',
-        role: 'user',
+          ". " +
+          "Do not include double quotes in the response.",
+        role: "user",
       },
     ],
     model: req.body.config.model,
     temperature: 0.6,
   });
 
-  let organizations = JSON.parse(
-    response.choices[0].message.function_call.arguments
+  const organizations = JSON.parse(
+    response.choices[0].message.function_call.arguments,
   ).organizations;
-  debug(JSON.stringify(organizations));
 
-  for (let i = 0; i < organizations.length; i++) {
-    debug(organizations[i]);
+  for (const organization of organizations) {
+    const childbusinesses = organization.childbusinesses;
+    const organizationId = await createOrganization(axios, organization, 0);
 
-    const orgId = await createOrganization(req, organizations[i], false);
-    const childbusinesses = organizations[i].childbusinesses;
+    debug(
+      organizationId + " has " + childbusinesses.length + " child businesses.",
+    );
 
-    debug(orgId + ' has ' + childbusinesses.length + ' child businesses.');
-
-    for (let j = 0; j < childbusinesses.length; j++) {
-      let childOrgId = await createOrganization(req, childbusinesses[j], orgId);
-      let departments = childbusinesses[j].departments;
-
-      debug(
-        childOrgId + ' has ' + departments.length + ' related departments.'
+    for (const childOrganization of childbusinesses) {
+      const childOrganizationId = await createOrganization(
+        axios,
+        childOrganization,
+        organizationId,
       );
 
-      for (let k = 0; k < departments.length; k++) {
-        createOrganization(req, departments[k], childOrgId);
+      let departments = childOrganization.departments;
+
+      debug(
+        childOrganizationId +
+          " has " +
+          departments.length +
+          " related departments.",
+      );
+
+      for (const department of departments) {
+        await createOrganization(axios, department, childOrganizationId);
       }
     }
   }
@@ -121,37 +133,28 @@ export default async function OrganizationsAction(req, res) {
   let end = new Date().getTime();
 
   res.status(200).json({
-    result: 'Completed in ' + functions.millisToMinutesAndSeconds(end - start),
+    result: "Completed in " + functions.millisToMinutesAndSeconds(end - start),
   });
 }
 
-async function createOrganization(req, organization, parentOrgId) {
-  debug('Creating ' + organization.name + ' with parent ' + parentOrgId);
-
-  const postBody = {
-    name: organization.name,
-    ...(parentOrgId > 0 && {
-      parentOrganization: {
-        id: parentOrgId,
-      },
-    }),
-  };
-
-  const orgApiPath =
-    req.body.config.serverURL + '/o/headless-admin-user/v1.0/organizations';
-  const options = functions.getAPIOptions('POST', 'en-US', req.body.config.base64data);
-
-  let returnid = 0;
-
+async function createOrganization(axios: Axios, organization, parentOrgId) {
   try {
-    const response = await axios.post(orgApiPath, postBody, options);
+    const response = await axios.post(
+      "/o/headless-admin-user/v1.0/organizations",
+      {
+        name: organization.name,
+        ...(parentOrgId > 0 && {
+          parentOrganization: {
+            id: parentOrgId,
+          },
+        }),
+      },
+    );
 
-    returnid = response.data.id;
-
-    debug('returned id:' + returnid);
+    return response.data.id;
   } catch (error) {
     console.log(error);
   }
 
-  return returnid;
+  return 0;
 }

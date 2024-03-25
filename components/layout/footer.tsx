@@ -6,6 +6,7 @@ import {
 import { useEffect, useState } from 'react';
 import Cookies from 'universal-cookie';
 
+import nextAxios from '../../services/next';
 import functions from '../../utils/functions';
 import ConfigModal from '../config-modal';
 
@@ -25,6 +26,7 @@ export default function AppFooter() {
 
   const [showModal, setShowModal] = useState(false);
   const [appConfig, setAppConfig] = useState({
+    authenticationType: 'basic',
     base64data: '',
     login: 'test@liferay.com',
     model: functions.getDefaultAIModel(),
@@ -50,14 +52,14 @@ export default function AppFooter() {
     setAppConfig(newConfig);
 
     cookies.set(APP_CONFIG, newConfig, {
-      expires: new Date(Date.now() + 2592000),
+      expires: new Date(Date.now() + 25920000),
       path: '/',
     });
 
     setShowModal(false);
 
     setEnvStatus('connected');
-    setEnvMsg("Validating config...");
+    setEnvMsg('Validating config...');
     checkConfig(newConfig);
   };
 
@@ -66,7 +68,7 @@ export default function AppFooter() {
       let appConfig = cookies.get(APP_CONFIG);
 
       console.log('Using existing appConfig');
-      
+
       setAppConfig(appConfig);
       checkConfig(appConfig);
     } else {
@@ -74,13 +76,11 @@ export default function AppFooter() {
     }
   }, []);
 
-  const checkConfig = (appConfig) => {
-    fetch('/api/env', {
-      body: JSON.stringify(appConfig),
-      method: 'POST',
-    })
-      .then((res) => res.json())
-      .then((json) => setEnv(json));
+  const checkConfig = async (appConfig) => {
+    console.log({ appConfig });
+    const { data } = await nextAxios.post('/api/env', appConfig);
+
+    setEnv(data);
   };
 
   return (

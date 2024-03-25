@@ -1,14 +1,18 @@
-import axios from 'axios';
-import fs from 'fs';
-import request from 'request';
+import { AxiosInstance } from "axios";
+import fs from "fs";
+import { NextApiRequest, NextApiResponse } from "next";
 
-import functions from '../../utils/functions';
-import { logger } from '../../utils/logger';
+import { axiosInstance } from "../../services/liferay";
+import functions from "../../utils/functions";
+import { logger } from "../../utils/logger";
 
-const debug = logger('Users File - Action');
+const debug = logger("Users File - Action");
 
-export default async function UsersFileAction(req, res) {
-  let start = new Date().getTime();
+export default async function UsersFileAction(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
+  const start = new Date().getTime();
   let successCount = 0;
   let errorCount = 0;
 
@@ -16,125 +20,97 @@ export default async function UsersFileAction(req, res) {
 
   debug(userlist);
 
-  let roleList = await getRoleList(req);
+  const axios = axiosInstance(req, res, {
+    "Accept-Language": req.body.defaultLanguage,
+  });
 
-  let userApiPath =
-    req.body.config.serverURL + '/o/headless-admin-user/v1.0/user-accounts';
-  let userImagePath = '';
+  const roleList = await getRoleList(axios);
+
+  let userImagePath = "";
 
   for (let i = 0; i < userlist.length; i++) {
     userImagePath = userlist[i].imageFile;
 
     delete userlist[i].imageFile;
 
-    if (debug)
-      console.log(
-        userlist[i].emailAddress + ', userImagePath: ' + userImagePath
-      );
+    debug(userlist[i].emailAddress + ", userImagePath: " + userImagePath);
 
-    debug('sending:', userlist[i]);
+    debug("sending:", userlist[i]);
 
     try {
-      let options = functions.getAPIOptions('POST', 'en-US', req.body.config.base64data);
-
       const response = await axios.post(
-        userApiPath,
+        "/o/headless-admin-user/v1.0/user-accounts",
         JSON.stringify(userlist[i]),
-        options
       );
 
-      debug('Saved user: ' + response.data.id);
+      debug("Saved user: " + response.data.id);
 
-      let roleBriefs = getRoleBriefs(userlist[i].jobTitle, roleList, debug);
+      const roleBriefs = getRoleBriefs(userlist[i].jobTitle, roleList);
 
       if (roleBriefs.length > 0) {
-        let userRoleApiPath =
-          req.body.config.serverURL +
-          '/o/headless-admin-user/v1.0/roles/' +
-          roleBriefs[0].id +
-          '/association/user-account/' +
-          response.data.id;
-
-        debug(userRoleApiPath);
-
-        const options = functions.getAPIOptions(
-          'POST',
-          req.body.defaultLanguage,
-          req.body.config.base64data
+        await axios.post(
+          `/o/headless-admin-user/v1.0/roles/${roleBriefs[0].id}/association/user-account/${response.data.id}`,
         );
 
-        await axios.post(userRoleApiPath, '', options);
-
-        debug('Role Association Complete');
+        debug("Role Association Complete");
       }
 
       if (userImagePath.length > 0) {
-        let userImageApiPath =
-          req.body.config.serverURL +
-          '/o/headless-admin-user/v1.0/user-accounts/' +
-          response.data.id +
-          '/image';
+        debug(process.cwd() + "/public/users/user-images/" + userImagePath);
 
-        debug(userImageApiPath);
-        if (debug)
-          console.log(
-            process.cwd() + '/public/users/user-images/' + userImagePath
-          );
-
-        let fileStream = fs.createReadStream(
-          process.cwd() + '/public/users/user-images/' + userImagePath
-        );
-        const imgoptions = functions.getFilePostOptions(
-          userImageApiPath,
-          fileStream,
-          'image',
-          req.body.config.base64data
+        const data = fs.readFileSync(
+          process.cwd() + "/public/users/user-images/" + userImagePath,
         );
 
-        request(imgoptions, function (err, res, body) {
-          if (err) console.log(err);
+        const uint8Array = new Uint8Array(data);
+        const blob = new Blob([uint8Array]);
 
-          debug('Image Upload Complete');
-        });
+        const formData = new FormData();
+
+        formData.append("image", blob);
+
+        await axios.post(
+          `/o/headless-admin-user/v1.0/user-accounts/${response.data.id}/image`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          },
+        );
+
+        debug("Image Upload Complete");
+
+        successCount++;
       }
-      successCount++;
     } catch (error) {
       errorCount++;
+
       console.log(error);
     }
   }
 
-  let end = new Date().getTime();
+  const end = new Date().getTime();
 
   res.status(200).json({
-    result:
-      successCount +
-      ' users added, ' +
-      errorCount +
-      ' errors in ' +
-      functions.millisToMinutesAndSeconds(end - start),
+    result: `${successCount} users added, ${errorCount} errors in ${functions.millisToMinutesAndSeconds(end - start)}`,
   });
 }
 
-async function getRoleList(req) {
-  let userApiPath =
-    req.body.config.serverURL + '/o/headless-admin-user/v1.0/roles';
+async function getRoleList(axios: AxiosInstance) {
+  const { data } = await axios.get("/o/headless-admin-user/v1.0/roles");
 
-  let roleoptions = functions.getAPIOptions('GET', 'en-US', req.body.config.base64data);
-
-  const roleresponse = await axios.get(userApiPath, roleoptions);
-
-  return roleresponse.data.items;
+  return data.items;
 }
 
-function getRoleBriefs(roleName, roleList, debug) {
+function getRoleBriefs(roleName: string, roleList: any[]) {
   let roleBriefs = [];
 
-  debug('Checking against ' + roleList.length + ' roles.');
+  debug("Checking against " + roleList.length + " roles.");
 
   for (let i = 0; i < roleList.length; i++) {
     if (roleName == roleList[i].name) {
-      debug('Match on role id:' + roleList[i].id);
+      debug("Match on role id:" + roleList[i].id);
 
       let roleBrief = { id: roleList[i].id };
       roleBriefs.push(roleBrief);

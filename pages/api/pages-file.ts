@@ -1,64 +1,61 @@
-import axios from 'axios';
-import OpenAI from 'openai';
+import { AxiosInstance } from "axios";
+import { NextApiRequest, NextApiResponse } from "next";
 
-import functions from '../../utils/functions';
-import { logger } from '../../utils/logger';
+import { axiosInstance } from "../../services/liferay";
+import functions from "../../utils/functions";
+import { logger } from "../../utils/logger";
 
-const debug = logger('Pages Action');
+const debug = logger("Pages Action");
 
-export default async function SitesAction(req, res) {
+export default async function SitesAction(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
   const start = new Date().getTime();
 
-  const openai = new OpenAI({
-    apiKey: req.body.config.openAIKey,
-  });
+  const axios = axiosInstance(req, res);
 
-  let pages = JSON.parse(req.body.fileoutput).pages;
+  const pages = JSON.parse(req.body.fileoutput).pages;
 
   for (let i = 0; i < pages.length; i++) {
     debug(pages[i]);
-    await createSitePage(req, req.body.siteId, pages[i], 'home');
+    await createSitePage(axios, req.body.siteId, pages[i], "home");
   }
 
-  let end = new Date().getTime();
+  const end = new Date().getTime();
 
   res.status(200).json({
-    result: 'Completed in ' + functions.millisToMinutesAndSeconds(end - start),
+    result: "Completed in " + functions.millisToMinutesAndSeconds(end - start),
   });
 }
 
-async function createSitePage(req, groupId, page, parentPath) {
-  let viewableBy = 'viewableBy' in page ? page['viewableBy'] : 'Anyone';
+async function createSitePage(
+  axios: AxiosInstance,
+  groupId: string,
+  page: any,
+  parentPath: string,
+) {
+  const viewableBy = "viewableBy" in page ? page["viewableBy"] : "Anyone";
 
   debug(
-    'Creating ' +
-      page.name +
-      ' with parent ' +
-      parentPath +
-      ' viewable by ' +
-      viewableBy
+    `Creating ${page.name} with parent ${parentPath} viewable by ${viewableBy}`,
   );
 
-  const postBody = getPageSchema(req, page.name, parentPath, viewableBy);
-
-  const orgApiPath =
-    req.body.config.serverURL +
-    '/o/headless-delivery/v1.0/sites/' +
-    groupId +
-    '/site-pages';
-  const options = functions.getAPIOptions('POST', 'en-US', req.body.config.base64data);
-  let returnPath = '';
+  let returnPath = "";
 
   try {
-    const response = await axios.post(orgApiPath, postBody, options);
+    const response = await axios.post(
+      `/o/headless-delivery/v1.0/sites/${groupId}/site-pages`,
+      getPageSchema(page.name, parentPath, viewableBy),
+    );
 
     returnPath = response.data.friendlyUrlPath;
 
-    debug('returned friendlyUrlPath: ' + returnPath);
+    debug("returned friendlyUrlPath: " + returnPath);
 
     if (page.pages && page.pages.length > 0) {
       for (let i = 0; i < page.pages.length; i++) {
-        createSitePage(req, groupId, page.pages[i], returnPath);
+        await createSitePage(axios, groupId, page.pages[i], returnPath);
       }
     }
   } catch (error) {
@@ -68,8 +65,8 @@ async function createSitePage(req, groupId, page, parentPath) {
   return returnPath;
 }
 
-function getPageSchema(req, name, parentPath, viewableBy) {
-  let pageSchema = {
+function getPageSchema(name: string, parentPath: string, viewableBy: string) {
+  const pageSchema = {
     pageDefinition: {
       pageElement: {
         pageElements: [
@@ -77,45 +74,45 @@ function getPageSchema(req, name, parentPath, viewableBy) {
             definition: {
               indexed: true,
               layout: {
-                widthType: 'Fixed',
+                widthType: "Fixed",
               },
             },
             pageElements: [],
-            type: 'Section',
+            type: "Section",
           },
         ],
-        type: 'Root',
+        type: "Root",
       },
       settings: {
-        colorSchemeName: '01',
-        themeName: 'Classic',
+        colorSchemeName: "01",
+        themeName: "Classic",
       },
       version: 1.1,
     },
     pagePermissions: [
       {
         actionKeys: [
-          'UPDATE_DISCUSSION',
-          'PERMISSIONS',
-          'UPDATE_LAYOUT_ADVANCED_OPTIONS',
-          'UPDATE_LAYOUT_CONTENT',
-          'CUSTOMIZE',
-          'LAYOUT_RULE_BUILDER',
-          'ADD_LAYOUT',
-          'VIEW',
-          'DELETE',
-          'UPDATE_LAYOUT_BASIC',
-          'DELETE_DISCUSSION',
-          'CONFIGURE_PORTLETS',
-          'UPDATE',
-          'UPDATE_LAYOUT_LIMITED',
-          'ADD_DISCUSSION',
+          "UPDATE_DISCUSSION",
+          "PERMISSIONS",
+          "UPDATE_LAYOUT_ADVANCED_OPTIONS",
+          "UPDATE_LAYOUT_CONTENT",
+          "CUSTOMIZE",
+          "LAYOUT_RULE_BUILDER",
+          "ADD_LAYOUT",
+          "VIEW",
+          "DELETE",
+          "UPDATE_LAYOUT_BASIC",
+          "DELETE_DISCUSSION",
+          "CONFIGURE_PORTLETS",
+          "UPDATE",
+          "UPDATE_LAYOUT_LIMITED",
+          "ADD_DISCUSSION",
         ],
-        roleKey: 'Owner',
+        roleKey: "Owner",
       },
       {
-        actionKeys: ['CUSTOMIZE', 'VIEW', 'ADD_DISCUSSION'],
-        roleKey: 'Site Member',
+        actionKeys: ["CUSTOMIZE", "VIEW", "ADD_DISCUSSION"],
+        roleKey: "Site Member",
       },
     ],
     parentSitePage: {
@@ -128,10 +125,10 @@ function getPageSchema(req, name, parentPath, viewableBy) {
     viewableBy: viewableBy,
   };
 
-  if (viewableBy == 'Anyone') {
+  if (viewableBy === "Anyone") {
     pageSchema.pagePermissions.push({
-      actionKeys: ['VIEW'],
-      roleKey: 'Guest',
+      actionKeys: ["VIEW"],
+      roleKey: "Guest",
     });
   }
 

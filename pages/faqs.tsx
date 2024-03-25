@@ -1,36 +1,36 @@
-import hljs from 'highlight.js';
-import { useState } from 'react';
-import React from 'react';
-import { useForm } from 'react-hook-form';
+import hljs from "highlight.js";
+import { useState } from "react";
+import React from "react";
+import { useForm } from "react-hook-form";
 
-import TopNavItem from '../components/apptopnavitem';
-import FieldLanguage from '../components/formfield-language';
-import FieldSubmit from '../components/formfield-submit';
-import Form from '../components/forms/form';
-import Input from '../components/forms/input';
-import Select from '../components/forms/select';
-import Layout from '../components/layout';
-import LoadingAnimation from '../components/loadinganimation';
-import ResultDisplay from '../components/resultdisplay';
-import schema, { z, zodResolver } from '../schemas/zod';
-import nextAxios from '../services/next';
-import { downloadFile } from '../utils/download';
-import functions from '../utils/functions';
-import { logger } from '../utils/logger';
+import TopNavItem from "../components/apptopnavitem";
+import FieldLanguage from "../components/formfield-language";
+import FieldSubmit from "../components/formfield-submit";
+import Form from "../components/forms/form";
+import Input from "../components/forms/input";
+import Select from "../components/forms/select";
+import Layout from "../components/layout";
+import LoadingAnimation from "../components/loadinganimation";
+import ResultDisplay from "../components/resultdisplay";
+import schema, { z, zodResolver } from "../schemas/zod";
+import nextAxios from "../services/next";
+import { downloadFile } from "../utils/download";
+import functions from "../utils/functions";
+import { logger } from "../utils/logger";
 
-const debug = logger('faqs');
+const debug = logger("faqs");
 
 type FaqSchema = z.infer<typeof schema.faq>;
 
 const handleStructureClick = () => {
   downloadFile({
-    fileName: 'Structure-Frequently_Asked_Question.json',
-    filePath: 'faqs/Structure-Frequently_Asked_Question.json',
+    fileName: "Structure-Frequently_Asked_Question.json",
+    filePath: "faqs/Structure-Frequently_Asked_Question.json",
   });
 };
 
 const handleFragmentClick = () => {
-  location.href = 'faqs/Fragment-FAQ.zip';
+  location.href = "faqs/Fragment-FAQ.zip";
 };
 
 const viewOptions = functions.getViewOptions();
@@ -38,23 +38,25 @@ const viewOptions = functions.getViewOptions();
 export default function Faqs() {
   const faqForm = useForm<FaqSchema>({
     defaultValues: {
-      defaultLanguage: 'en-US',
-      faqNumber: '5',
-      folderId: '0',
+      defaultLanguage: "en-US",
+      faqNumber: "5",
+      folderId: "0",
       manageLanguage: false,
       viewOptions: viewOptions[0].id,
     },
     resolver: zodResolver(schema.faq),
   });
 
-  const [result, setResult] = useState('');
+  console.log(faqForm.formState.errors);
+
+  const [result, setResult] = useState("");
 
   async function onSubmit(payload: FaqSchema) {
     debug(
-      `languagesInput ${payload.languages}, manageLanguageInput ${payload.manageLanguage}, defaultLaguagesInput ${payload.defaultLanguage}`
+      `languagesInput ${payload.languages}, manageLanguageInput ${payload.manageLanguage}, defaultLaguagesInput ${payload.defaultLanguage}`,
     );
 
-    const { data } = await nextAxios.post('/api/faqs', payload);
+    const { data } = await nextAxios.post("/api/faqs", payload);
 
     const hljsResult = hljs.highlightAuto(data.result).value;
     setResult(hljsResult);
@@ -69,7 +71,7 @@ export default function Faqs() {
       description={`Type your topic in the field below and wait for your FAQs. Examples of FAQ topics are "budget planning", "starting a manufacturing company", or "practical uses of sodium bicarbonate".`}
       title="Liferay FAQ Generator"
     >
-      <div className="fixed top-2 right-5 p-5 text-lg download-options rounded">
+      <div className="download-options fixed right-5 top-2 rounded p-5 text-lg">
         <TopNavItem label="FAQ Structure" onClick={handleStructureClick} />
         <TopNavItem label="FAQ Fragment" onClick={handleFragmentClick} />
       </div>
@@ -78,7 +80,7 @@ export default function Faqs() {
         formProviderProps={faqForm}
         onSubmit={faqForm.handleSubmit(onSubmit)}
       >
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 md:gap-4 mb-5">
+        <div className="mb-5 grid grid-cols-1 gap-2 sm:grid-cols-3 md:gap-4">
           <Input
             label="FAQ Topic"
             name="faqTopic"
@@ -124,19 +126,19 @@ export default function Faqs() {
 
         <FieldLanguage
           defaultLanguageChange={(value) =>
-            faqForm.setValue('defaultLanguage', value)
+            faqForm.setValue("defaultLanguage", value)
           }
-          languagesChange={(value) => faqForm.setValue('languages', value)}
+          languagesChange={(value) => faqForm.setValue("languages", value)}
           manageLanguageChange={(value) =>
-            faqForm.setValue('manageLanguage', value)
+            faqForm.setValue("manageLanguage", value)
           }
         />
 
         <FieldSubmit disabled={isSubmitting} label="Generate FAQs" />
       </Form>
 
-      <p className="text-slate-100 text-center text-lg mb-3 rounded p-5 bg-white/10 w-1/2 italic">
-        <b>Note:</b> FAQ generation requires a specific content structure.{' '}
+      <p className="mb-3 w-1/2 rounded bg-white/10 p-5 text-center text-lg italic text-slate-100">
+        <b>Note:</b> FAQ generation requires a specific content structure.{" "}
         <br />
         Please use the supplied FAQ Structure and Fragment supplied above.
       </p>

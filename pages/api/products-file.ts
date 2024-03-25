@@ -1,19 +1,23 @@
-import axios from 'axios';
+import { AxiosInstance } from "axios";
+import { NextApiRequest, NextApiResponse } from "next";
 
-import functions from '../../utils/functions';
-import { logger } from '../../utils/logger';
+import { axiosInstance } from "../../services/liferay";
+import functions from "../../utils/functions";
+import { logger } from "../../utils/logger";
 
-const debug = logger('Products File - Action');
+const debug = logger("Products File - Action");
 
-export default async function UsersFileAction(req, res) {
-  let start = new Date().getTime();
+export default async function UsersFileAction(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
+  const start = new Date().getTime();
   let successCount = 0;
   let errorCount = 0;
 
-  let catalogId = req.body.catalogId;
-  let globalSiteId = req.body.globalSiteId;
+  const { catalogId, csvoutput: productslist, globalSiteId } = req.body;
 
-  let productslist = req.body.csvoutput;
+  const axios = axiosInstance(req, res);
 
   debug(productslist);
 
@@ -25,13 +29,13 @@ export default async function UsersFileAction(req, res) {
 
   let productCategories = [];
 
-  for (const [key, value] of Object.entries(categoryMap)) {
+  for (const [key] of Object.entries(categoryMap)) {
     productCategories.push(key);
   }
 
-  let categoryDataStr = {
-    'Category Names': productCategories,
-    'Category Vocab': req.body.vocabularyName,
+  const categoryDataStr = {
+    "Category Names": productCategories,
+    "Category Vocab": req.body.vocabularyName,
   };
 
   debug(categoryDataStr);
@@ -39,45 +43,33 @@ export default async function UsersFileAction(req, res) {
   // check if vocabulary exists
 
   let vocabId = await getExistingVocabID(
-    req,
+    axios,
     req.body.vocabularyName,
-    globalSiteId
+    globalSiteId,
   );
 
   // Setup Vocabulary
 
-  let options = await functions.getAPIOptions(
-    'POST',
-    'en-US',
-    req.body.config.base64data
-  );
-  let apiPath = '';
-
   if (vocabId > 0) {
-    debug('Using existing vocabId: ' + vocabId);
+    debug("Using existing vocabId: " + vocabId);
   } else {
-    let apiPath =
-      req.body.config.serverURL +
-      '/o/headless-admin-taxonomy/v1.0/sites/' +
-      globalSiteId +
-      '/taxonomy-vocabularies';
-    let vocabPostObj = { name: req.body.vocabularyName };
-
-    // wait for the vocab to complete before adding categories
     try {
-      const vocabResponse = await axios.post(apiPath, vocabPostObj, options);
+      const vocabResponse = await axios.post(
+        `/o/headless-admin-taxonomy/v1.0/sites/${globalSiteId}/taxonomy-vocabularies`,
+        { name: req.body.vocabularyName },
+      );
 
       debug(vocabResponse.data);
       vocabId = vocabResponse.data.id;
     } catch (error) {
-      debug(error.response.data.status + ':' + error.response.data.title);
+      debug(error.response.data.status + ":" + error.response.data.title);
       errorCount++;
     }
   }
 
   const categMap = new Map();
 
-  debug('Returned vocab id is ' + vocabId);
+  debug("Returned vocab id is " + vocabId);
 
   let currCategory, currCategoryJson, categResponse;
 
@@ -86,32 +78,27 @@ export default async function UsersFileAction(req, res) {
 
     // check if category exists
 
-    let categoryId = await getExistingCategoryID(req, currCategory, vocabId);
+    let categoryId = await getExistingCategoryID(axios, currCategory, vocabId);
 
     // create the categories for the vocabulary that was just generated
 
     if (categoryId > 0) {
-      debug('Using existing categoryId: ' + categoryId);
+      debug("Using existing categoryId: " + categoryId);
       categMap.set(currCategory, categoryId);
     } else {
-      currCategoryJson = { name: currCategory, taxonomyVocabularyId: vocabId };
-
-      apiPath =
-        req.body.config.serverURL +
-        '/o/headless-admin-taxonomy/v1.0/taxonomy-vocabularies/' +
-        vocabId +
-        '/taxonomy-categories';
-      debug('creating category');
-      debug(currCategoryJson);
+      debug("creating category", currCategoryJson);
 
       try {
-        categResponse = await axios.post(apiPath, currCategoryJson, options);
+        categResponse = await axios.post(
+          `/o/headless-admin-taxonomy/v1.0/taxonomy-vocabularies/${vocabId}/taxonomy-categories`,
+          { name: currCategory, taxonomyVocabularyId: vocabId },
+        );
 
-        debug(categResponse.data.id + ' is the id for ' + currCategory);
+        debug(categResponse.data.id + " is the id for " + currCategory);
 
         categMap.set(currCategory, categResponse.data.id);
       } catch (error) {
-        debug(error.response.data.status + ':' + error.response.data.title);
+        debug(error.response.data.status + ":" + error.response.data.title);
         errorCount++;
       }
 
@@ -142,10 +129,10 @@ export default async function UsersFileAction(req, res) {
     inventoryCount = productslist[i].stock;
     if (
       !productslist[i].sku ||
-      productslist[i].sku == '' ||
-      productslist[i].sku == '?'
+      productslist[i].sku == "" ||
+      productslist[i].sku == "?"
     ) {
-      productSku = productName.toLowerCase().replaceAll(' ', '-');
+      productSku = productName.toLowerCase().replaceAll(" ", "-");
     } else {
       productSku = productslist[i].sku;
     }
@@ -165,7 +152,7 @@ export default async function UsersFileAction(req, res) {
         en_US: productName,
       },
       productStatus: 0,
-      productType: 'simple',
+      productType: "simple",
       shortDescription: {
         en_US: shortDescription,
       },
@@ -173,7 +160,7 @@ export default async function UsersFileAction(req, res) {
       skus: [
         {
           neverExpire: true,
-          price: parseFloat(productPrice.replaceAll('$', '')),
+          price: parseFloat(productPrice.replaceAll("$", "")),
           published: true,
           purchasable: true,
           sku: productSku,
@@ -182,16 +169,15 @@ export default async function UsersFileAction(req, res) {
     };
 
     try {
-      apiPath =
-        req.body.config.serverURL +
-        '/o/headless-commerce-admin-catalog/v1.0/products';
-
-      productResponse = await axios.post(apiPath, productJson, options);
+      productResponse = await axios.post(
+        "/o/headless-commerce-admin-catalog/v1.0/products",
+        productJson,
+      );
 
       productId = productResponse.data.productId;
 
-      debug('----------------------------------');
-      debug(productName + ' created with id ' + productId);
+      debug("----------------------------------");
+      debug(productName + " created with id " + productId);
 
       productCategoryJson = {
         id: currCategoryId,
@@ -200,29 +186,23 @@ export default async function UsersFileAction(req, res) {
       };
 
       let imgschema = JSON.stringify({
-        externalReferenceCode: 'product-' + productResponse.data.productId,
+        externalReferenceCode: "product-" + productResponse.data.productId,
         neverExpire: true,
         priority: 1,
         src: imageUrl,
         title: { en_US: productName },
       });
 
-      debug('imgschema');
-      debug(imgschema);
+      debug({ imgschema });
 
-      let imgApiPath =
-        req.body.config.serverURL +
-        '/o/headless-commerce-admin-catalog/v1.0/products/' +
-        productResponse.data.productId +
-        '/images/by-url';
-
-      let productImageResponse = await axios.post(
-        imgApiPath,
+      await axios.post(
+        "/o/headless-commerce-admin-catalog/v1.0/products/" +
+          productResponse.data.productId +
+          "/images/by-url",
         imgschema,
-        options
       );
     } catch (productError) {
-      debug('error creating product ' + productName + ' -- ' + productError);
+      debug("error creating product " + productName + " -- " + productError);
       errorCount++;
     }
   }
@@ -230,34 +210,25 @@ export default async function UsersFileAction(req, res) {
   let end = new Date().getTime();
 
   res.status(200).json({
-    result:
-      successCount +
-      ' products added, ' +
-      errorCount +
-      ' errors in ' +
-      functions.millisToMinutesAndSeconds(end - start),
+    result: `${successCount} products added, ${errorCount} errors in ${functions.millisToMinutesAndSeconds(end - start)} `,
   });
 }
 
-async function getExistingVocabID(req, name, globalSiteId) {
+async function getExistingVocabID(
+  axios: AxiosInstance,
+  name: string,
+  globalSiteId: string,
+) {
   name = name.replaceAll("'", "''");
   let filter = "name eq '" + name + "'";
 
-  let apiPath =
-    req.body.config.serverURL +
-    '/o/headless-admin-taxonomy/v1.0/sites/' +
-    globalSiteId +
-    '/taxonomy-vocabularies?filter=' +
-    encodeURI(filter);
-
-  let options = functions.getAPIOptions(
-    'GET',
-    'en-US',
-    req.body.config.base64data
-  );
-
   try {
-    const vocabResponse = await axios.get(apiPath, options);
+    const vocabResponse = await axios.get(
+      "/o/headless-admin-taxonomy/v1.0/sites/" +
+        globalSiteId +
+        "/taxonomy-vocabularies?filter=" +
+        encodeURI(filter),
+    );
 
     if (vocabResponse.data.items.length > 0) {
       return vocabResponse.data.items[0].id;
@@ -269,25 +240,21 @@ async function getExistingVocabID(req, name, globalSiteId) {
   }
 }
 
-async function getExistingCategoryID(req, name, vocabId) {
+async function getExistingCategoryID(
+  axios: AxiosInstance,
+  name: string,
+  vocabId: string,
+) {
   name = name.replaceAll("'", "''");
   let filter = "name eq '" + name + "'";
 
-  let apiPath =
-    req.body.config.serverURL +
-    '/o/headless-admin-taxonomy/v1.0/taxonomy-vocabularies/' +
-    vocabId +
-    '/taxonomy-categories?filter=' +
-    encodeURI(filter);
-
-  let options = functions.getAPIOptions(
-    'GET',
-    'en-US',
-    req.body.config.base64data
-  );
-
   try {
-    const categoryResponse = await axios.get(apiPath, options);
+    const categoryResponse = await axios.get(
+      "/o/headless-admin-taxonomy/v1.0/taxonomy-vocabularies/" +
+        vocabId +
+        "/taxonomy-categories?filter=" +
+        encodeURI(filter),
+    );
 
     if (categoryResponse.data.items.length > 0) {
       return categoryResponse.data.items[0].id;

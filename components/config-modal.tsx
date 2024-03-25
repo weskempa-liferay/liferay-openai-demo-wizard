@@ -1,29 +1,18 @@
 import { XCircleIcon } from '@heroicons/react/24/solid';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import FieldSelect from '../components/formfield-select';
+import schema from '../schemas/zod';
 import functions from '../utils/functions';
 import Form from './forms/form';
 import Input from './forms/input';
 import Select from './forms/select';
 
-const configFormSchema = z.object({
-  clientId: z.string(),
-  clientSecret: z.string(),
-  login: z.string(),
-  model: z.string(),
-  openAIKey: z.string(),
-  password: z.string(),
-  serverURL: z.string(),
-});
-
 const authenticationTypes = [
   { id: 'basic', name: 'Basic Authentication' },
-  { id: 'oauth', name: 'OAuth2' }
-]
+  { id: 'oauth', name: 'OAuth2' },
+];
 
 const aiModelOptions = functions.getAIModelOptions();
 
@@ -32,12 +21,12 @@ export default function ConfigModal({
   saveConfiguration,
   setShowModal,
 }) {
-  const configForm = useForm<z.infer<typeof configFormSchema>>({
+  const configForm = useForm<z.infer<typeof schema.config>>({
     defaultValues: appConfig,
-    resolver: zodResolver(configFormSchema),
+    resolver: zodResolver(schema.config),
   });
 
-  const [authMethod, setAuthMethod] = useState("basic");
+  const authenticationType = configForm.watch('authenticationType');
 
   return (
     <Form
@@ -103,51 +92,49 @@ export default function ConfigModal({
                 </div>
 
                 <div className="mb-2 p-2 bg-blue-600/20 rounded-lg">
-
-                  <FieldSelect
-                    inputChange={setAuthMethod}
+                  <Select
                     label="Select Authentication Type"
                     name="authenticationType"
                     optionMap={authenticationTypes}
                   />
-
                 </div>
 
-                <div className = {authMethod == 'basic' ? '' : 'hidden'}>
-                  <div className="mb-2 p-2 bg-blue-600/30 rounded-lg">
-                    <Input
-                      label="User Login"
-                      name="login"
-                      placeholder="Enter user login"
-                    />
+                {authenticationType === 'basic' && (
+                  <div>
+                    <div className="mb-2 p-2 bg-blue-600/30 rounded-lg">
+                      <Input
+                        label="User Login"
+                        name="login"
+                        placeholder="Enter user login"
+                      />
 
-                    <Input
-                      label="Password"
-                      name="password"
-                      placeholder="Enter password (Password is never saved directly)"
-                      type="password"
-                    />
-
+                      <Input
+                        label="Password"
+                        name="password"
+                        placeholder="Enter password (Password is never saved directly)"
+                        type="password"
+                      />
+                    </div>
                   </div>
-                </div>
+                )}
 
-                <div className = {authMethod == 'oauth' ? '' : 'hidden'}>
-                  <div className="mb-2 p-2 bg-blue-600/30 rounded-lg">
+                {authenticationType === 'oauth' && (
+                  <div>
+                    <div className="mb-2 p-2 bg-blue-600/30 rounded-lg">
+                      <Input
+                        label="OAuth2 - Client ID"
+                        name="clientId"
+                        placeholder="Enter Client ID (Secrets are never saved directly)"
+                      />
 
-                    <Input
-                      label="OAuth2 - Client ID"
-                      name="clientId"
-                      placeholder="Enter Client ID (Secrets are never saved directly)"
-                    />
-
-                    <Input
-                      label="OAuth2 - Client Secret"
-                      name="clientSecret"
-                      placeholder="Enter Client Secret (Secrets are never saved directly)"
-                    />
+                      <Input
+                        label="OAuth2 - Client Secret"
+                        name="clientSecret"
+                        placeholder="Enter Client Secret (Secrets are never saved directly)"
+                      />
+                    </div>
                   </div>
-                </div>
-
+                )}
               </div>
             </div>
 

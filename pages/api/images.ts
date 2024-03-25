@@ -1,16 +1,21 @@
-import fs from 'fs';
-import http from 'https';
-import OpenAI from 'openai';
-import request from 'request';
+import { AxiosInstance } from "axios";
+import { NextApiRequest, NextApiResponse } from "next";
+import OpenAI from "openai";
 
-import functions from '../../utils/functions';
-import { logger } from '../../utils/logger';
+import schema, { z } from "../../schemas/zod";
+import { axiosInstance } from "../../services/liferay";
+import { getDownloadFormData } from "../../utils/download";
+import functions from "../../utils/functions";
+import { logger } from "../../utils/logger";
 
-const debug = logger('ImagesAction');
+const debug = logger("ImagesAction");
 const runCountMax = 10;
 
-export default async function ImagesAction(req, res) {
-  let start = new Date().getTime();
+export default async function ImagesAction(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
+  const start = new Date().getTime();
 
   const openai = new OpenAI({
     apiKey: req.body.config.openAIKey,
@@ -18,91 +23,62 @@ export default async function ImagesAction(req, res) {
 
   debug(req.body);
 
-  const runCount = req.body.imageNumber;
-  const imageDescription = req.body.imageDescription;
-  const imageGeneration = req.body.imageGeneration;
+  let { imageDescription, imageGeneration, imageNumber, imageStyle } =
+    req.body as z.infer<typeof schema.image>;
 
-  let pictureDescription = imageDescription;
+  const axios = axiosInstance(req, res);
 
-  for (let i = 0; i < runCount; i++) {
+  for (let i = 0; i < Number(imageNumber); i++) {
     if (req.body.imageStyle) {
-      pictureDescription =
-        'Create an image in the style of ' +
-        req.body.imageStyle +
-        '. ' +
-        imageDescription;
+      imageDescription = `Create an image in the style of ${imageStyle}. ${imageDescription}`;
     }
 
-    debug('pictureDescription: ' + pictureDescription);
+    debug("imageDescription: " + imageDescription);
 
     try {
       const imageResponse = await openai.images.generate({
         model: imageGeneration,
         n: 1,
-        prompt: pictureDescription,
+        prompt: imageDescription,
         quality: req.body.imageGenerationQuality,
         size: req.body.imageGenerationSize,
       });
 
       debug(imageResponse.data[0].url);
 
-      const timestamp = new Date().getTime();
-      const file = fs.createWriteStream(
-        'generatedimages/img' + timestamp + '-' + i + '.jpg'
-      );
+      debug("In Exports, getGeneratedImage:" + imageResponse);
 
-      debug('In Exports, getGeneratedImage:' + imageResponse);
+      const formData = await getDownloadFormData(imageResponse.data[0].url);
 
-      http.get(imageResponse.data[0].url, function (response) {
-        response.pipe(file);
-
-        file.on('finish', () => {
-          file.close();
-          postImageToLiferay(file, req);
-        });
-      });
+      await postImageToLiferay(axios, formData, req.body.imageFolderId);
     } catch (error) {
-      if (error.response) {
-        console.log(error.response.status);
-      } else {
-        console.log(error.message);
-      }
+      debug(error);
     }
 
     if (i >= runCountMax) break;
   }
 
-  let end = new Date().getTime();
+  const end = new Date().getTime();
 
-  debug('Completed in ' + (end - start) + ' milliseconds');
+  debug("Completed in " + (end - start) + " milliseconds");
 
   res.status(200).json({
-    result: 'Completed in ' + functions.millisToMinutesAndSeconds(end - start),
+    result: "Completed in " + functions.millisToMinutesAndSeconds(end - start),
   });
 }
 
-function postImageToLiferay(file, req) {
-  const imageFolderId = parseInt(req.body.imageFolderId);
-
-  let imageApiPath =
-    req.body.config.serverURL +
-    '/o/headless-delivery/v1.0/document-folders/' +
-    imageFolderId +
-    '/documents';
-
-  debug(imageApiPath);
-
-  let fileStream = fs.createReadStream(process.cwd() + '/' + file.path);
-  const options = functions.getFilePostOptions(
-    imageApiPath,
-    fileStream,
-    'file',
-    req.body.config.base64data
+async function postImageToLiferay(
+  axios: AxiosInstance,
+  formData: FormData,
+  imageFolderId: number,
+) {
+  await axios.post(
+    `/o/headless-delivery/v1.0/document-folders/${imageFolderId}/documents`,
+    formData,
+    {
+      headers: {
+        "Content-Type": "application/form-data",
+      },
+    },
   );
-
-  setTimeout(function () {
-    request(options, function (err, res, body) {
-      if (err) console.log(err);
-    });
-  }, 100);
 }

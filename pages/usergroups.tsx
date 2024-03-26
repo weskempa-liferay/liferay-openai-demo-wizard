@@ -60,7 +60,9 @@ export default function UserGroups() {
           />
         </div>
 
-        <FieldSubmit disabled={isSubmitting} label="Generate User Group" />
+        <FieldSubmit 
+          disabled={!userGroupsForm.formState.isValid || isSubmitting}
+          label="Generate User Group" />
       </Form>
 
       {isSubmitting ? (

@@ -49,6 +49,10 @@ form .btn-popuptoggle {
   padding: 5px 20px;
 }
 
+.text-muted-foreground{
+  color:darksalmon;
+}
+
 .imgtoggle {
   width: 220px;
   padding: 20px;

@@ -144,7 +144,9 @@ export default function Products() {
           )}
         </div>
 
-        <FieldSubmit disabled={isSubmitting} label={submitLabel} />
+        <FieldSubmit 
+           disabled={!productForm.formState.isValid || isSubmitting}
+           label={submitLabel} />
       </Form>
 
       {isSubmitting ? (

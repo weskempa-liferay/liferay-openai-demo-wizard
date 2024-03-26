@@ -11,6 +11,9 @@ import { logger } from "../../utils/logger";
 const debug = logger("ImagesAction");
 const runCountMax = 10;
 
+export type Size = '256x256' | '512x512' | '1024x1024' | '1024x1792' | '1792x1024';
+
+
 export default async function ImagesAction(
   req: NextApiRequest,
   res: NextApiResponse,
@@ -34,6 +37,10 @@ export default async function ImagesAction(
     }
 
     debug("imageDescription: " + imageDescription);
+    debug("req.body.imageGenerationQuality: " + req.body.imageGenerationQuality);
+    debug("req.body.imageGenerationSize: " + req.body.imageGenerationSize);
+
+    let imageSize = req.body.imageGenerationSize.split("-")[0] as Size;
 
     try {
       const imageResponse = await openai.images.generate({
@@ -41,7 +48,7 @@ export default async function ImagesAction(
         n: 1,
         prompt: imageDescription,
         quality: req.body.imageGenerationQuality,
-        size: req.body.imageGenerationSize,
+        size: imageSize,
       });
 
       debug(imageResponse.data[0].url);

@@ -114,7 +114,7 @@ const schema = {
     siteId: z.string(),
   }),
   productsAI: z.object({
-    catalogId: z.string().min(0),
+    catalogId: z.string(),
     companyTheme: z.string().min(3),
     globalSiteId: z.string().min(1),
     imageGeneration: z.string(),

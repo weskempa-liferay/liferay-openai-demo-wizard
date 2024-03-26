@@ -85,7 +85,9 @@ export default function PagesAI() {
           />
         </div>
 
-        <FieldSubmit disabled={isSubmitting} label="Generate Pages" />
+        <FieldSubmit 
+          disabled={!pagesAIForm.formState.isValid || isSubmitting}
+          label="Generate Pages" />
       </Form>
 
       <p className="text-slate-100 text-center text-lg mb-3 rounded p-5 bg-white/10 w-1/2 italic">

@@ -96,7 +96,9 @@ export default function Categories() {
           }
         />
 
-        <FieldSubmit disabled={isSubmitting} label="Generate Categories" />
+        <FieldSubmit 
+          disabled={!categoriesForm.formState.isValid || isSubmitting}
+          label="Generate Categories" />
       </Form>
 
       {isSubmitting ? (

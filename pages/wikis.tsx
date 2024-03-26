@@ -98,7 +98,7 @@ export default function Wikis() {
         </div>
 
         <FieldSubmit
-          disabled={isSubmitting}
+          disabled={!wikiForm.formState.isValid || isSubmitting}
           label="Generate Wiki Node and Pages"
         />
       </Form>

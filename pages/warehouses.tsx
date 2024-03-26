@@ -60,7 +60,9 @@ export default function Warehouses() {
           />
         </div>
 
-        <FieldSubmit disabled={isSubmitting} label="Generate Warehouses" />
+        <FieldSubmit
+          disabled={!warehouseForm.formState.isValid || isSubmitting}
+          label="Generate Warehouses" />
       </Form>
 
       <p className="text-slate-100 text-center text-lg mb-3 rounded p-5 bg-white/10 w-1/2 italic">

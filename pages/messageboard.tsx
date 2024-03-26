@@ -100,8 +100,8 @@ export default function MessageBoard() {
           />
         </div>
 
-        <FieldSubmit
-          disabled={isSubmitting}
+        <FieldSubmit 
+          disabled={!messageBoardForm.formState.isValid || isSubmitting}
           label={'Generate Message Board Threads'}
         />
       </Form>

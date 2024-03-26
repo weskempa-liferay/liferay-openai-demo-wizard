@@ -67,7 +67,9 @@ export default function UsersAI() {
           />
         </div>
 
-        <FieldSubmit disabled={isSubmitting} label="Generate Users" />
+        <FieldSubmit 
+          disabled={!usersAIForm.formState.isValid || isSubmitting}
+          label="Generate Users" />
       </Form>
 
       {isSubmitting ? (

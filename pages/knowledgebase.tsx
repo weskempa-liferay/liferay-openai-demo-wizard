@@ -95,8 +95,8 @@ export default function KnowledgeBase() {
           />
         </div>
 
-        <FieldSubmit
-          disabled={isSubmitting}
+        <FieldSubmit 
+          disabled={!knowledgeBaseForm.formState.isValid || isSubmitting}
           label="Generate Knowledge Base Articles"
         />
       </Form>

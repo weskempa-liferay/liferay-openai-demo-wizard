@@ -67,7 +67,9 @@ export default function Organizations() {
           />
         </div>
 
-        <FieldSubmit disabled={isSubmitting} label="Generate Organization" />
+        <FieldSubmit 
+          disabled={!organizationsForm.formState.isValid || isSubmitting}
+          label="Generate Organization" />
       </Form>
 
       {isSubmitting ? (

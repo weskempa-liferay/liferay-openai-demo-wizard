@@ -152,7 +152,9 @@ export default function Objects() {
           </div>
         </div>
 
-        <FieldSubmit disabled={isSubmitting} label="Generate Object Data" />
+        <FieldSubmit 
+          disabled={!objectsForm.formState.isValid || isSubmitting}
+          label="Generate Object Data" />
       </Form>
 
       {isSubmitting ? (

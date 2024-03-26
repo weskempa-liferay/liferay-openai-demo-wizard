@@ -134,7 +134,9 @@ export default function Faqs() {
           }
         />
 
-        <FieldSubmit disabled={isSubmitting} label="Generate FAQs" />
+        <FieldSubmit 
+          disabled={!faqForm.formState.isValid || isSubmitting}
+          label="Generate FAQs" />
       </Form>
 
       <p className="mb-3 w-1/2 rounded bg-white/10 p-5 text-center text-lg italic text-slate-100">

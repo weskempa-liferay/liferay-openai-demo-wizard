@@ -25,8 +25,6 @@ export default function ProductsFile() {
   const [result, setResult] = useState('');
 
   useEffect(() => {
-    debug('Load');
-
     const fetchData = async () => {
       const response = await fetch('/api/catalogs');
       const catalogs = await response.json();

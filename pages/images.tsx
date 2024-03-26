@@ -158,7 +158,9 @@ export default function Images() {
           )}
         </div>
 
-        <FieldSubmit disabled={isSubmitting} label={submitLabel} />
+        <FieldSubmit 
+          disabled={!imageForm.formState.isValid || isSubmitting}
+          label={submitLabel} />
       </Form>
 
       {isSubmitting ? (

@@ -141,7 +141,9 @@ export default function Blogs() {
           )}
         </div>
 
-        <FieldSubmit disabled={isSubmitting} label={submitLabel} />
+        <FieldSubmit
+          disabled={!blogsForm.formState.isValid || isSubmitting}
+          label={submitLabel} />
       </Form>
 
       {isSubmitting ? (

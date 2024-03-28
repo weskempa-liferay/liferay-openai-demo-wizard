@@ -105,9 +105,9 @@ export default function Blogs() {
           />
 
           <Input
-            label="Site ID or Asset Library Group ID"
+            label="Site ID"
             name="siteId"
-            placeholder="Enter a site ID or asset library group ID"
+            placeholder="Enter a site ID"
           />
 
           <Select
@@ -145,6 +145,11 @@ export default function Blogs() {
           disabled={!blogsForm.formState.isValid || isSubmitting}
           label={submitLabel} />
       </Form>
+
+      <p className="text-slate-100 text-center text-lg mb-3 rounded p-5 bg-white/10 w-1/2 italic">
+        <b>Note:</b> The AI generation of blogs is not dependable for GPT
+        4.0. Because of this, GPT 3.5 or GPT 3.5 turbo is currently recommended.
+      </p>
 
       {isSubmitting ? (
         <LoadingAnimation />

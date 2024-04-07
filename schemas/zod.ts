@@ -1,5 +1,5 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 
 const schema = {
   blog: z.object({
@@ -98,7 +98,7 @@ const schema = {
         fieldDescription: z.string(),
         fieldName: z.string(),
         fieldType: z.string(),
-      }),
+      })
     ),
   }),
   organizations: z.object({
@@ -114,7 +114,7 @@ const schema = {
     siteId: z.string(),
   }),
   productsAI: z.object({
-    catalogId: z.string(),
+    catalogId: z.string().min(1, 'Catalog is required'),
     companyTheme: z.string().min(3),
     globalSiteId: z.string().min(1),
     imageGeneration: z.string(),

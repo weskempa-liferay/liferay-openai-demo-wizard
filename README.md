@@ -48,6 +48,28 @@ Technologies used:
 - [TailwindCSS](https://tailwindcss.com/)
 - [Highlight.js](https://highlightjs.org/)
 
+## Authentication
+
+You have two options of authentication using Liferay Portal
+
+1. Basic
+2. OAuth2
+
+The **Basic** authentication is ideal for localhost, dev, staging environments and the authentication method is using **email** and **password**, you must have sufficient permissions to consume the APIs used on the target asset.
+
+**OAuth2** is recommended for production environments, especially if you are using Liferay SaaS, as basic authentication is disabled by default.
+
+You will need to enable the following scopes to use the **openai-demo-wizard**:
+
+- Liferay.Headless.Admin.Taxonomy.everything
+- Liferay.Headless.Admin.User.everything
+- Liferay.Headless.Admin.Workflow.everything
+- Liferay.Headless.Commerce.Admin.Account.everything
+- Liferay.Headless.Commerce.Admin.Catalog.everything
+- Liferay.Headless.Delivery.everything
+- Liferay.Headless.Site.everything
+
+
 ## Setup
 
 1. If you don’t have Node.js installed, [install it from here](https://nodejs.org/en/)

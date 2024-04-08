@@ -1,5 +1,5 @@
 import hljs from 'highlight.js';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -11,6 +11,7 @@ import ImageStyle from '../components/imagestyle';
 import Layout from '../components/layout';
 import LoadingAnimation from '../components/loadinganimation';
 import ResultDisplay from '../components/resultdisplay';
+import useCatalogs from '../hooks/useCatalogs';
 import schema, { z, zodResolver } from '../schemas/zod';
 import nextAxios from '../services/next';
 import { USDollar } from '../utils/currency';
@@ -25,10 +26,11 @@ export default function Products() {
       numberOfCategories: '5',
       numberOfProducts: '3',
     },
+    mode: 'all',
     resolver: zodResolver(schema.productsAI),
   });
 
-  const [productCatalogOptions, setProductCatalogOptions] = useState([]);
+  const catalogs = useCatalogs();
   const [result, setResult] = useState('');
 
   const {
@@ -70,9 +72,6 @@ export default function Products() {
   }, [imageGeneration, numberOfCategories, numberOfProducts]);
 
   async function onSubmit(payload: ProductAISchema) {
-
-    console.log(payload);
-
     const { data } = await nextAxios.post('/api/products-ai', payload);
 
     const hljsResult = hljs.highlightAuto(data.result).value;
@@ -119,10 +118,11 @@ export default function Products() {
             placeholder="Enter the number of products per category"
           />
 
-          <Input
+          <Select
+            defaultOption
             label="Product Catalog ID"
             name="catalogId"
-            optioplaceholdernMap="Enter the Catalog ID"
+            optionMap={catalogs}
           />
 
           <Select
@@ -144,9 +144,10 @@ export default function Products() {
           )}
         </div>
 
-        <FieldSubmit 
-           disabled={!productForm.formState.isValid || isSubmitting}
-           label={submitLabel} />
+        <FieldSubmit
+          disabled={!productForm.formState.isValid || isSubmitting}
+          label={submitLabel}
+        />
       </Form>
 
       {isSubmitting ? (

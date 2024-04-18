@@ -23,6 +23,7 @@ const functions = {
       { id: "gpt-3.5-turbo-1106", name: "GPT 3.5 Turbo (u1106) - Default" },
       { id: "gpt-4", name: "GPT 4.0" },
       { id: "gpt-4-turbo-preview", name: "GPT 4.0 Turbo Preview (u0125)" },
+      { id: "gpt-4-turbo-2024-04-09", name: "GPT 4.0 Turbo (4/9/2024)" }
     ];
   },
   getAPIOptions: (method, defaultLanguage, base64data) => {

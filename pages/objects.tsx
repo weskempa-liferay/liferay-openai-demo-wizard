@@ -60,12 +60,15 @@ export default function Objects() {
   };
 
   const addField = () => {
+    event.preventDefault();
     fieldArray.append({ fieldDescription: '', fieldName: '', fieldType: '' });
 
     setUpdateCount(updateCount + 1);
   };
 
   const removeField = (index: number) => {
+    event.preventDefault();
+
     fieldArray.remove(index);
 
     setUpdateCount(updateCount + 1);

@@ -36,18 +36,19 @@ const handleFragmentClick = () => {
 const viewOptions = functions.getViewOptions();
 
 export default function Faqs() {
+
   const faqForm = useForm<FaqSchema>({
     defaultValues: {
       defaultLanguage: "en-US",
       faqNumber: "5",
       folderId: "0",
+      languages: [""],
       manageLanguage: false,
+      categoryIds: "",
       viewOptions: viewOptions[0].id,
     },
     resolver: zodResolver(schema.faq),
   });
-
-  console.log(faqForm.formState.errors);
 
   const [result, setResult] = useState("");
 

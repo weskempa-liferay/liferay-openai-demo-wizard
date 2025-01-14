@@ -41,8 +41,8 @@ const schema = {
     folderId: z.string(),
     languages: z.array(z.string()),
     manageLanguage: z.boolean(),
-    siteId: z.string(),
-    structureId: z.string(),
+    siteId: z.string().min(3),
+    structureId: z.string().min(3),
     viewOptions: z.string(),
   }),
   image: z.object({

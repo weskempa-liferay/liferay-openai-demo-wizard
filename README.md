@@ -2,7 +2,7 @@
 
 With this application, creating content within Liferay is a breeze!
 
-Consider this scenario: You can create 15 products across 5 categories in just 35 seconds with a single prompt from you. The magic happens through with the integration of OpenAI's API for content creation and Liferay's APIs for seamless storage based on your prompts.
+Consider this scenario: You can create 15 products across 5 categories in just 35 seconds with a single prompt from you. The magic happens with integrating OpenAI's API for content creation and Liferay's APIs for seamless storage based on your prompts.
 
 Utilizing this OpenAI Wizard doesn't just speed up content creation, which many of us are already doing with AI. It goes the extra mile by seamlessly loading it into Liferay through Liferay's Extensive Headless APIs. Big kudos to Steven Lu, who helped identify the potential to optimize the time spent on setting up commerce products, categories, and SKUs through Liferay's Headless APIs.
   
@@ -95,6 +95,9 @@ npm run dev
 ```
 
 You should now be able to access the app at [http://localhost:3000](http://localhost:3000). 
+
+> [!TIP]
+> If you are accessing a local Liferay instance through localhost and have issues, https://127.0.0.1:8080 might solve the connection issue. Some nodejs or axios versions have known issues for calling localhost.
 
 ## Deployment
 

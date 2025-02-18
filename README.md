@@ -97,7 +97,7 @@ npm run dev
 You should now be able to access the app at [http://localhost:3000](http://localhost:3000). 
 
 > [!TIP]
-> If you are accessing a local Liferay instance through localhost and have issues, https://127.0.0.1:8080 might solve the connection issue. Some nodejs or axios versions have known issues for calling localhost.
+> If you are accessing a local Liferay instance through localhost and have issues with getting the configuration to connect, using "https://127.0.0.1:8080" might solve the connection issue. Some nodejs or axios versions have known issues for calling localhost.
 
 ## Deployment
 
